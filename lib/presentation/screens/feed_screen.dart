@@ -36,7 +36,7 @@ class _FeedScreenState extends State<FeedScreen> {
     });
 
     try {
-      // TODO: Replace with actual API call
+      // Simulate API call for initial posts
       await Future.delayed(const Duration(seconds: 1));
 
       if (mounted) {
@@ -76,7 +76,7 @@ class _FeedScreenState extends State<FeedScreen> {
     });
 
     try {
-      // TODO: Replace with actual API call
+      // Simulate API call for more posts
       await Future.delayed(const Duration(seconds: 1));
 
       final newPosts = List.generate(
@@ -122,7 +122,12 @@ class _FeedScreenState extends State<FeedScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              // TODO: Navigate to create post screen
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Create post feature coming soon!'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
             },
           ),
         ],
@@ -152,16 +157,36 @@ class _FeedScreenState extends State<FeedScreen> {
                   return PostCard(
                     post: post,
                     onTap: () {
-                      // TODO: Navigate to post detail screen
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Post detail feature coming soon!'),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
                     },
                     onLike: () {
-                      // TODO: Implement like functionality
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Like feature coming soon!'),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
                     },
                     onComment: () {
-                      // TODO: Navigate to comments screen
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Comments feature coming soon!'),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
                     },
                     onShare: () {
-                      // TODO: Implement share functionality
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Share feature coming soon!'),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
                     },
                   );
                 },

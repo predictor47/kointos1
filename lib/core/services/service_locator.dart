@@ -37,7 +37,7 @@ Future<void> setupServiceLocator() async {
 
   // Data Sources
   serviceLocator.registerLazySingleton<CoinGeckoService>(
-    () => CoinGeckoService(baseUrl: AppConstants.coinGeckoBaseUrl),
+    () => const CoinGeckoService(baseUrl: AppConstants.coinGeckoBaseUrl),
   );
 
   // Repositories

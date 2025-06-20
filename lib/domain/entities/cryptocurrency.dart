@@ -47,10 +47,10 @@ class Cryptocurrency {
   @JsonKey(name: 'sparkline_in_7d')
   final Map<String, List<double>>? sparklineData;
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   final String? description;
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   final Map<String, dynamic>? additionalDetails;
 
   final bool isFavorite;

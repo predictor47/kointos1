@@ -21,10 +21,12 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
   bool _isLoading = false;
   List<double>? _priceHistory;
   int _selectedDays = 7;
+  late bool _isFavorite;
 
   @override
   void initState() {
     super.initState();
+    _isFavorite = widget.cryptocurrency.isFavorite;
     _loadData();
   }
 
@@ -74,13 +76,25 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              widget.cryptocurrency.isFavorite ? Icons.star : Icons.star_border,
-              color: widget.cryptocurrency.isFavorite
+              _isFavorite ? Icons.star : Icons.star_border,
+              color: _isFavorite
                   ? AppTheme.accentColor
                   : AppTheme.textSecondaryColor,
             ),
             onPressed: () {
-              // TODO: Implement favorite toggle
+              setState(() {
+                _isFavorite = !_isFavorite;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    _isFavorite
+                        ? 'Added to favorites!'
+                        : 'Removed from favorites!',
+                  ),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
             },
           ),
         ],
@@ -239,7 +253,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppTheme.textSecondaryColor,
             ),
           ),

@@ -22,7 +22,7 @@ class _MarketScreenState extends State<MarketScreen> {
   String _sortBy = 'market_cap_desc';
   Map<String, dynamic>? _marketStats;
   List<Cryptocurrency> _cryptocurrencies = [];
-  Set<String> _favorites = {};
+  final Set<String> _favorites = {};
 
   int _currentPage = 1;
   static const _itemsPerPage = 50;

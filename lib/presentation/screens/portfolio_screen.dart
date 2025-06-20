@@ -60,7 +60,12 @@ class _PortfolioScreenState extends State<PortfolioScreen>
   @override
   void initState() {
     super.initState();
+    _loadPortfolioData();
+  }
+
+  Future<void> _loadPortfolioData() async {
     // In a real app, we would fetch portfolio data here
+    // For now, we're using mock data
   }
 
   Future<void> _refreshPortfolio() async {
@@ -106,7 +111,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Portfolio',
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -130,7 +135,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
             },
           ),
           IconButton(
-            icon: Icon(Icons.history, color: AppTheme.textPrimaryColor),
+            icon: const Icon(Icons.history, color: AppTheme.textPrimaryColor),
             onPressed: () {
               // Navigate to transaction history
             },
@@ -142,7 +147,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
         color: AppTheme.primaryColor,
         backgroundColor: AppTheme.cardColor,
         child: _isLoading
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation(AppTheme.primaryColor),
                 ),
@@ -174,7 +179,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Your Assets',
                             style: TextStyle(
                               fontSize: 18,
@@ -185,9 +190,9 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                           DropdownButton<String>(
                             value: 'Balance',
                             dropdownColor: AppTheme.cardColor,
-                            style: TextStyle(color: AppTheme.primaryColor),
+                            style: const TextStyle(color: AppTheme.primaryColor),
                             underline: Container(height: 0),
-                            icon: Icon(Icons.keyboard_arrow_down,
+                            icon: const Icon(Icons.keyboard_arrow_down,
                                 color: AppTheme.primaryColor),
                             items: ['Balance', 'Profit/Loss', 'Name', 'Price']
                                 .map((String value) {
@@ -213,13 +218,13 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                               padding: const EdgeInsets.all(32.0),
                               child: Column(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.account_balance_wallet_outlined,
                                     size: 64,
                                     color: AppTheme.textSecondaryColor,
                                   ),
                                   const SizedBox(height: 16),
-                                  Text(
+                                  const Text(
                                     'Your portfolio is empty',
                                     style: TextStyle(
                                       fontSize: 18,
@@ -228,7 +233,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
+                                  const Text(
                                     'Start adding your crypto assets to track your portfolio',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -263,8 +268,8 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                     const SizedBox(height: 16),
 
                     // Allocation section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'Portfolio Allocation',
                         style: TextStyle(
@@ -285,7 +290,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                         color: AppTheme.cardColor,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           'Allocation Chart',
                           style: TextStyle(
@@ -298,8 +303,8 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                     const SizedBox(height: 24),
 
                     // Performance section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'Performance',
                         style: TextStyle(
@@ -320,7 +325,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                         color: AppTheme.cardColor,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           'Performance Chart',
                           style: TextStyle(

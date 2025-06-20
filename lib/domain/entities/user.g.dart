@@ -13,8 +13,8 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       displayName: json['displayName'] as String?,
       profileImageUrl: json['profileImageUrl'] as String?,
       bio: json['bio'] as String?,
-      points: json['points'] as int? ?? 0,
-      level: json['level'] as int? ?? 1,
+      points: (json['points'] as num?)?.toInt() ?? 0,
+      level: (json['level'] as num?)?.toInt() ?? 1,
       badges: (json['badges'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -23,8 +23,8 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
               ?.map((e) => e as String)
               .toList() ??
           const [],
-      followersCount: json['followersCount'] as int? ?? 0,
-      followingCount: json['followingCount'] as int? ?? 0,
+      followersCount: (json['followersCount'] as num?)?.toInt() ?? 0,
+      followingCount: (json['followingCount'] as num?)?.toInt() ?? 0,
       createdAt: User._dateTimeFromJson(json['createdAt']),
       lastActive: User._dateTimeFromJson(json['lastActive']),
     );

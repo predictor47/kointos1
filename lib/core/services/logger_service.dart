@@ -1,41 +1,43 @@
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 
 class LoggerService {
-  static final Logger _logger = Logger('Kointos');
+  static late Logger _logger;
   static bool _initialized = false;
 
   static void init() {
     if (_initialized) return;
 
-    Logger.root.level = Level.ALL;
-    Logger.root.onRecord.listen((record) {
-      // In production, you might want to send logs to a service like Firebase Crashlytics
-      // For development, we'll just print to console
-      final message = '${record.level.name}: ${record.time}: ${record.message}';
-      if (record.error != null) {
-        print(
-            '$message\nError: ${record.error}\nStack trace:\n${record.stackTrace}');
-      } else {
-        print(message);
-      }
-    });
+    _logger = Logger(
+      printer: PrettyPrinter(
+        methodCount: 2,
+        errorMethodCount: 8,
+        lineLength: 120,
+        colors: true,
+        printEmojis: true,
+        dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
+      ),
+    );
 
     _initialized = true;
   }
 
   static void debug(String message, [Object? error, StackTrace? stackTrace]) {
-    _logger.fine(message, error, stackTrace);
+    if (!_initialized) init();
+    _logger.d(message, error: error, stackTrace: stackTrace);
   }
 
   static void info(String message, [Object? error, StackTrace? stackTrace]) {
-    _logger.info(message, error, stackTrace);
+    if (!_initialized) init();
+    _logger.i(message, error: error, stackTrace: stackTrace);
   }
 
   static void warning(String message, [Object? error, StackTrace? stackTrace]) {
-    _logger.warning(message, error, stackTrace);
+    if (!_initialized) init();
+    _logger.w(message, error: error, stackTrace: stackTrace);
   }
 
   static void error(String message, [Object? error, StackTrace? stackTrace]) {
-    _logger.severe(message, error, stackTrace);
+    if (!_initialized) init();
+    _logger.e(message, error: error, stackTrace: stackTrace);
   }
 }

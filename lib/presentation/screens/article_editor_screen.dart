@@ -59,9 +59,11 @@ class _ArticleEditorScreenState extends State<ArticleEditorScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to pick image')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to pick image')),
+        );
+      }
     }
   }
 
@@ -191,9 +193,9 @@ class _ArticleEditorScreenState extends State<ArticleEditorScreen> {
               : null,
         ),
         child: _coverImagePath == null
-            ? Column(
+            ? const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(
                     Icons.add_photo_alternate,
                     size: 48,

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/storage_interface.dart';
 import 'package:kointos/domain/entities/user.dart';
@@ -69,16 +68,12 @@ class UserProfileRepository {
       final key = 'users/$userId/profile.jpg';
       await _storageService.uploadFile(key, file);
 
-      final response = await _apiService.put(
+      await _apiService.put(
         '/users/$userId',
         {
           'profileImage': key,
         },
       );
-
-      if (response == null) {
-        throw Exception('Failed to update profile image');
-      }
     } catch (e) {
       rethrow;
     }

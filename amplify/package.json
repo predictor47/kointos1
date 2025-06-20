@@ -1,12 +1,12 @@
 {
-  "name": "kointos-backend",
+  "name": "amplify-backend",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "build": "npx ampx pipeline-deploy --branch main"
+  },
   "dependencies": {
-    "@aws-amplify/backend": "^0.6.0",
-    "@aws-amplify/backend-cli": "^0.9.2",
-    "aws-cdk-lib": "^2.110.0",
-    "constructs": "^10.3.0",
-    "typescript": "^5.0.0"
+    "@aws-amplify/backend": "^1.16.1",
+    "@aws-amplify/backend-cli": "^1.8.0"
   }
 }

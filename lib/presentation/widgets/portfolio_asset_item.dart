@@ -7,10 +7,10 @@ class PortfolioAssetItem extends StatelessWidget {
   final bool isPrivateMode;
 
   const PortfolioAssetItem({
-    Key? key,
+    super.key,
     required this.portfolioItem,
     this.isPrivateMode = false,
-  }) : super(key: key);
+  });
 
   String _formatNumber(double number) {
     if (number >= 1000000000) {
@@ -54,7 +54,7 @@ class PortfolioAssetItem extends StatelessWidget {
                 child: Center(
                   child: Text(
                     portfolioItem.symbol.substring(0, 1),
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppTheme.primaryColor,
                       fontWeight: FontWeight.bold,
                     ),
@@ -70,14 +70,14 @@ class PortfolioAssetItem extends StatelessWidget {
                   children: [
                     Text(
                       portfolioItem.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.textPrimaryColor,
                       ),
                     ),
                     Text(
                       portfolioItem.symbol,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppTheme.textSecondaryColor,
                         fontSize: 12,
                       ),
@@ -94,7 +94,7 @@ class PortfolioAssetItem extends StatelessWidget {
                     isPrivateMode
                         ? '***'
                         : '${portfolioItem.amount.toStringAsFixed(4)} ${portfolioItem.symbol}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       color: AppTheme.textPrimaryColor,
                     ),
@@ -103,7 +103,7 @@ class PortfolioAssetItem extends StatelessWidget {
                     isPrivateMode
                         ? '***'
                         : '\$${_formatNumber(portfolioItem.totalValue)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppTheme.textSecondaryColor,
                       fontSize: 12,
                     ),

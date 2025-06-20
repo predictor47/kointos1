@@ -172,7 +172,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 if (_errorMessage != null)
                   Text(
                     _errorMessage!,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppTheme.negativeChangeColor,
                     ),
                     textAlign: TextAlign.center,

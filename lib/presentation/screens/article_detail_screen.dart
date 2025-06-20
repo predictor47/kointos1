@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart' hide MarkdownBody;
-import 'package:markdown/markdown.dart' as md;
 import 'package:kointos/core/theme/app_theme.dart';
 import 'package:kointos/core/utils/url_utils.dart';
 import 'package:kointos/domain/entities/article.dart';
@@ -86,7 +85,7 @@ class ArticleDetailScreen extends StatelessWidget {
               backgroundColor: AppTheme.primaryWithAlpha(25),
               child: Text(
                 article.authorName.substring(0, 1).toUpperCase(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppTheme.primaryColor,
                 ),
               ),
@@ -104,7 +103,7 @@ class ArticleDetailScreen extends StatelessWidget {
                   ),
                   Text(
                     _formatDate(article.createdAt),
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppTheme.textSecondaryColor,
                       fontSize: 12,
                     ),
@@ -129,7 +128,7 @@ class ArticleDetailScreen extends StatelessWidget {
                 ),
                 child: Text(
                   '#$tag',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 12,
                   ),
@@ -152,32 +151,32 @@ class ArticleDetailScreen extends StatelessWidget {
         }
       },
       styleSheet: MarkdownStyleSheet(
-        p: TextStyle(
+        p: const TextStyle(
           color: AppTheme.textPrimaryColor,
           fontSize: 16,
           height: 1.5,
         ),
-        h1: TextStyle(
+        h1: const TextStyle(
           color: AppTheme.textPrimaryColor,
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),
-        h2: TextStyle(
+        h2: const TextStyle(
           color: AppTheme.textPrimaryColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        h3: TextStyle(
+        h3: const TextStyle(
           color: AppTheme.textPrimaryColor,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
-        blockquote: TextStyle(
+        blockquote: const TextStyle(
           color: AppTheme.textSecondaryColor,
           fontSize: 16,
           height: 1.5,
         ),
-        code: TextStyle(
+        code: const TextStyle(
           color: AppTheme.textPrimaryColor,
           fontSize: 14,
           fontFamily: 'monospace',

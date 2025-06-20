@@ -61,7 +61,7 @@ class PostCard extends StatelessWidget {
           child: post.authorAvatar.isEmpty
               ? Text(
                   post.authorName.substring(0, 1).toUpperCase(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontWeight: FontWeight.bold,
                   ),
@@ -81,7 +81,7 @@ class PostCard extends StatelessWidget {
               ),
               Text(
                 _formatDate(post.createdAt),
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppTheme.textSecondaryColor,
                   fontSize: 12,
                 ),
@@ -116,7 +116,7 @@ class PostCard extends StatelessWidget {
                 ),
                 child: Text(
                   '#$tag',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppTheme.primaryColor,
                     fontSize: 12,
                   ),

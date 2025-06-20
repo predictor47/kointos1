@@ -13,7 +13,7 @@ Cryptocurrency _$CryptocurrencyFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       currentPrice: (json['current_price'] as num).toDouble(),
       marketCap: (json['market_cap'] as num).toDouble(),
-      marketCapRank: json['market_cap_rank'] as int?,
+      marketCapRank: (json['market_cap_rank'] as num?)?.toInt(),
       totalVolume: (json['total_volume'] as num).toDouble(),
       high24h: (json['high_24h'] as num?)?.toDouble(),
       low24h: (json['low_24h'] as num?)?.toDouble(),

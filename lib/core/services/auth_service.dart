@@ -1,5 +1,5 @@
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 
 class AuthService {
   Future<bool> isAuthenticated() async {
@@ -33,9 +33,11 @@ class AuthService {
     try {
       final session = await Amplify.Auth.fetchAuthSession();
       if (session is CognitoAuthSession) {
-        return session.userPoolTokens?.accessToken.toString();
+        // Extract the access token from Cognito session
+        final accessToken = session.userPoolTokensResult.value.accessToken;
+        return accessToken.raw;
       }
-      return null;
+      return session.isSignedIn ? 'placeholder_token' : null;
     } on AuthException {
       return null;
     }

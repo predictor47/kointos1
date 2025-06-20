@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/kointos_amplify_config.dart';
 import 'package:kointos/core/services/service_locator.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/presentation/screens/auth_screen.dart';
-import 'package:kointos/presentation/screens/market_screen.dart';
+import 'package:kointos/presentation/screens/main_tab_screen.dart';
+import 'package:kointos/presentation/widgets/first_time_tutorial.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,7 +84,9 @@ class _AppEntryPointState extends State<AppEntryPoint> {
 
     return MaterialApp(
       theme: AppTheme.darkTheme,
-      home: _isAuthenticated ? const MarketScreen() : const AuthScreen(),
+      home: FirstTimeTutorial(
+        child: _isAuthenticated ? const MainTabScreen() : const AuthScreen(),
+      ),
     );
   }
 }

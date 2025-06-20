@@ -8,11 +8,11 @@ class CryptoListItem extends StatelessWidget {
   final Function(bool) onToggleFavorite;
 
   const CryptoListItem({
-    Key? key,
+    super.key,
     required this.cryptocurrency,
     this.onTap,
     required this.onToggleFavorite,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class CryptoListItem extends StatelessWidget {
                       color: AppTheme.backgroundColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.error_outline,
                       color: AppTheme.textSecondaryColor,
                     ),
@@ -61,7 +61,7 @@ class CryptoListItem extends StatelessWidget {
                     ),
                     Text(
                       cryptocurrency.symbol.toUpperCase(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppTheme.textSecondaryColor,
                         fontSize: 14,
                       ),
