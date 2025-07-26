@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kointos/core/services/service_locator.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/data/repositories/article_repository.dart';
 import 'package:kointos/domain/entities/article.dart';
 
@@ -199,7 +199,7 @@ class _ArticleEditorScreenState extends State<ArticleEditorScreen> {
                   Icon(
                     Icons.add_photo_alternate,
                     size: 48,
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.pureWhite,
                   ),
                   SizedBox(height: 8),
                   Text('Add Cover Image'),

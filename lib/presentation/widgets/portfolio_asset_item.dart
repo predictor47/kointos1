@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/domain/entities/portfolio_item.dart';
 
 class PortfolioAssetItem extends StatelessWidget {
@@ -55,7 +55,7 @@ class PortfolioAssetItem extends StatelessWidget {
                   child: Text(
                     portfolioItem.symbol.substring(0, 1),
                     style: const TextStyle(
-                      color: AppTheme.primaryColor,
+                      color: AppTheme.pureWhite,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -78,7 +78,7 @@ class PortfolioAssetItem extends StatelessWidget {
                     Text(
                       portfolioItem.symbol,
                       style: const TextStyle(
-                        color: AppTheme.textSecondaryColor,
+                        color: AppTheme.greyText,
                         fontSize: 12,
                       ),
                     ),
@@ -104,7 +104,7 @@ class PortfolioAssetItem extends StatelessWidget {
                         ? '***'
                         : '\$${_formatNumber(portfolioItem.totalValue)}',
                     style: const TextStyle(
-                      color: AppTheme.textSecondaryColor,
+                      color: AppTheme.greyText,
                       fontSize: 12,
                     ),
                   ),
@@ -112,8 +112,8 @@ class PortfolioAssetItem extends StatelessWidget {
                     '${portfolioItem.profitLossPercentage >= 0 ? '+' : ''}${portfolioItem.profitLossPercentage.toStringAsFixed(2)}%',
                     style: TextStyle(
                       color: portfolioItem.profitLossPercentage >= 0
-                          ? AppTheme.positiveChangeColor
-                          : AppTheme.negativeChangeColor,
+                          ? AppTheme.successGreen
+                          : AppTheme.errorRed,
                       fontSize: 12,
                     ),
                   ),

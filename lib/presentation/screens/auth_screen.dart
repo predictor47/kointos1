@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/service_locator.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 
 enum AuthMode { signIn, signUp, verification }
 
@@ -173,7 +173,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   Text(
                     _errorMessage!,
                     style: const TextStyle(
-                      color: AppTheme.negativeChangeColor,
+                      color: AppTheme.errorRed,
                     ),
                     textAlign: TextAlign.center,
                   ),

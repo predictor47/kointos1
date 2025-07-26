@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 
 class PortfolioSummaryCard extends StatelessWidget {
   final double totalValue;
@@ -30,8 +30,8 @@ class PortfolioSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.primaryColor,
-            AppTheme.primaryColor.withOpacity(0.8),
+            AppTheme.pureWhite,
+            AppTheme.pureWhite.withOpacity(0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -39,7 +39,7 @@ class PortfolioSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryColor.withOpacity(0.3),
+            color: AppTheme.pureWhite.withOpacity(0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -72,8 +72,8 @@ class PortfolioSummaryCard extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: isPositive
-                      ? AppTheme.positiveChangeColor.withOpacity(0.3)
-                      : AppTheme.negativeChangeColor.withOpacity(0.3),
+                      ? AppTheme.successGreen.withOpacity(0.3)
+                      : AppTheme.errorRed.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: isPrivateMode
@@ -92,8 +92,8 @@ class PortfolioSummaryCard extends StatelessWidget {
                                 : Icons.arrow_downward,
                             size: 16,
                             color: isPositive
-                                ? AppTheme.positiveChangeColor
-                                : AppTheme.negativeChangeColor,
+                                ? AppTheme.successGreen
+                                : AppTheme.errorRed,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -101,8 +101,8 @@ class PortfolioSummaryCard extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: isPositive
-                                  ? AppTheme.positiveChangeColor
-                                  : AppTheme.negativeChangeColor,
+                                  ? AppTheme.successGreen
+                                  : AppTheme.errorRed,
                             ),
                           ),
                         ],
@@ -116,8 +116,8 @@ class PortfolioSummaryCard extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: isPositive
-                      ? AppTheme.positiveChangeColor
-                      : AppTheme.negativeChangeColor,
+                      ? AppTheme.successGreen
+                      : AppTheme.errorRed,
                 ),
               ),
             ],
@@ -144,7 +144,7 @@ class PortfolioSummaryCard extends StatelessWidget {
                     filter,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: isSelected ? AppTheme.primaryColor : Colors.white,
+                      color: isSelected ? AppTheme.pureWhite : Colors.white,
                     ),
                   ),
                 ),

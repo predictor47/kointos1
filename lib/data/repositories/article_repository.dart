@@ -1,26 +1,72 @@
 import 'dart:io';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/storage_interface.dart';
+import 'package:kointos/core/services/api_service.dart';
+import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/domain/entities/article.dart';
 import 'package:uuid/uuid.dart';
 
 class ArticleRepository {
   final AuthService _authService;
   final StorageInterface _storageService;
+  final ApiService _apiService;
   final _uuid = const Uuid();
 
   ArticleRepository({
     required AuthService authService,
     required StorageInterface storageService,
+    required ApiService apiService,
   })  : _authService = authService,
-        _storageService = storageService;
+        _storageService = storageService,
+        _apiService = apiService;
+
+  // Factory constructor to create instance with dependencies from service locator
+  factory ArticleRepository.fromServiceLocator() {
+    return ArticleRepository(
+      authService: serviceLocator<AuthService>(),
+      storageService: serviceLocator<StorageInterface>(),
+      apiService: serviceLocator<ApiService>(),
+    );
+  }
 
   Future<Article> getArticle(String articleId) async {
     try {
-      // TODO: Replace with actual API call
-      final article = await _getMockArticleAsync(articleId);
-      final content = await _storageService.downloadData(article.contentKey);
-      return article.copyWith(content: content);
+      final articleData = await _apiService.getArticle(articleId);
+      if (articleData == null) {
+        throw Exception('Article not found');
+      }
+
+      // Download content from storage
+      String content = '';
+      try {
+        content = await _storageService.downloadData(articleData['contentKey']);
+      } catch (e) {
+        // If content can't be downloaded, use empty string
+        content = '';
+      }
+
+      return Article(
+        id: articleData['id'],
+        authorId: articleData['authorId'],
+        authorName: articleData['authorName'],
+        title: articleData['title'],
+        content: content,
+        summary: articleData['summary'] ?? '',
+        coverImageUrl: articleData['coverImageUrl'],
+        tags: List<String>.from(articleData['tags'] ?? []),
+        images: List<String>.from(articleData['images'] ?? []),
+        createdAt: DateTime.parse(articleData['createdAt']),
+        updatedAt: DateTime.parse(articleData['updatedAt']),
+        likesCount: articleData['likesCount'] ?? 0,
+        commentsCount: articleData['commentsCount'] ?? 0,
+        isLiked: false, // This would need to be fetched separately
+        status: ArticleStatus.values.firstWhere(
+          (status) =>
+              status.name.toUpperCase() == articleData['status'].toUpperCase(),
+          orElse: () => ArticleStatus.draft,
+        ),
+        contentKey: articleData['contentKey'],
+      );
     } catch (e) {
       rethrow;
     }
@@ -33,13 +79,46 @@ class ArticleRepository {
     int limit = 10,
   }) async {
     try {
-      // TODO: Replace with actual API call
-      await Future.delayed(const Duration(seconds: 1));
-      final futures = List.generate(
-        10,
-        (index) => _getMockArticleAsync('article_${page}_$index'),
+      final articlesData = await _apiService.getArticles(
+        authorId: authorId,
+        status: status?.name.toUpperCase(),
+        limit: limit,
       );
-      return await Future.wait(futures);
+
+      final articles = <Article>[];
+      for (final articleData in articlesData) {
+        try {
+          final article = Article(
+            id: articleData['id'],
+            authorId: articleData['authorId'],
+            authorName: articleData['authorName'],
+            title: articleData['title'],
+            content: '', // Content is loaded separately when needed
+            summary: articleData['summary'] ?? '',
+            coverImageUrl: articleData['coverImageUrl'],
+            tags: List<String>.from(articleData['tags'] ?? []),
+            images: List<String>.from(articleData['images'] ?? []),
+            createdAt: DateTime.parse(articleData['createdAt']),
+            updatedAt: DateTime.parse(articleData['updatedAt']),
+            likesCount: articleData['likesCount'] ?? 0,
+            commentsCount: articleData['commentsCount'] ?? 0,
+            isLiked: false,
+            status: ArticleStatus.values.firstWhere(
+              (status) =>
+                  status.name.toUpperCase() ==
+                  articleData['status'].toUpperCase(),
+              orElse: () => ArticleStatus.draft,
+            ),
+            contentKey: articleData['contentKey'],
+          );
+          articles.add(article);
+        } catch (e) {
+          // Skip invalid articles
+          continue;
+        }
+      }
+
+      return articles;
     } catch (e) {
       rethrow;
     }
@@ -52,23 +131,57 @@ class ArticleRepository {
         throw Exception('User not authenticated');
       }
 
-      final userName = 'User $userId'; // TODO: Get actual user name
-      final articleId = _uuid.v4();
+      // Get user profile to get the actual user name
+      String userName = 'User';
+      try {
+        final userProfile = await _apiService.getUserProfile(userId);
+        if (userProfile != null) {
+          userName =
+              userProfile['displayName'] ?? userProfile['username'] ?? 'User';
+        }
+      } catch (e) {
+        // Use fallback name if profile can't be fetched
+        userName = 'User $userId';
+      }
 
-      final article = Article.draft(
-        id: articleId,
+      final articleId = _uuid.v4();
+      final contentKey = 'articles/$userId/$articleId/content.md';
+
+      // Initialize article content in storage
+      await _storageService.uploadData(contentKey, '');
+
+      // Create article metadata in API
+      final articleData = await _apiService.createArticle(
         authorId: userId,
         authorName: userName,
+        title: 'Untitled Article',
+        contentKey: contentKey,
+        status: 'DRAFT',
+        isPublic: false,
       );
 
-      // Initialize article content
-      await _storageService.uploadData(
-        article.contentKey,
-        '',
-      );
+      if (articleData == null) {
+        throw Exception('Failed to create article');
+      }
 
-      // TODO: Save article metadata to API
-      return article;
+      return Article(
+        id: articleData['id'],
+        authorId: articleData['authorId'],
+        authorName: articleData['authorName'],
+        title: articleData['title'],
+        content: '',
+        summary: articleData['summary'] ?? '',
+        coverImageUrl: articleData['coverImageUrl'],
+        tags: List<String>.from(articleData['tags'] ?? []),
+        images: List<String>.from(articleData['images'] ?? []),
+        createdAt: DateTime.parse(articleData['createdAt']),
+        updatedAt: DateTime.parse(articleData['updatedAt']),
+        likesCount: 0,
+        commentsCount: 0,
+        isLiked: false,
+        status: ArticleStatus.draft,
+        contentKey: contentKey,
+      );
     } catch (e) {
       rethrow;
     }
@@ -85,7 +198,27 @@ class ArticleRepository {
     ArticleStatus? status,
   }) async {
     try {
-      final updatedArticle = article.copyWith(
+      // Update content in storage if provided
+      if (content != null) {
+        await _storageService.uploadData(article.contentKey, content);
+      }
+
+      // Update article metadata in API
+      final updatedData = await _apiService.updateArticle(
+        id: article.id,
+        title: title,
+        summary: summary,
+        coverImageUrl: coverImageUrl,
+        tags: tags,
+        images: images,
+        status: status?.name.toUpperCase(),
+      );
+
+      if (updatedData == null) {
+        throw Exception('Failed to update article');
+      }
+
+      return article.copyWith(
         title: title,
         content: content,
         summary: summary,
@@ -95,13 +228,6 @@ class ArticleRepository {
         status: status,
         updatedAt: DateTime.now(),
       );
-
-      if (content != null) {
-        await _storageService.uploadData(article.contentKey, content);
-      }
-
-      // TODO: Update article metadata in API
-      return updatedArticle;
     } catch (e) {
       rethrow;
     }
@@ -109,8 +235,14 @@ class ArticleRepository {
 
   Future<void> deleteArticle(Article article) async {
     try {
+      // Delete content from storage
       await _storageService.removeFile(article.contentKey);
-      // TODO: Delete article metadata from API
+
+      // Delete article metadata from API
+      final success = await _apiService.deleteArticle(article.id);
+      if (!success) {
+        throw Exception('Failed to delete article from database');
+      }
     } catch (e) {
       rethrow;
     }
@@ -123,13 +255,22 @@ class ArticleRepository {
     int limit = 10,
   }) async {
     try {
-      // TODO: Replace with actual API call
-      await Future.delayed(const Duration(seconds: 1));
-      final futures = List.generate(
-        5,
-        (index) => _getMockArticleAsync('search_${page}_$index'),
+      // For now, we'll get all articles and filter by title/content
+      // In a real implementation, you'd want server-side search
+      final articles = await getArticles(
+        status: status,
+        limit: limit * 2, // Get more articles to account for filtering
       );
-      return await Future.wait(futures);
+
+      final filteredArticles = articles.where((article) {
+        final queryLower = query.toLowerCase();
+        return article.title.toLowerCase().contains(queryLower) ||
+            article.summary.toLowerCase().contains(queryLower) ||
+            article.tags.any((tag) => tag.toLowerCase().contains(queryLower));
+      }).toList();
+
+      // Return only the requested number of articles
+      return filteredArticles.take(limit).toList();
     } catch (e) {
       rethrow;
     }
@@ -138,41 +279,32 @@ class ArticleRepository {
   Future<Article> uploadArticleImage(String articleId, String imagePath) async {
     try {
       final file = File(imagePath);
+      final userId = await _authService.getCurrentUserId();
+      if (userId == null) {
+        throw Exception('User not authenticated');
+      }
+
       final key =
-          'articles/$articleId/images/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+          'articles/$userId/$articleId/images/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+
       await _storageService.uploadFile(key, file);
 
-      // TODO: Update article metadata with new image
+      // Get current article and update with new image
       final article = await getArticle(articleId);
-      return article.copyWith(
-        images: [...article.images, key],
+      final updatedImages = [...article.images, key];
+
+      final updatedData = await _apiService.updateArticle(
+        id: articleId,
+        images: updatedImages,
       );
+
+      if (updatedData == null) {
+        throw Exception('Failed to update article with new image');
+      }
+
+      return article.copyWith(images: updatedImages);
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<Article> _getMockArticleAsync(String id) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    return Article(
-      id: id,
-      authorId: 'author_1',
-      authorName: 'John Doe',
-      title: 'Sample Article $id',
-      content: 'This is a sample article content for $id.',
-      summary: 'Sample article summary',
-      coverImageUrl: 'https://picsum.photos/seed/$id/800/400',
-      tags: ['crypto', 'bitcoin', 'trading'],
-      images: ['https://picsum.photos/seed/${id}_1/800/400'],
-      createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      updatedAt: DateTime.now(),
-      likesCount: 42,
-      commentsCount: 7,
-      isLiked: false,
-      status: ArticleStatus.published,
-      contentKey: 'articles/author_1/$id/content.md',
-    );
   }
 }

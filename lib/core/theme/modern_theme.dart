@@ -328,4 +328,28 @@ class AppTheme {
     fontSize: 12,
     fontWeight: FontWeight.normal,
   );
+
+  // Additional properties for backward compatibility
+  static const Color backgroundColor = primaryBlack;
+  static const Color surfaceColor = secondaryBlack;
+  static const Color cardColor = cardBlack;
+  static const Color textPrimaryColor = pureWhite;
+  static const Color textSecondaryColor = greyText;
+  static const Color primaryColor = pureWhite;
+  static const Color accentColor = cryptoGold;
+  static const Color positiveChangeColor = successGreen;
+  static const Color negativeChangeColor = errorRed;
+  static const double cardBorderRadius = 12.0;
+
+  // Spacing constants
+  static const EdgeInsets screenPadding = EdgeInsets.all(16.0);
+  static const EdgeInsets cardPadding = EdgeInsets.all(16.0);
+  static const double spacing = 8.0;
+  static const double largeSpacing = 24.0;
+  static const double smallSpacing = 4.0;
+
+  // Method for alpha colors
+  static Color primaryWithAlpha(double opacity) {
+    return pureWhite.withOpacity(opacity);
+  }
 }

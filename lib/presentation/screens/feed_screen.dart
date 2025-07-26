@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/domain/entities/post.dart';
 import 'package:kointos/presentation/widgets/post_card.dart';
 
@@ -115,7 +115,7 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.primaryBlack,
       appBar: AppBar(
         title: const Text('Feed'),
         actions: [

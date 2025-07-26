@@ -176,7 +176,100 @@ const schema = a.schema({
     })
     .authorization(allow => [allow.owner()]),
 
-  // News Articles
+  // Articles (User-generated content)
+  Article: a
+    .model({
+      authorId: a.id().required(),
+      authorName: a.string().required(),
+      title: a.string().required(),
+      content: a.string(),
+      summary: a.string(),
+      coverImageUrl: a.url(),
+      contentKey: a.string().required(), // S3 key for article content
+      tags: a.string().array(),
+      images: a.string().array(),
+      status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']), 
+      likesCount: a.integer().default(0),
+      commentsCount: a.integer().default(0),
+      viewsCount: a.integer().default(0),
+      isPublic: a.boolean().default(true),
+      publishedAt: a.datetime(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .authorization(allow => [allow.owner(), allow.authenticated().to(['read'])]),
+
+  // Payment Methods
+  PaymentMethod: a
+    .model({
+      userId: a.id().required(),
+      type: a.enum(['BANK_ACCOUNT', 'CREDIT_CARD', 'DEBIT_CARD', 'CRYPTO_WALLET']),
+      name: a.string().required(),
+      last4: a.string(), // Last 4 digits for cards
+      expiryMonth: a.integer(),
+      expiryYear: a.integer(),
+      bankName: a.string(),
+      accountType: a.string(),
+      walletAddress: a.string(),
+      isDefault: a.boolean().default(false),
+      isActive: a.boolean().default(true),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .authorization(allow => [allow.owner()]),
+
+  // Support Tickets
+  SupportTicket: a
+    .model({
+      userId: a.id().required(),
+      subject: a.string().required(),
+      description: a.string().required(),
+      category: a.enum(['TECHNICAL', 'BILLING', 'ACCOUNT', 'FEATURE_REQUEST', 'OTHER']),
+      priority: a.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
+      status: a.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']),
+      attachments: a.string().array(),
+      adminNotes: a.string(),
+      resolvedAt: a.datetime(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .authorization(allow => [allow.owner()]),
+
+  // FAQ Items
+  FAQ: a
+    .model({
+      question: a.string().required(),
+      answer: a.string().required(),
+      category: a.string(),
+      tags: a.string().array(),
+      isPublished: a.boolean().default(true),
+      order: a.integer().default(0),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .authorization(allow => [allow.authenticated().to(['read'])]),
+
+  // User Settings
+  UserSettings: a
+    .model({
+      userId: a.id().required(),
+      theme: a.enum(['LIGHT', 'DARK', 'SYSTEM']),
+      language: a.string().default('en'),
+      currency: a.string().default('USD'),
+      notificationsEnabled: a.boolean().default(true),
+      emailNotifications: a.boolean().default(true),
+      pushNotifications: a.boolean().default(true),
+      marketAlerts: a.boolean().default(true),
+      portfolioPrivacy: a.boolean().default(false),
+      twoFactorEnabled: a.boolean().default(false),
+      biometricEnabled: a.boolean().default(false),
+      dataRetention: a.integer().default(365), // days
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .authorization(allow => [allow.owner()]),
+
+  // News Articles (External content)
   NewsArticle: a
     .model({
       title: a.string().required(),
@@ -191,7 +284,7 @@ const schema = a.schema({
       sentiment: a.enum(['POSITIVE', 'NEGATIVE', 'NEUTRAL']),
       createdAt: a.datetime(),
     })
-    .authorization(allow => [allow.authenticated().to(['read']), allow.owner()]),
+    .authorization(allow => [allow.authenticated().to(['read'])]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

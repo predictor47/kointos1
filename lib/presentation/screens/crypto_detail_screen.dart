@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kointos/core/services/service_locator.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/data/repositories/cryptocurrency_repository.dart';
 import 'package:kointos/domain/entities/cryptocurrency.dart';
 
@@ -70,7 +70,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.primaryBlack,
       appBar: AppBar(
         title: Text(widget.cryptocurrency.name),
         actions: [
@@ -78,8 +78,8 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
             icon: Icon(
               _isFavorite ? Icons.star : Icons.star_border,
               color: _isFavorite
-                  ? AppTheme.accentColor
-                  : AppTheme.textSecondaryColor,
+                  ? AppTheme.cryptoGold
+                  : AppTheme.greyText,
             ),
             onPressed: () {
               setState(() {
@@ -144,8 +144,8 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           widget.cryptocurrency.formattedPriceChange,
           style: TextStyle(
             color: widget.cryptocurrency.hasPositivePriceChange
-                ? AppTheme.positiveChangeColor
-                : AppTheme.negativeChangeColor,
+                ? AppTheme.successGreen
+                : AppTheme.errorRed,
             fontSize: 16,
           ),
         ),
@@ -168,8 +168,8 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           child: CustomPaint(
             painter: PriceChartPainter(
               prices: _priceHistory!,
-              color: AppTheme.primaryColor,
-              fillColor: AppTheme.primaryWithAlpha(25),
+              color: AppTheme.pureWhite,
+              fillColor: AppTheme.pureWhite.withOpacity(0.25),
             ),
             size: const Size(double.infinity, 200),
           ),
@@ -197,14 +197,14 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
       onPressed: () => _onTimeRangeChanged(days),
       style: TextButton.styleFrom(
         backgroundColor:
-            isSelected ? AppTheme.primaryWithAlpha(25) : Colors.transparent,
+            isSelected ? AppTheme.pureWhite.withOpacity(0.25) : Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
       child: Text(
         label,
         style: TextStyle(
           color:
-              isSelected ? AppTheme.primaryColor : AppTheme.textSecondaryColor,
+              isSelected ? AppTheme.pureWhite : AppTheme.greyText,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -254,7 +254,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           Text(
             label,
             style: const TextStyle(
-              color: AppTheme.textSecondaryColor,
+              color: AppTheme.greyText,
             ),
           ),
           Text(

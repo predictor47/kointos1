@@ -11,6 +11,30 @@
 			],
 			"group": "build",
 			"problemMatcher": []
+		},
+		{
+			"label": "Flutter: Run Tests",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"test"
+			],
+			"group": "test",
+			"problemMatcher": []
+		},
+		{
+			"label": "Setup AWS Test Sandbox",
+			"type": "shell",
+			"command": "./setup-test-sandbox.sh",
+			"group": "test",
+			"problemMatcher": []
+		},
+		{
+			"label": "Cleanup AWS Test Sandbox",
+			"type": "shell",
+			"command": "./cleanup-test-sandbox.sh",
+			"group": "test",
+			"problemMatcher": []
 		}
 	]
 }

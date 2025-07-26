@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart' hide MarkdownBody;
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/core/utils/url_utils.dart';
 import 'package:kointos/domain/entities/article.dart';
 
@@ -19,7 +19,7 @@ class ArticleDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.primaryBlack,
       body: CustomScrollView(
         slivers: [
           _buildAppBar(),
@@ -59,7 +59,7 @@ class ArticleDetailScreen extends StatelessWidget {
                   child: Icon(
                     Icons.article,
                     size: 64,
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.pureWhite,
                   ),
                 ),
               ),
@@ -82,11 +82,11 @@ class ArticleDetailScreen extends StatelessWidget {
         Row(
           children: [
             CircleAvatar(
-              backgroundColor: AppTheme.primaryWithAlpha(25),
+              backgroundColor: AppTheme.pureWhite.withOpacity(0.25),
               child: Text(
                 article.authorName.substring(0, 1).toUpperCase(),
                 style: const TextStyle(
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.pureWhite,
                 ),
               ),
             ),
@@ -104,7 +104,7 @@ class ArticleDetailScreen extends StatelessWidget {
                   Text(
                     _formatDate(article.createdAt),
                     style: const TextStyle(
-                      color: AppTheme.textSecondaryColor,
+                      color: AppTheme.greyText,
                       fontSize: 12,
                     ),
                   ),
@@ -123,13 +123,13 @@ class ArticleDetailScreen extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryWithAlpha(25),
+                  color: AppTheme.pureWhite.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
                   '#$tag',
                   style: const TextStyle(
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.pureWhite,
                     fontSize: 12,
                   ),
                 ),
@@ -172,7 +172,7 @@ class ArticleDetailScreen extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         blockquote: const TextStyle(
-          color: AppTheme.textSecondaryColor,
+          color: AppTheme.greyText,
           fontSize: 16,
           height: 1.5,
         ),
@@ -218,7 +218,7 @@ class ArticleDetailScreen extends StatelessWidget {
     bool isActive = false,
   }) {
     final color =
-        isActive ? AppTheme.primaryColor : AppTheme.textSecondaryColor;
+        isActive ? AppTheme.pureWhite : AppTheme.greyText;
 
     return Row(
       children: [

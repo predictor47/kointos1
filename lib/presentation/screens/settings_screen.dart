@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/api_service.dart';
 import '../../core/services/service_locator.dart';
+import 'payment_methods_screen.dart';
+import 'transaction_history_screen.dart';
+import 'help_screen.dart';
+import 'contact_support_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -112,9 +117,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Payment Methods',
             subtitle: 'Manage your payment options',
             onTap: () {
-              // TODO: Navigate to payment methods
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Payment methods coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const PaymentMethodsScreen(),
+                ),
               );
             },
           ),
@@ -123,10 +129,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Transaction History',
             subtitle: 'View your trading history',
             onTap: () {
-              // TODO: Navigate to transaction history
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Transaction history coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const TransactionHistoryScreen(),
+                ),
               );
             },
           ),
@@ -138,9 +144,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Help & FAQ',
             subtitle: 'Get help and find answers',
             onTap: () {
-              // TODO: Navigate to help section
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Help section coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const HelpScreen(),
+                ),
               );
             },
           ),
@@ -149,9 +156,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Contact Support',
             subtitle: 'Get in touch with our team',
             onTap: () {
-              // TODO: Navigate to contact support
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Contact support coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ContactSupportScreen(),
+                ),
               );
             },
           ),
@@ -345,13 +353,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                // TODO: Implement account deletion
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Account deletion feature coming soon!')),
-                );
+                await _deleteAccount();
               },
               child: const Text('Delete', style: TextStyle(color: Colors.red)),
             ),
@@ -359,5 +363,79 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
       },
     );
+  }
+
+  Future<void> _deleteAccount() async {
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Text('Deleting account...'),
+            ],
+          ),
+        ),
+      );
+
+      final authService = serviceLocator<AuthService>();
+      final userId = await authService.getCurrentUserId();
+
+      if (userId != null) {
+        // Create API service instance
+        final apiService = ApiService(
+          baseUrl: 'https://api.example.com',
+          authService: authService,
+        );
+
+        // Delete user account from backend
+        final success = await apiService.deleteUserAccount(userId);
+
+        if (success) {
+          // Sign out user
+          await authService.signOut();
+
+          // Close loading dialog
+          if (mounted) Navigator.of(context).pop();
+
+          // Show success message and navigate to auth screen
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Account deleted successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+            // Navigate to auth screen (replace entire stack)
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/auth',
+              (route) => false,
+            );
+          }
+        } else {
+          throw Exception('Failed to delete account');
+        }
+      } else {
+        throw Exception('User not authenticated');
+      }
+    } catch (e) {
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting account: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

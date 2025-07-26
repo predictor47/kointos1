@@ -52,6 +52,7 @@ Future<void> setupServiceLocator() async {
     () => ArticleRepository(
       authService: serviceLocator<AuthService>(),
       storageService: serviceLocator<StorageInterface>(),
+      apiService: serviceLocator<ApiService>(),
     ),
   );
 

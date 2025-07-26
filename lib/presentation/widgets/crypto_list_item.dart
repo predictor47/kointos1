@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/domain/entities/cryptocurrency.dart';
 
 class CryptoListItem extends StatelessWidget {
@@ -35,12 +35,12 @@ class CryptoListItem extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppTheme.backgroundColor,
+                      color: AppTheme.primaryBlack,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
                       Icons.error_outline,
-                      color: AppTheme.textSecondaryColor,
+                      color: AppTheme.greyText,
                     ),
                   ),
                 ),
@@ -62,7 +62,7 @@ class CryptoListItem extends StatelessWidget {
                     Text(
                       cryptocurrency.symbol.toUpperCase(),
                       style: const TextStyle(
-                        color: AppTheme.textSecondaryColor,
+                        color: AppTheme.greyText,
                         fontSize: 14,
                       ),
                     ),
@@ -85,8 +85,8 @@ class CryptoListItem extends StatelessWidget {
                     cryptocurrency.formattedPriceChange,
                     style: TextStyle(
                       color: cryptocurrency.hasPositivePriceChange
-                          ? AppTheme.positiveChangeColor
-                          : AppTheme.negativeChangeColor,
+                          ? AppTheme.successGreen
+                          : AppTheme.errorRed,
                       fontSize: 14,
                     ),
                   ),
@@ -98,8 +98,8 @@ class CryptoListItem extends StatelessWidget {
                 icon: Icon(
                   cryptocurrency.isFavorite ? Icons.star : Icons.star_border,
                   color: cryptocurrency.isFavorite
-                      ? AppTheme.accentColor
-                      : AppTheme.textSecondaryColor,
+                      ? AppTheme.cryptoGold
+                      : AppTheme.greyText,
                 ),
                 onPressed: () => onToggleFavorite(!cryptocurrency.isFavorite),
               ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/domain/entities/portfolio_item.dart';
 import 'package:kointos/presentation/widgets/portfolio_summary_card.dart';
 import 'package:kointos/presentation/widgets/portfolio_asset_item.dart';
@@ -109,7 +109,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
     final totalProfitLossPercentage = _getTotalProfitLossPercentage();
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.primaryBlack,
       appBar: AppBar(
         title: const Text(
           'Portfolio',
@@ -118,15 +118,15 @@ class _PortfolioScreenState extends State<PortfolioScreen>
             color: AppTheme.textPrimaryColor,
           ),
         ),
-        backgroundColor: AppTheme.backgroundColor,
+        backgroundColor: AppTheme.primaryBlack,
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(
               _isPrivateMode ? Icons.visibility_off : Icons.visibility,
               color: _isPrivateMode
-                  ? AppTheme.textSecondaryColor
-                  : AppTheme.primaryColor,
+                  ? AppTheme.greyText
+                  : AppTheme.pureWhite,
             ),
             onPressed: () {
               setState(() {
@@ -144,12 +144,12 @@ class _PortfolioScreenState extends State<PortfolioScreen>
       ),
       body: RefreshIndicator(
         onRefresh: _refreshPortfolio,
-        color: AppTheme.primaryColor,
+        color: AppTheme.pureWhite,
         backgroundColor: AppTheme.cardColor,
         child: _isLoading
             ? const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(AppTheme.primaryColor),
+                  valueColor: AlwaysStoppedAnimation(AppTheme.pureWhite),
                 ),
               )
             : SingleChildScrollView(
@@ -190,10 +190,10 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                           DropdownButton<String>(
                             value: 'Balance',
                             dropdownColor: AppTheme.cardColor,
-                            style: const TextStyle(color: AppTheme.primaryColor),
+                            style: const TextStyle(color: AppTheme.pureWhite),
                             underline: Container(height: 0),
                             icon: const Icon(Icons.keyboard_arrow_down,
-                                color: AppTheme.primaryColor),
+                                color: AppTheme.pureWhite),
                             items: ['Balance', 'Profit/Loss', 'Name', 'Price']
                                 .map((String value) {
                               return DropdownMenuItem<String>(
@@ -221,7 +221,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                   const Icon(
                                     Icons.account_balance_wallet_outlined,
                                     size: 64,
-                                    color: AppTheme.textSecondaryColor,
+                                    color: AppTheme.greyText,
                                   ),
                                   const SizedBox(height: 16),
                                   const Text(
@@ -237,7 +237,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                                     'Start adding your crypto assets to track your portfolio',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: AppTheme.textSecondaryColor,
+                                      color: AppTheme.greyText,
                                     ),
                                   ),
                                   const SizedBox(height: 16),
@@ -294,7 +294,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                         child: Text(
                           'Allocation Chart',
                           style: TextStyle(
-                            color: AppTheme.textSecondaryColor,
+                            color: AppTheme.greyText,
                           ),
                         ),
                       ),
@@ -329,7 +329,7 @@ class _PortfolioScreenState extends State<PortfolioScreen>
                         child: Text(
                           'Performance Chart',
                           style: TextStyle(
-                            color: AppTheme.textSecondaryColor,
+                            color: AppTheme.greyText,
                           ),
                         ),
                       ),

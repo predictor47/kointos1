@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/domain/entities/post.dart';
 
 class PostCard extends StatelessWidget {
@@ -57,12 +57,12 @@ class PostCard extends StatelessWidget {
           backgroundImage: post.authorAvatar.isNotEmpty
               ? NetworkImage(post.authorAvatar)
               : null,
-          backgroundColor: AppTheme.primaryWithAlpha(25),
+          backgroundColor: AppTheme.pureWhite.withOpacity(0.25),
           child: post.authorAvatar.isEmpty
               ? Text(
                   post.authorName.substring(0, 1).toUpperCase(),
                   style: const TextStyle(
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.pureWhite,
                     fontWeight: FontWeight.bold,
                   ),
                 )
@@ -82,7 +82,7 @@ class PostCard extends StatelessWidget {
               Text(
                 _formatDate(post.createdAt),
                 style: const TextStyle(
-                  color: AppTheme.textSecondaryColor,
+                  color: AppTheme.greyText,
                   fontSize: 12,
                 ),
               ),
@@ -111,13 +111,13 @@ class PostCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryWithAlpha(25),
+                  color: AppTheme.pureWhite.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
                   '#$tag',
                   style: const TextStyle(
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.pureWhite,
                     fontSize: 12,
                   ),
                 ),
@@ -187,7 +187,7 @@ class PostCard extends StatelessWidget {
     bool isActive = false,
   }) {
     final color =
-        isActive ? AppTheme.primaryColor : AppTheme.textSecondaryColor;
+        isActive ? AppTheme.pureWhite : AppTheme.greyText;
 
     return InkWell(
       onTap: onTap,

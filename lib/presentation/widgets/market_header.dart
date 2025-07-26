@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kointos/core/theme/app_theme.dart';
+import 'package:kointos/core/theme/modern_theme.dart';
 
 class MarketHeader extends StatelessWidget {
   final Map<String, dynamic>? marketData;
@@ -18,10 +18,10 @@ class MarketHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.backgroundColor,
+        color: AppTheme.primaryBlack,
         border: Border(
           bottom: BorderSide(
-            color: AppTheme.primaryWithAlpha(25),
+            color: AppTheme.pureWhite.withOpacity(0.25),
           ),
         ),
       ),
@@ -94,7 +94,7 @@ class MarketHeader extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: AppTheme.textSecondaryColor,
+            color: AppTheme.greyText,
             fontSize: 12,
           ),
         ),
@@ -144,9 +144,9 @@ class MarketHeader extends StatelessWidget {
         onPressed: () => onSortChanged(value),
         style: ElevatedButton.styleFrom(
           backgroundColor: isSelected
-              ? AppTheme.primaryColor
-              : AppTheme.primaryWithAlpha(25),
-          foregroundColor: isSelected ? Colors.white : AppTheme.primaryColor,
+              ? AppTheme.pureWhite
+              : AppTheme.pureWhite.withOpacity(0.25),
+          foregroundColor: isSelected ? Colors.white : AppTheme.pureWhite,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
