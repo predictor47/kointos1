@@ -4,6 +4,8 @@ import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/gamification_service.dart';
 import 'package:kointos/presentation/widgets/platform_widgets.dart';
+import 'package:kointos/domain/entities/article.dart';
+import 'article_detail_screen.dart';
 
 class RealArticlesScreen extends StatefulWidget {
   const RealArticlesScreen({super.key});
@@ -73,8 +75,18 @@ class _RealArticlesScreenState extends State<RealArticlesScreen>
       // Award points for reading an article
       await _gamificationService.awardPoints(GameAction.readArticle);
 
-      // Navigate to article detail (placeholder for now)
+      // Navigate to article detail
       if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ArticleDetailScreen(
+              article: Article.fromJson(article),
+            ),
+          ),
+        );
+
+        // Show XP notification
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Reading "${article['title']}" - +1 XP earned'),

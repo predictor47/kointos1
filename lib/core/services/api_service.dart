@@ -1110,4 +1110,98 @@ class ApiService {
 
     return headers;
   }
+
+  // Search for users by username or display name
+  Future<List<Map<String, dynamic>>> searchUsers(String query) async {
+    try {
+      const searchQuery = '''
+        query SearchUsers(\$query: String!) {
+          searchUsers(query: \$query) {
+            items {
+              id
+              username
+              displayName
+              profileImageUrl
+              bio
+              followersCount
+              followingCount
+            }
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: searchQuery,
+        variables: {'query': query},
+      );
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.data != null) {
+        final data = json.decode(response.data!);
+        final searchResults = data['searchUsers']?['items'] as List?;
+
+        if (searchResults != null) {
+          return searchResults.cast<Map<String, dynamic>>();
+        }
+      }
+
+      return [];
+    } catch (e) {
+      LoggerService.error('Error searching users: $e');
+      return [];
+    }
+  }
+
+  // Check if current user is following another user
+  Future<bool> isFollowing(String userId) async {
+    try {
+      const query = '''
+        query IsFollowing(\$followingId: ID!) {
+          isFollowing(followingId: \$followingId)
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: query,
+        variables: {'followingId': userId},
+      );
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.data != null) {
+        final data = json.decode(response.data!);
+        return data['isFollowing'] as bool? ?? false;
+      }
+
+      return false;
+    } catch (e) {
+      LoggerService.error('Error checking follow status: $e');
+      return false;
+    }
+  }
+
+  // Unfollow a user
+  Future<bool> unfollowUser(String followingId) async {
+    try {
+      const mutation = '''
+        mutation UnfollowUser(\$followingId: ID!) {
+          unfollowUser(followingId: \$followingId) {
+            id
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: mutation,
+        variables: {'followingId': followingId},
+      );
+
+      final response = await Amplify.API.mutate(request: request).response;
+      return response.data != null;
+    } catch (e) {
+      LoggerService.error('Error unfollowing user: $e');
+      return false;
+    }
+  }
 }

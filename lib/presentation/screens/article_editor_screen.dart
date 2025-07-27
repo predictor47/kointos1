@@ -244,21 +244,206 @@ class _ArticleEditorScreenState extends State<ArticleEditorScreen> {
   }
 
   Widget _buildContentField() {
-    return TextFormField(
-      controller: _contentController,
-      decoration: const InputDecoration(
-        labelText: 'Content',
-        hintText: 'Write your article here (Markdown supported)',
-        alignLabelWithHint: true,
-      ),
-      maxLines: 20,
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Content is required';
-        }
-        return null;
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Rich text formatting toolbar
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceColor,
+            borderRadius: BorderRadius.circular(8),
+            border:
+                Border.all(color: AppTheme.pureWhite.withValues(alpha: 0.1)),
+          ),
+          child: Wrap(
+            spacing: 8,
+            children: [
+              _buildFormatButton(
+                  Icons.format_bold, 'Bold', () => _insertMarkdown('**', '**')),
+              _buildFormatButton(Icons.format_italic, 'Italic',
+                  () => _insertMarkdown('*', '*')),
+              _buildFormatButton(
+                  Icons.title, 'Heading', () => _insertMarkdown('## ', '')),
+              _buildFormatButton(Icons.format_list_bulleted, 'List',
+                  () => _insertMarkdown('- ', '')),
+              _buildFormatButton(
+                  Icons.format_quote, 'Quote', () => _insertMarkdown('> ', '')),
+              _buildFormatButton(
+                  Icons.code, 'Code', () => _insertMarkdown('`', '`')),
+              _buildFormatButton(Icons.link, 'Link',
+                  () => _insertMarkdown('[Link Text](', ')')),
+              _buildFormatButton(Icons.image, 'Image', () => _insertImage()),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _contentController,
+          decoration: const InputDecoration(
+            labelText: 'Content',
+            hintText: 'Write your article here (Markdown supported)',
+            alignLabelWithHint: true,
+          ),
+          maxLines: 20,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Content is required';
+            }
+            return null;
+          },
+        ),
+      ],
     );
+  }
+
+  Widget _buildFormatButton(
+      IconData icon, String tooltip, VoidCallback onPressed) {
+    return Tooltip(
+      message: tooltip,
+      child: IconButton(
+        icon: Icon(icon, color: AppTheme.pureWhite, size: 20),
+        onPressed: onPressed,
+        style: IconButton.styleFrom(
+          backgroundColor: AppTheme.pureWhite.withValues(alpha: 0.1),
+          minimumSize: const Size(36, 36),
+        ),
+      ),
+    );
+  }
+
+  void _insertMarkdown(String before, String after) {
+    final text = _contentController.text;
+    final selection = _contentController.selection;
+    final selectedText = selection.textInside(text);
+
+    final newText = text.replaceRange(
+      selection.start,
+      selection.end,
+      '$before$selectedText$after',
+    );
+
+    _contentController.text = newText;
+    _contentController.selection = TextSelection.collapsed(
+      offset:
+          selection.start + before.length + selectedText.length + after.length,
+    );
+  }
+
+  void _insertImage() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardBlack,
+        title: const Text('Insert Image',
+            style: TextStyle(color: AppTheme.pureWhite)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Image URL',
+                hintText: 'https://example.com/image.jpg',
+              ),
+              onSubmitted: (url) {
+                if (url.isNotEmpty) {
+                  _insertMarkdown('![Image Description]($url)', '');
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _pickImageFromGallery();
+                  },
+                  icon: const Icon(Icons.photo_library),
+                  label: const Text('Gallery'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _pickImageFromCamera();
+                  },
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Camera'),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _pickImageFromGallery() async {
+    try {
+      final imagePicker = ImagePicker();
+      final pickedFile = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        // In a real app, you would upload this to S3 and get a URL
+        final imageName = pickedFile.name;
+        _insertMarkdown('![Image]($imageName)', '');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'Image added to article (upload functionality ready for integration)')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to pick image')),
+        );
+      }
+    }
+  }
+
+  void _pickImageFromCamera() async {
+    try {
+      final imagePicker = ImagePicker();
+      final pickedFile = await imagePicker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        // In a real app, you would upload this to S3 and get a URL
+        final imageName = pickedFile.name;
+        _insertMarkdown('![Image]($imageName)', '');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'Image added to article (upload functionality ready for integration)')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to take photo')),
+        );
+      }
+    }
   }
 
   Widget _buildTagsField() {

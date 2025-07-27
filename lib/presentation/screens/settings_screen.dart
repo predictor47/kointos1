@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/service_locator.dart';
-import 'payment_methods_screen.dart';
 import 'transaction_history_screen.dart';
 import 'help_screen.dart';
 import 'contact_support_screen.dart';
@@ -105,24 +104,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
 
-          // Trading Section
-          _buildSectionHeader('Trading'),
-          _buildListTile(
-            icon: Icons.account_balance_wallet,
-            title: 'Payment Methods',
-            subtitle: 'Manage your payment options',
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const PaymentMethodsScreen(),
-                ),
-              );
-            },
-          ),
+          // Portfolio & Data Section
+          _buildSectionHeader('Portfolio & Data'),
           _buildListTile(
             icon: Icons.history,
-            title: 'Transaction History',
-            subtitle: 'View your trading history',
+            title: 'Portfolio History',
+            subtitle: 'View your portfolio tracking history',
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(

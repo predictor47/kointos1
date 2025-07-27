@@ -420,14 +420,10 @@ class _RealMarketScreenState extends State<RealMarketScreen>
                   ElevatedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                                'Buy $symbol functionality ready for integration')),
-                      );
+                      _showAddToPortfolioDialog(name, symbol, price);
                     },
-                    icon: const Icon(Icons.add_shopping_cart),
-                    label: const Text('Buy'),
+                    icon: const Icon(Icons.account_balance_wallet),
+                    label: const Text('Add to Portfolio'),
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -450,6 +446,109 @@ class _RealMarketScreenState extends State<RealMarketScreen>
             child: const Text('Close'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showAddToPortfolioDialog(String name, String symbol, double price) {
+    final amountController = TextEditingController();
+    final avgPriceController =
+        TextEditingController(text: price.toStringAsFixed(2));
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppTheme.cardBlack,
+          title: Text(
+            'Add $symbol to Portfolio',
+            style: const TextStyle(color: AppTheme.pureWhite),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(color: AppTheme.pureWhite),
+                decoration: InputDecoration(
+                  labelText: 'Amount ($symbol)',
+                  labelStyle: const TextStyle(color: AppTheme.greyText),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: AppTheme.greyText.withValues(alpha: 0.3)),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: AppTheme.cryptoGold),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: avgPriceController,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(color: AppTheme.pureWhite),
+                decoration: InputDecoration(
+                  labelText: 'Average Buy Price (USD)',
+                  labelStyle: const TextStyle(color: AppTheme.greyText),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: AppTheme.greyText.withValues(alpha: 0.3)),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: AppTheme.cryptoGold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel',
+                  style: TextStyle(color: AppTheme.greyText)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final amount = double.tryParse(amountController.text);
+                final avgPrice = double.tryParse(avgPriceController.text);
+
+                if (amount != null &&
+                    avgPrice != null &&
+                    amount > 0 &&
+                    avgPrice > 0) {
+                  Navigator.pop(context);
+                  _addToPortfolio(symbol, name, amount, avgPrice);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter valid amount and price'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.cryptoGold,
+                foregroundColor: AppTheme.primaryBlack,
+              ),
+              child: const Text('Add to Portfolio'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addToPortfolio(
+      String symbol, String name, double amount, double avgPrice) {
+    // In a real app, this would save to the backend
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+            'Added $amount $symbol to your portfolio at \$${avgPrice.toStringAsFixed(2)}'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
       ),
     );
   }
