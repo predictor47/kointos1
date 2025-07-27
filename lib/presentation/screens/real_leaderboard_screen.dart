@@ -405,7 +405,7 @@ class _RealLeaderboardScreenState extends State<RealLeaderboardScreen>
                 child: Column(
                   children: [
                     if (rankIcon != null)
-                      const Icon(rankIcon, color: rankColor, size: 24)
+                      Icon(rankIcon, color: rankColor, size: 24)
                     else
                       Text(
                         '#$position',

@@ -66,7 +66,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             icon: const Icon(Icons.filter_list),
             onSelected: (value) {
               setState(() {
-                _filter = value == 'ALL' ? null : TransactionTypeEnum.fromString(value);
+                _filter = value == 'ALL'
+                    ? null
+                    : TransactionTypeEnum.fromString(value);
               });
             },
             itemBuilder: (context) => [
@@ -183,23 +185,27 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             Text('Date: ${_formatDate(date)}'),
           ],
         ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
+        trailing: Builder(
+          builder: (context) {
             final transactionType = TransactionTypeEnum.fromString(type);
-            Text(
-              '${transactionType?.isIncoming == true ? '+' : '-'}$amount',
-              style: TextStyle(
-                color: typeColor,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              symbol,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${transactionType?.isIncoming == true ? '+' : '-'}$amount',
+                  style: TextStyle(
+                    color: typeColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  symbol,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            );
+          },
         ),
         onTap: () {
           _showTransactionDetails(transaction);

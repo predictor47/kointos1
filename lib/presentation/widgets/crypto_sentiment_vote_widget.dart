@@ -308,7 +308,7 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isLoading)
-              const SizedBox(
+              SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
@@ -452,11 +452,11 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
 
     return Row(
       children: [
-        const SizedBox(
+        SizedBox(
           width: 60,
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppTheme.greyText,
               fontSize: 12,
             ),
@@ -469,7 +469,7 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
               color: AppTheme.secondaryBlack,
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Fractionallyconst SizedBox(
+            child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
               widthFactor: percentage,
               child: Container(
@@ -482,7 +482,7 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
           ),
         ),
         const SizedBox(width: 8),
-        const SizedBox(
+        SizedBox(
           width: 30,
           child: Text(
             '${(percentage * 100).toInt()}%',
