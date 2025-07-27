@@ -7,9 +7,6 @@ import 'package:kointos/core/services/logger_service.dart';
 class GamificationService {
   final ApiService _apiService;
 
-  // Cache for user stats to reduce API calls
-  final Map<String, UserGameStats> _userStatsCache = {};
-
   GamificationService(this._apiService);
 
   // Point values for different actions
@@ -157,10 +154,33 @@ class GamificationService {
   Future<UserGameStats> _updateUserStats(
       String userId, int pointsToAdd, GameAction action) async {
     try {
-      // Implement GraphQL mutation for backend synchronization
+      // Get current user profile to update
+      final currentProfile = await _apiService.getUserProfile(userId);
+      if (currentProfile == null) {
+        throw Exception('User profile not found');
+      }
+
+      final currentPoints = currentProfile['totalPoints'] ?? 0;
+      final newTotalPoints = currentPoints + pointsToAdd;
+      final newLevel = _calculateLevel(newTotalPoints);
+
+      // Reset daily/weekly counters if needed
+      final now = DateTime.now();
+      final lastActivity =
+          DateTime.tryParse(currentProfile['lastActivity'] ?? '') ?? now;
+      final isNewDay = !_isSameDay(lastActivity, now);
+      final isNewWeek = !_isSameWeek(lastActivity, now);
+
+      final newActionsToday =
+          isNewDay ? 1 : (currentProfile['actionsToday'] ?? 0) + 1;
+      final newWeeklyPoints = isNewWeek
+          ? pointsToAdd
+          : (currentProfile['weeklyPoints'] ?? 0) + pointsToAdd;
+
+      // Update user profile with gamification data
       const mutation = '''
-        mutation UpdateUserGameStats(\$input: UpdateUserGameStatsInput!) {
-          updateUserGameStats(input: \$input) {
+        mutation UpdateUserProfile(\$input: UpdateUserProfileInput!) {
+          updateUserProfile(input: \$input) {
             userId
             totalPoints
             level
@@ -169,6 +189,7 @@ class GamificationService {
             lastActivity
             actionsToday
             weeklyPoints
+            monthlyPoints
             globalRank
           }
         }
@@ -176,9 +197,16 @@ class GamificationService {
 
       final input = {
         'userId': userId,
-        'pointsToAdd': pointsToAdd,
-        'action': action.toString(),
-        'timestamp': DateTime.now().toIso8601String(),
+        'totalPoints': newTotalPoints,
+        'level': newLevel,
+        'lastActivity': now.toIso8601String(),
+        'actionsToday': newActionsToday,
+        'weeklyPoints': newWeeklyPoints,
+        // Keep existing values for other fields
+        'streak': currentProfile['streak'] ?? 0,
+        'badges': currentProfile['badges'] ?? [],
+        'monthlyPoints': currentProfile['monthlyPoints'] ?? 0,
+        'globalRank': currentProfile['globalRank'] ?? 999999,
       };
 
       final request = GraphQLRequest<String>(
@@ -190,40 +218,43 @@ class GamificationService {
 
       if (response.data != null) {
         final data = jsonDecode(response.data!);
-        final statsData = data['updateUserGameStats'];
+        final profileData = data['updateUserProfile'];
+
+        LoggerService.info(
+            'Updated user stats: +$pointsToAdd points for $action');
+
         return UserGameStats(
-          userId: statsData['userId'],
-          totalPoints: statsData['totalPoints'],
-          level: statsData['level'],
-          streak: statsData['streak'],
-          badges: List<String>.from(statsData['badges'] ?? []),
-          lastActivity: DateTime.parse(statsData['lastActivity']),
-          actionsToday: statsData['actionsToday'],
-          weeklyPoints: statsData['weeklyPoints'],
-          rank: statsData['globalRank'] ?? 0,
+          userId: profileData['userId'],
+          totalPoints: profileData['totalPoints'],
+          level: profileData['level'],
+          streak: profileData['streak'],
+          badges: List<String>.from(profileData['badges'] ?? []),
+          lastActivity: DateTime.parse(profileData['lastActivity']),
+          actionsToday: profileData['actionsToday'],
+          weeklyPoints: profileData['weeklyPoints'],
+          rank: profileData['globalRank'] ?? 0,
         );
       } else {
-        throw Exception('Failed to update user stats');
+        throw Exception('Failed to update user profile');
       }
     } catch (e) {
-      LoggerService.error(
-          'Backend stats update failed, using local fallback: $e');
-
-      // Return local fallback stats using getUserStats
-      final currentStats = await getUserStats(userId);
-
-      return UserGameStats(
-        userId: userId,
-        totalPoints: currentStats.totalPoints + pointsToAdd,
-        level: _calculateLevel(currentStats.totalPoints + pointsToAdd),
-        streak: currentStats.streak,
-        badges: currentStats.badges,
-        lastActivity: DateTime.now(),
-        actionsToday: currentStats.actionsToday + 1,
-        weeklyPoints: currentStats.weeklyPoints + pointsToAdd,
-        rank: currentStats.rank,
-      );
+      LoggerService.error('Backend stats update failed: $e');
+      rethrow;
     }
+  }
+
+  /// Check if two dates are on the same day
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  /// Check if two dates are in the same week
+  bool _isSameWeek(DateTime date1, DateTime date2) {
+    final startOfWeek1 = date1.subtract(Duration(days: date1.weekday - 1));
+    final startOfWeek2 = date2.subtract(Duration(days: date2.weekday - 1));
+    return _isSameDay(startOfWeek1, startOfWeek2);
   }
 
   /// Handle level up event
@@ -279,8 +310,49 @@ class GamificationService {
   /// Award a badge to user
   Future<void> _awardBadge(String userId, String badgeId) async {
     try {
-      // This would be a GraphQL mutation to add badge to user profile
-      LoggerService.info('Awarded badge $badgeId to user $userId');
+      // Get current user profile
+      final currentProfile = await _apiService.getUserProfile(userId);
+      if (currentProfile == null) {
+        throw Exception('User profile not found');
+      }
+
+      // Check if user already has this badge
+      final currentBadges = List<String>.from(currentProfile['badges'] ?? []);
+      if (currentBadges.contains(badgeId)) {
+        LoggerService.info('User $userId already has badge $badgeId');
+        return;
+      }
+
+      // Add new badge
+      currentBadges.add(badgeId);
+
+      // Update user profile with new badge
+      const mutation = '''
+        mutation UpdateUserProfile(\$input: UpdateUserProfileInput!) {
+          updateUserProfile(input: \$input) {
+            userId
+            badges
+          }
+        }
+      ''';
+
+      final input = {
+        'userId': userId,
+        'badges': currentBadges,
+      };
+
+      final request = GraphQLRequest<String>(
+        document: mutation,
+        variables: {'input': input},
+      );
+
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data != null) {
+        LoggerService.info('Awarded badge $badgeId to user $userId');
+      } else {
+        throw Exception('Failed to update user badges');
+      }
     } catch (e) {
       LoggerService.error('Failed to award badge $badgeId: $e');
     }
@@ -292,10 +364,18 @@ class GamificationService {
     int limit = 50,
   }) async {
     try {
-      // Implement GraphQL query for real leaderboard data
+      // Real GraphQL query for leaderboard data
       const query = '''
-        query GetLeaderboard(\$type: LeaderboardType!, \$limit: Int!) {
-          getLeaderboard(type: \$type, limit: \$limit) {
+        query ListLeaderboardEntries(
+          \$filter: ModelLeaderboardEntryFilterInput
+          \$limit: Int
+          \$nextToken: String
+        ) {
+          listLeaderboardEntries(
+            filter: \$filter
+            limit: \$limit
+            nextToken: \$nextToken
+          ) {
             items {
               userId
               username
@@ -304,15 +384,23 @@ class GamificationService {
               rank
               badges
               title
+              leaderboardType
+              createdAt
+              updatedAt
             }
+            nextToken
           }
         }
       ''';
 
+      final filter = {
+        'leaderboardType': {'eq': type.toString().split('.').last.toUpperCase()}
+      };
+
       final request = GraphQLRequest<String>(
         document: query,
         variables: {
-          'type': type.toString().split('.').last.toUpperCase(),
+          'filter': filter,
           'limit': limit,
         },
       );
@@ -321,9 +409,9 @@ class GamificationService {
 
       if (response.data != null) {
         final data = jsonDecode(response.data!);
-        final leaderboardData = data['getLeaderboard']['items'] as List;
+        final leaderboardData = data['listLeaderboardEntries']['items'] as List;
 
-        return leaderboardData
+        final entries = leaderboardData
             .map((item) => LeaderboardEntry(
                   userId: item['userId'],
                   username: item['username'],
@@ -334,47 +422,129 @@ class GamificationService {
                   title: item['title'],
                 ))
             .toList();
+
+        // Sort by rank to ensure proper ordering
+        entries.sort((a, b) => a.rank.compareTo(b.rank));
+
+        LoggerService.info(
+            'Retrieved ${entries.length} leaderboard entries for $type');
+        return entries;
       } else {
-        throw Exception('Failed to fetch leaderboard data');
+        throw Exception('Failed to fetch leaderboard data from GraphQL');
       }
     } catch (e) {
-      LoggerService.error('Leaderboard query failed, using cached data: $e');
+      LoggerService.error(
+          'Leaderboard query failed, generating from user profiles: $e');
 
-      // Return cached stats as leaderboard entries (fallback)
-      final entries = <LeaderboardEntry>[];
-
-      // Convert cached user stats to leaderboard entries
-      _userStatsCache.forEach((userId, stats) {
-        entries.add(LeaderboardEntry(
-          userId: userId,
-          username: 'User ${userId.substring(0, 8)}', // Truncated for privacy
-          avatarUrl:
-              null, // Avatar URLs fetched from UserProfile in real implementation
-          points: type == LeaderboardType.weekly
-              ? stats.weeklyPoints
-              : stats.totalPoints,
-          rank: 0, // Will be calculated after sorting
-          badges: stats.badges, // User badges from cached stats
-        ));
-      });
-
-      // Sort by points and assign ranks
-      entries.sort((a, b) => b.points.compareTo(a.points));
-      final rankedEntries = <LeaderboardEntry>[];
-      for (int i = 0; i < entries.length; i++) {
-        rankedEntries.add(LeaderboardEntry(
-          userId: entries[i].userId,
-          username: entries[i].username,
-          avatarUrl: entries[i].avatarUrl,
-          points: entries[i].points,
-          rank: i + 1,
-          badges: entries[i].badges,
-          title: entries[i].title,
-        ));
-      }
-
-      return rankedEntries.take(limit).toList();
+      // Fallback: Generate leaderboard from UserProfile data
+      return await _generateLeaderboardFromProfiles(type, limit);
     }
+  }
+
+  /// Generate leaderboard from UserProfile data (fallback)
+  Future<List<LeaderboardEntry>> _generateLeaderboardFromProfiles(
+      LeaderboardType type, int limit) async {
+    try {
+      // Query all user profiles and sort by points
+      const query = '''
+        query ListUserProfiles(\$limit: Int) {
+          listUserProfiles(limit: \$limit) {
+            items {
+              userId
+              username
+              displayName
+              profilePicture
+              totalPoints
+              weeklyPoints
+              monthlyPoints
+              badges
+              level
+            }
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: query,
+        variables: {'limit': limit * 2}, // Get more to sort and filter
+      );
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.data != null) {
+        final data = jsonDecode(response.data!);
+        final profiles = data['listUserProfiles']['items'] as List;
+
+        // Convert to leaderboard entries
+        final entries = profiles
+            .map((profile) {
+              int points;
+              switch (type) {
+                case LeaderboardType.weekly:
+                  points = profile['weeklyPoints'] ?? 0;
+                  break;
+                case LeaderboardType.monthly:
+                  points = profile['monthlyPoints'] ?? 0;
+                  break;
+                case LeaderboardType.daily:
+                  points = profile['weeklyPoints'] ??
+                      0; // Use weekly for daily fallback
+                  break;
+                case LeaderboardType.allTime:
+                  points = profile['totalPoints'] ?? 0;
+                  break;
+              }
+
+              return LeaderboardEntry(
+                userId: profile['userId'],
+                username: profile['username'] ?? 'Unknown User',
+                avatarUrl: profile['profilePicture'],
+                points: points,
+                rank: 0, // Will be assigned after sorting
+                badges: List<String>.from(profile['badges'] ?? []),
+                title: _getLevelTitle(profile['level'] ?? 0),
+              );
+            })
+            .where((entry) => entry.points > 0)
+            .toList(); // Only include users with points
+
+        // Sort by points and assign ranks
+        entries.sort((a, b) => b.points.compareTo(a.points));
+
+        final rankedEntries = <LeaderboardEntry>[];
+        for (int i = 0; i < entries.length && i < limit; i++) {
+          rankedEntries.add(LeaderboardEntry(
+            userId: entries[i].userId,
+            username: entries[i].username,
+            avatarUrl: entries[i].avatarUrl,
+            points: entries[i].points,
+            rank: i + 1,
+            badges: entries[i].badges,
+            title: entries[i].title,
+          ));
+        }
+
+        LoggerService.info(
+            'Generated ${rankedEntries.length} leaderboard entries from profiles');
+        return rankedEntries;
+      }
+    } catch (e) {
+      LoggerService.error('Failed to generate leaderboard from profiles: $e');
+    }
+
+    // Ultimate fallback: empty list
+    return [];
+  }
+
+  /// Get title based on level
+  String? _getLevelTitle(int level) {
+    if (level >= 10) return 'Legend';
+    if (level >= 8) return 'Expert';
+    if (level >= 6) return 'Pro';
+    if (level >= 4) return 'Advanced';
+    if (level >= 2) return 'Intermediate';
+    if (level >= 1) return 'Beginner';
+    return null;
   }
 }
 

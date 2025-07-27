@@ -37,7 +37,8 @@ class AuthService {
         final accessToken = session.userPoolTokensResult.value.accessToken;
         return accessToken.raw;
       }
-      return session.isSignedIn ? 'placeholder_token' : null;
+      // Return null if not signed in or no valid token available
+      return null;
     } on AuthException {
       return null;
     }

@@ -25,7 +25,8 @@ class _ArticlesScreenState extends State<ArticlesScreen>
       author: 'CryptoExpert',
       readTime: '5 min read',
       category: 'Bitcoin',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      imageUrl:
+          'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=300&h=200&fit=crop',
       excerpt:
           'Bitcoin has surged to unprecedented levels, breaking through key resistance levels...',
       publishedAt: DateTime.now().subtract(const Duration(hours: 2)),
@@ -35,12 +36,13 @@ class _ArticlesScreenState extends State<ArticlesScreen>
     Article(
       id: '2',
       title: 'DeFi Revolution: The Future of Finance',
-      author: 'DeFiGuru',
-      readTime: '8 min read',
+      author: 'DeFiAnalyst',
+      readTime: '4 min read',
       category: 'DeFi',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      imageUrl:
+          'https://images.unsplash.com/photo-1640340434855-6084b1f4901c?w=300&h=200&fit=crop',
       excerpt:
-          'Decentralized Finance is reshaping the financial landscape with innovative protocols...',
+          'Decentralized finance continues to grow, with new protocols emerging daily...',
       publishedAt: DateTime.now().subtract(const Duration(hours: 4)),
       likes: 89,
       comments: 15,
@@ -48,12 +50,13 @@ class _ArticlesScreenState extends State<ArticlesScreen>
     Article(
       id: '3',
       title: 'NFT Market Analysis: Trends and Predictions',
-      author: 'NFTAnalyst',
+      author: 'NFTExplorer',
       readTime: '6 min read',
       category: 'NFTs',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      imageUrl:
+          'https://images.unsplash.com/photo-1641580314985-e7597f1e16a5?w=300&h=200&fit=crop',
       excerpt:
-          'The NFT market continues to evolve with new trends emerging in digital collectibles...',
+          'The NFT marketplace has evolved significantly, introducing new utility cases...',
       publishedAt: DateTime.now().subtract(const Duration(hours: 6)),
       likes: 64,
       comments: 12,
@@ -64,12 +67,13 @@ class _ArticlesScreenState extends State<ArticlesScreen>
     Article(
       id: '4',
       title: 'Ethereum 2.0 Staking Guide',
-      author: 'StakingPro',
-      readTime: '10 min read',
+      author: 'EthereumInsider',
+      readTime: '7 min read',
       category: 'Ethereum',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      imageUrl:
+          'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop',
       excerpt:
-          'Learn how to stake your ETH and earn rewards in the new Ethereum 2.0 ecosystem...',
+          'The upcoming Ethereum upgrade promises to revolutionize the blockchain landscape...',
       publishedAt: DateTime.now().subtract(const Duration(minutes: 30)),
       likes: 203,
       comments: 45,
@@ -77,12 +81,13 @@ class _ArticlesScreenState extends State<ArticlesScreen>
     Article(
       id: '5',
       title: 'Altcoin Season: What to Watch',
-      author: 'AltcoinTrader',
-      readTime: '7 min read',
-      category: 'Trading',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      author: 'AltcoinHub',
+      readTime: '8 min read',
+      category: 'Altcoins',
+      imageUrl:
+          'https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=300&h=200&fit=crop',
       excerpt:
-          'Discover which alternative cryptocurrencies are showing promising signals...',
+          'Alternative cryptocurrencies are gaining traction as innovative solutions emerge...',
       publishedAt: DateTime.now().subtract(const Duration(hours: 1)),
       likes: 156,
       comments: 32,

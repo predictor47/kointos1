@@ -3,6 +3,8 @@ import 'package:kointos/core/constants/app_constants.dart';
 import 'package:kointos/core/services/amplify_storage_service.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/auth_service.dart';
+import 'package:kointos/core/services/crypto_sentiment_service.dart';
+import 'package:kointos/core/services/gamification_service.dart';
 import 'package:kointos/core/services/kointos_ai_chatbot_service.dart';
 import 'package:kointos/core/services/llm_service.dart';
 import 'package:kointos/core/services/local_storage_service.dart';
@@ -37,6 +39,14 @@ Future<void> setupServiceLocator() async {
     () => AmplifyStorageService(),
   );
 
+  serviceLocator.registerLazySingleton<GamificationService>(
+    () => GamificationService(serviceLocator<ApiService>()),
+  );
+
+  serviceLocator.registerLazySingleton<CryptoSentimentService>(
+    () => CryptoSentimentService(serviceLocator<GamificationService>()),
+  );
+
   // AI Services
   serviceLocator.registerLazySingleton<LLMService>(
     () => LLMService(),
@@ -48,7 +58,7 @@ Future<void> setupServiceLocator() async {
 
   // Data Sources
   serviceLocator.registerLazySingleton<CoinGeckoService>(
-    () => const CoinGeckoService(baseUrl: AppConstants.coinGeckoBaseUrl),
+    () => CoinGeckoService(baseUrl: AppConstants.coinGeckoBaseUrl),
   );
 
   // Repositories

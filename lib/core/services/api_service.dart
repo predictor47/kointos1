@@ -320,8 +320,8 @@ class ApiService {
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {
     try {
       const query = '''
-        query GetUserProfile(\$userId: ID!) {
-          getUserProfile(userId: \$userId) {
+        query GetUserProfile(\$id: ID!) {
+          getUserProfile(id: \$id) {
             userId
             email
             username
@@ -340,7 +340,7 @@ class ApiService {
 
       final request = GraphQLRequest<String>(
         document: query,
-        variables: {'userId': userId},
+        variables: {'id': userId},
       );
 
       final response = await Amplify.API.query(request: request).response;
@@ -880,6 +880,16 @@ class ApiService {
     bool isPublic = true,
   }) async {
     try {
+      // Get current user ID from auth service
+      final userToken = await authService.getUserToken();
+      if (userToken == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Extract user ID from token or get it from Amplify Auth
+      final user = await Amplify.Auth.getCurrentUser();
+      final userId = user.userId;
+
       const mutation = '''
         mutation CreatePost(\$input: CreatePostInput!) {
           createPost(input: \$input) {
@@ -903,10 +913,11 @@ class ApiService {
         document: mutation,
         variables: {
           'input': {
+            'userId': userId,
             'content': content,
-            'imageUrl': imageUrl,
-            'tags': tags,
-            'mentionedCryptos': mentionedCryptos,
+            if (imageUrl != null) 'imageUrl': imageUrl,
+            if (tags != null) 'tags': tags,
+            if (mentionedCryptos != null) 'mentionedCryptos': mentionedCryptos,
             'isPublic': isPublic,
           }
         },

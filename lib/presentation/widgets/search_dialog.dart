@@ -39,8 +39,8 @@ class _SearchDialogState extends State<SearchDialog> {
     // Simulate API call delay
     await Future.delayed(const Duration(milliseconds: 500));
 
-    // Mock search results - in real app, this would call your API
-    final mockCryptos = [
+    // Sample search results for demonstration
+    final sampleCryptos = [
       Cryptocurrency(
         id: '1',
         name: 'Bitcoin',
@@ -65,7 +65,7 @@ class _SearchDialogState extends State<SearchDialog> {
       ),
     ];
 
-    final mockArticles = [
+    final sampleArticles = [
       Article(
         id: '1',
         authorId: 'author1',
@@ -85,13 +85,13 @@ class _SearchDialogState extends State<SearchDialog> {
     ];
 
     // Filter results based on query
-    final filteredCryptos = mockCryptos
+    final filteredCryptos = sampleCryptos
         .where((crypto) =>
             crypto.name.toLowerCase().contains(query.toLowerCase()) ||
             crypto.symbol.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    final filteredArticles = mockArticles
+    final filteredArticles = sampleArticles
         .where((article) =>
             article.title.toLowerCase().contains(query.toLowerCase()) ||
             article.content.toLowerCase().contains(query.toLowerCase()))
@@ -277,8 +277,11 @@ class _SearchDialogState extends State<SearchDialog> {
       subtitle: Text(
         'By ${article.authorName}',
         style: TextStyle(
-          color:
-              Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+          color: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.color
+              ?.withValues(alpha: 0.7),
         ),
       ),
       trailing: Column(

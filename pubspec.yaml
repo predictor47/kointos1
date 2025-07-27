@@ -45,6 +45,9 @@ dependencies:
   amplify_api: ^2.4.0
   amplify_storage_s3: ^2.4.0
   
+  # AWS SDK for Bedrock integration
+  aws_client: ^0.6.0
+  
   # State Management & Architecture
   bloc: ^8.1.4
   flutter_bloc: ^8.1.6

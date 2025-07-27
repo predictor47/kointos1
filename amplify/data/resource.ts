@@ -20,6 +20,16 @@ const schema = a.schema({
       followersCount: a.integer().default(0),
       followingCount: a.integer().default(0),
       isPublic: a.boolean().default(true),
+      // Gamification fields
+      totalPoints: a.integer().default(0),
+      level: a.integer().default(0),
+      streak: a.integer().default(0),
+      badges: a.string().array(),
+      lastActivity: a.datetime(),
+      actionsToday: a.integer().default(0),
+      weeklyPoints: a.integer().default(0),
+      monthlyPoints: a.integer().default(0),
+      globalRank: a.integer().default(999999),
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
@@ -285,6 +295,72 @@ const schema = a.schema({
       createdAt: a.datetime(),
     })
     .authorization(allow => [allow.authenticated().to(['read'])]),
+
+  // User Gamification Stats
+  UserGameStats: a
+    .model({
+      userId: a.id().required(),
+      totalPoints: a.integer().default(0),
+      level: a.integer().default(0),
+      streak: a.integer().default(0),
+      badges: a.string().array(),
+      lastActivity: a.datetime(),
+      actionsToday: a.integer().default(0),
+      weeklyPoints: a.integer().default(0),
+      monthlyPoints: a.integer().default(0),
+      globalRank: a.integer().default(999999),
+      weeklyRank: a.integer().default(999999),
+      monthlyRank: a.integer().default(999999),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .authorization(allow => [allow.owner(), allow.authenticated().to(['read'])]),
+
+  // Leaderboard Entries (Computed view for performance)
+  LeaderboardEntry: a
+    .model({
+      userId: a.id().required(),
+      username: a.string().required(),
+      avatarUrl: a.url(),
+      points: a.integer().required(),
+      rank: a.integer().required(),
+      badges: a.string().array(),
+      title: a.string(),
+      leaderboardType: a.enum(['DAILY', 'WEEKLY', 'MONTHLY', 'ALL_TIME']),
+      periodStart: a.date(),
+      periodEnd: a.date(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .authorization(allow => [allow.authenticated().to(['read'])]),
+
+  // Achievement Definitions
+  Achievement: a
+    .model({
+      badgeId: a.id().required(),
+      name: a.string().required(),
+      description: a.string().required(),
+      iconUrl: a.url(),
+      category: a.string(),
+      pointsRequired: a.integer(),
+      actionRequired: a.string(),
+      countRequired: a.integer().default(1),
+      isActive: a.boolean().default(true),
+      rarity: a.enum(['COMMON', 'RARE', 'EPIC', 'LEGENDARY']),
+      createdAt: a.datetime(),
+    })
+    .authorization(allow => [allow.authenticated().to(['read'])]),
+
+  // User Achievements (Junction table)
+  UserAchievement: a
+    .model({
+      userId: a.id().required(),
+      badgeId: a.id().required(),
+      unlockedAt: a.datetime(),
+      progress: a.integer().default(0),
+      isCompleted: a.boolean().default(false),
+    })
+    .authorization(allow => [allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

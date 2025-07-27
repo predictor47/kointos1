@@ -277,25 +277,26 @@ class KointosAIChatbotService {
       //   }
       // ''';
 
-      // Using demo portfolio data for AI chatbot responses
-      final mockHoldings = [
+      // Using sample portfolio data for AI chatbot context
+      // In production, this would connect to user's actual portfolio
+      final sampleHoldings = [
         {'symbol': 'BTC', 'value': 2500.0, 'change': 120.50},
         {'symbol': 'ETH', 'value': 1800.0, 'change': -45.20},
         {'symbol': 'SOL', 'value': 900.0, 'change': 78.30},
       ];
 
-      final totalValue = mockHoldings.fold<double>(
+      final totalValue = sampleHoldings.fold<double>(
           0.0, (sum, holding) => sum + (holding['value'] as double));
-      final totalChange = mockHoldings.fold<double>(
+      final totalChange = sampleHoldings.fold<double>(
           0.0, (sum, holding) => sum + (holding['change'] as double));
 
       return {
         'totalValue': totalValue,
         'dayChange': totalChange,
         'dayChangePercent': (totalChange / totalValue) * 100,
-        'topHolding': mockHoldings.first['symbol'],
+        'topHolding': sampleHoldings.first['symbol'],
         'diversificationScore': 0.85, // Good diversification
-        'holdingsCount': mockHoldings.length,
+        'holdingsCount': sampleHoldings.length,
       };
     } catch (e) {
       LoggerService.error('Error fetching portfolio data: $e');
