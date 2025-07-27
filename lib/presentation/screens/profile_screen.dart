@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/services/auth_service.dart';
@@ -42,66 +43,70 @@ class _ProfileScreenState extends State<ProfileScreen>
       // Load user profile
       final currentUser = await _authService.getCurrentUserId();
       if (currentUser != null) {
-        final userProfile = await _apiService.getUserProfile(currentUser);
+        // Get user email and other details from Amplify Auth
+        final amplifyUser = await Amplify.Auth.getCurrentUser();
+        final userAttributes = await Amplify.Auth.fetchUserAttributes();
 
-        // Load gamification stats
-        final gameStats = await _gamificationService.getUserStats();
+        String email = '';
+        String displayName = '';
+        for (final attr in userAttributes) {
+          if (attr.userAttributeKey == AuthUserAttributeKey.email) {
+            email = attr.value;
+          } else if (attr.userAttributeKey == AuthUserAttributeKey.name) {
+            displayName = attr.value;
+          }
+        }
 
-        // Load user articles - using demo data for now
-        final articles = _getDemoArticles();
+        try {
+          // Try to get profile from API
+          final userProfile = await _apiService.getUserProfile(currentUser);
 
-        setState(() {
-          _userProfile = UserProfile.fromApi(
-              userProfile, {'userId': currentUser, 'username': 'User'});
-          _gameStats = gameStats;
-          _userArticles = articles;
-          _isLoading = false;
-        });
+          // Load gamification stats
+          final gameStats = await _gamificationService.getUserStats();
+
+          // Load real user articles
+          final articles = await _apiService.getUserArticles(currentUser);
+
+          setState(() {
+            _userProfile = UserProfile.fromApi(userProfile, {
+              'userId': currentUser,
+              'username': amplifyUser.username,
+              'email': email,
+              'displayName': displayName,
+            });
+            _gameStats = gameStats;
+            _userArticles = articles;
+            _isLoading = false;
+          });
+        } catch (apiError) {
+          // If API fails, create profile from Amplify auth data
+          setState(() {
+            _userProfile = UserProfile.fromApi(null, {
+              'userId': currentUser,
+              'username': amplifyUser.username,
+              'email': email,
+              'displayName':
+                  displayName.isNotEmpty ? displayName : amplifyUser.username,
+            });
+            _gameStats = null;
+            _userArticles = [];
+            _isLoading = false;
+          });
+        }
       } else {
-        // User not authenticated, show default/guest state
+        // User not authenticated, show guest state
         setState(() {
           _userProfile = UserProfile.guest();
           _isLoading = false;
         });
       }
     } catch (e) {
-      // Fall back to demo data if API fails
+      // Critical error - show error state
       setState(() {
-        _userProfile = UserProfile.demo();
-        _gameStats = null; // Will be handled gracefully since it's nullable
-        _userArticles = _getDemoArticles();
+        _userProfile = null;
         _isLoading = false;
       });
     }
-  }
-
-  List<Map<String, dynamic>> _getDemoArticles() {
-    return [
-      {
-        'id': '1',
-        'title': 'Bitcoin Market Analysis for Q2 2025',
-        'summary': 'A comprehensive look at Bitcoin\'s performance...',
-        'createdAt': DateTime.now().subtract(const Duration(hours: 2)),
-        'likesCount': 142,
-        'commentsCount': 28,
-      },
-      {
-        'id': '2',
-        'title': 'Understanding DeFi Protocols',
-        'summary': 'Deep dive into decentralized finance...',
-        'createdAt': DateTime.now().subtract(const Duration(days: 3)),
-        'likesCount': 89,
-        'commentsCount': 15,
-      },
-      {
-        'id': '3',
-        'title': 'NFT Market Trends',
-        'summary': 'Latest trends in the NFT space...',
-        'createdAt': DateTime.now().subtract(const Duration(days: 7)),
-        'likesCount': 64,
-        'commentsCount': 12,
-      },
-    ];
   }
 
   @override
@@ -695,28 +700,32 @@ class UserProfile {
 
   factory UserProfile.fromApi(
       Map<String, dynamic>? apiData, Map<String, dynamic> currentUser) {
-    if (apiData == null) {
-      return UserProfile.demo();
-    }
-
+    // Always use real user data instead of demo data
     return UserProfile(
       id: currentUser['userId'] ?? 'unknown',
-      username: apiData['username'] ?? currentUser['username'] ?? 'User',
+      username: apiData?['username'] ?? currentUser['username'] ?? 'User',
       email: currentUser['email'] ?? 'user@example.com',
-      fullName: apiData['fullName'] ?? 'Kointos User',
-      bio: apiData['bio'] ??
+      fullName: apiData?['fullName'] ??
+          currentUser['displayName'] ??
+          currentUser['username'] ??
+          'Kointos User',
+      bio: apiData?['bio'] ??
           'Welcome to Kointos! Exploring the world of cryptocurrency.',
-      avatar: apiData['avatar'] ?? (apiData['fullName']?[0] ?? 'K'),
-      joinedDate: apiData['createdAt'] != null
-          ? DateTime.parse(apiData['createdAt'])
+      avatar: (apiData?['fullName']?[0] ??
+              currentUser['displayName']?[0] ??
+              currentUser['username']?[0] ??
+              'K')
+          .toUpperCase(),
+      joinedDate: apiData?['createdAt'] != null
+          ? DateTime.parse(apiData!['createdAt'])
           : DateTime.now().subtract(const Duration(days: 30)),
-      totalPoints: apiData['totalPoints'] ?? 500,
-      rank: apiData['rank'] ?? 100,
-      articlesPublished: apiData['articlesCount'] ?? 0,
-      postsShared: apiData['postsCount'] ?? 0,
-      followers: apiData['followersCount'] ?? 0,
-      following: apiData['followingCount'] ?? 0,
-      badges: _getBadgesFromApi(apiData['badges']),
+      totalPoints: apiData?['totalPoints'] ?? 500,
+      rank: apiData?['rank'] ?? 100,
+      articlesPublished: apiData?['articlesCount'] ?? 0,
+      postsShared: apiData?['postsCount'] ?? 0,
+      followers: apiData?['followersCount'] ?? 0,
+      following: apiData?['followingCount'] ?? 0,
+      badges: _getBadgesFromApi(apiData?['badges']),
     );
   }
 

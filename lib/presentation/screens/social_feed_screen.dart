@@ -3,7 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/services/api_service.dart';
+import 'package:kointos/core/services/gamification_service.dart';
 import 'package:kointos/presentation/widgets/create_post_widget.dart';
+import 'user_profile_view_screen.dart';
 
 class SocialFeedScreen extends StatefulWidget {
   const SocialFeedScreen({super.key});
@@ -238,7 +240,35 @@ class _SocialFeedScreenState extends State<SocialFeedScreen>
   Future<void> _handleLike(String postId) async {
     try {
       final apiService = getService<ApiService>();
+      final gamificationService = getService<GamificationService>();
+
       await apiService.likePost(postId);
+
+      // Award gamification points
+      try {
+        await gamificationService.awardPoints(GameAction.likePost);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Liked! +2 XP earned'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 1),
+            ),
+          );
+        }
+      } catch (gamificationError) {
+        // Continue even if gamification fails
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Post liked!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 1),
+            ),
+          );
+        }
+      }
 
       // Update the post in the list
       setState(() {
@@ -297,6 +327,20 @@ class PostCard extends StatelessWidget {
     required this.onComment,
   });
 
+  void _navigateToUserProfile(BuildContext context, String? userId) {
+    if (userId != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UserProfileViewScreen(
+            userId: userId,
+            username: 'User${userId.substring(0, 8)}',
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -315,37 +359,43 @@ class PostCard extends StatelessWidget {
           // User info
           Row(
             children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: AppTheme.cryptoGold,
-                child: Text(
-                  post['userId']?.substring(0, 1).toUpperCase() ?? 'U',
-                  style: const TextStyle(
-                    color: AppTheme.primaryBlack,
-                    fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () => _navigateToUserProfile(context, post['userId']),
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: AppTheme.cryptoGold,
+                  child: Text(
+                    post['userId']?.substring(0, 1).toUpperCase() ?? 'U',
+                    style: const TextStyle(
+                      color: AppTheme.primaryBlack,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'User ${post['userId']?.substring(0, 8) ?? 'Unknown'}',
-                      style: const TextStyle(
-                        color: AppTheme.pureWhite,
-                        fontWeight: FontWeight.bold,
+                child: GestureDetector(
+                  onTap: () => _navigateToUserProfile(context, post['userId']),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'User ${post['userId']?.substring(0, 8) ?? 'Unknown'}',
+                        style: const TextStyle(
+                          color: AppTheme.pureWhite,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      _formatTime(post['createdAt']),
-                      style: const TextStyle(
-                        color: AppTheme.greyText,
-                        fontSize: 12,
+                      Text(
+                        _formatTime(post['createdAt']),
+                        style: const TextStyle(
+                          color: AppTheme.greyText,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -475,17 +525,26 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
     try {
       final apiService = getService<ApiService>();
+      final gamificationService = getService<GamificationService>();
+
       await apiService.createComment(
         postId: widget.postId,
         content: _controller.text.trim(),
       );
+
+      // Award gamification points
+      try {
+        await gamificationService.awardPoints(GameAction.commentOnPost);
+      } catch (gamificationError) {
+        // Continue even if gamification fails
+      }
 
       if (mounted) {
         Navigator.pop(context);
         widget.onCommentAdded();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Comment added successfully!'),
+            content: Text('Comment added! +5 XP earned'),
             backgroundColor: Colors.green,
           ),
         );

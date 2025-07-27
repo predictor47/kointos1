@@ -1204,4 +1204,49 @@ class ApiService {
       return false;
     }
   }
+
+  // Get user's articles
+  Future<List<Map<String, dynamic>>> getUserArticles(String userId) async {
+    try {
+      const query = '''
+        query GetUserArticles(\$userId: ID!) {
+          getUserArticles(userId: \$userId) {
+            items {
+              id
+              title
+              summary
+              coverImageUrl
+              likesCount
+              commentsCount
+              viewsCount
+              createdAt
+              updatedAt
+              status
+            }
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: query,
+        variables: {'userId': userId},
+      );
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.data != null) {
+        final data = json.decode(response.data!);
+        final articles = data['getUserArticles']?['items'] as List?;
+
+        if (articles != null) {
+          return articles.cast<Map<String, dynamic>>();
+        }
+      }
+
+      return [];
+    } catch (e) {
+      LoggerService.error('Error getting user articles: $e');
+      return [];
+    }
+  }
 }

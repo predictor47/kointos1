@@ -319,14 +319,16 @@ class _AdaptiveMainScreenState extends State<AdaptiveMainScreen>
   // Mobile layout with bottom navigation
   Widget _buildMobileLayout() {
     return Scaffold(
-      body: Stack(
-        children: [
-          IndexedStack(
-            index: _selectedIndex,
-            children: _screens,
-          ),
-          const EnhancedCryptoBotWidget(),
-        ],
+      body: SafeArea(
+        child: Stack(
+          children: [
+            IndexedStack(
+              index: _selectedIndex,
+              children: _screens,
+            ),
+            const EnhancedCryptoBotWidget(),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         height: ResponsiveUtils.isWeb ? 70 : 80,
