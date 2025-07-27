@@ -118,8 +118,7 @@ class NotificationService {
         final targetPrice = (alert['targetPrice'] as num).toDouble();
 
         // Get current price
-        final cryptos =
-            await _cryptoRepository.getTopCryptocurrencies(limit: 100);
+        final cryptos = await _cryptoRepository.getTopCryptocurrencies();
         final crypto = cryptos.firstWhere(
           (c) => c.symbol.toUpperCase() == cryptoSymbol.toUpperCase(),
           orElse: () => throw Exception('Crypto not found'),
@@ -273,8 +272,7 @@ class NotificationService {
   /// Generate alert message
   String _generateAlertMessage(String cryptoSymbol, String alertType,
       double targetPrice, double currentPrice) {
-    final direction = alertType == 'ABOVE' ? 'above' : 'below';
-    return '\$cryptoSymbol has reached \$\${currentPrice.toStringAsFixed(2)}, which is \$direction your alert price of \$\${targetPrice.toStringAsFixed(2)}!';
+    return '\$cryptoSymbol has reached \$\${currentPrice.toStringAsFixed(2)}, which is ${alertType == 'ABOVE' ? 'above' : 'below'} your alert price of \$\${targetPrice.toStringAsFixed(2)}!';
   }
 
   /// Get sample price alerts for demo

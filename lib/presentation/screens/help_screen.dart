@@ -211,7 +211,7 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               faq['answer'] ?? '',
-              style: const TextStyle(color: Colors.grey[300], height: 1.5),
+              style: TextStyle(color: Colors.grey[300], height: 1.5),
             ),
           ),
         ],
@@ -393,9 +393,9 @@ class _CreateSupportTicketDialogState extends State<CreateSupportTicketDialog> {
                 style: const TextStyle(color: Colors.white),
                 items: widget.supportService
                     .getSupportCategories()
-                    .map((category) {
-                  return DropdownMenuItem(
-                    value: category['value'],
+                    .map<DropdownMenuItem<String>>((category) {
+                  return DropdownMenuItem<String>(
+                    value: category['value'] as String,
                     child: Text('${category['icon']} ${category['label']}'),
                   );
                 }).toList(),
@@ -414,11 +414,12 @@ class _CreateSupportTicketDialogState extends State<CreateSupportTicketDialog> {
                 ),
                 dropdownColor: Colors.grey[800],
                 style: const TextStyle(color: Colors.white),
-                items:
-                    widget.supportService.getPriorityLevels().map((priority) {
-                  return DropdownMenuItem(
-                    value: priority['value'],
-                    child: Text(priority['label']),
+                items: widget.supportService
+                    .getPriorityLevels()
+                    .map<DropdownMenuItem<String>>((priority) {
+                  return DropdownMenuItem<String>(
+                    value: priority['value'] as String,
+                    child: Text(priority['label'] as String),
                   );
                 }).toList(),
                 onChanged: (value) =>
@@ -491,23 +492,27 @@ class _CreateSupportTicketDialogState extends State<CreateSupportTicketDialog> {
       );
 
       if (ticketId != null) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Support ticket created successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Support ticket created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else {
         throw Exception('Failed to create ticket');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to create support ticket. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to create support ticket. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       setState(() => _isSubmitting = false);
     }
@@ -626,7 +631,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
             const SizedBox(height: 8),
             Text(
               ticket['description'] ?? '',
-              style: const TextStyle(color: Colors.grey[300]),
+              style: TextStyle(color: Colors.grey[300]),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

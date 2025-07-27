@@ -329,7 +329,7 @@ class SupportTicketService {
         'id': 'ticket_003',
         'subject': 'Cannot update profile picture',
         'description':
-            'When I try to upload a new profile picture, it says \"upload failed\" but doesn\'t give more details.',
+            'When I try to upload a new profile picture, it says "upload failed" but doesn\'t give more details.',
         'category': 'ACCOUNT',
         'priority': 'MEDIUM',
         'status': 'RESOLVED',

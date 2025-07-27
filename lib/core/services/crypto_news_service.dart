@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:kointos/core/services/logger_service.dart';
 import 'package:kointos/core/services/local_storage_service.dart';
 
@@ -118,7 +117,7 @@ class CryptoNewsService {
   /// Get cached news
   Future<List<Map<String, dynamic>>> _getCachedNews() async {
     try {
-      final cacheData = await _storageService.getString(_cacheKey);
+      final cacheData = await _storageService.get(_cacheKey);
       if (cacheData == null) return [];
 
       final cache = json.decode(cacheData);
@@ -145,7 +144,7 @@ class CryptoNewsService {
         'articles': articles,
       };
 
-      await _storageService.setString(_cacheKey, json.encode(cacheData));
+      await _storageService.set(_cacheKey, json.encode(cacheData));
     } catch (e) {
       LoggerService.error('Error caching news', e);
     }

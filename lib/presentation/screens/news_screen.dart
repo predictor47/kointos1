@@ -233,10 +233,10 @@ class _NewsScreenState extends State<NewsScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: sentimentColor.withOpacity(0.2),
+                      color: sentimentColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: sentimentColor.withOpacity(0.5)),
+                      border: Border.all(
+                          color: sentimentColor.withValues(alpha: 0.5)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -282,7 +282,7 @@ class _NewsScreenState extends State<NewsScreen> {
               if (article['summary'] != null) ...[
                 Text(
                   article['summary'],
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.grey[300],
                     fontSize: 14,
                     height: 1.4,
@@ -305,7 +305,7 @@ class _NewsScreenState extends State<NewsScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.amber.withOpacity(0.2),
+                              color: Colors.amber.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -411,10 +411,10 @@ class ArticleDetailsDialog extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: sentimentColor.withOpacity(0.2),
+                      color: sentimentColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: sentimentColor.withOpacity(0.5)),
+                      border: Border.all(
+                          color: sentimentColor.withValues(alpha: 0.5)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -489,7 +489,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                     // Content
                     Text(
                       article['content'] ?? '',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.grey[300],
                         fontSize: 16,
                         height: 1.6,
@@ -518,7 +518,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: Colors.amber.withOpacity(0.2),
+                                    color: Colors.amber.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Text(
@@ -555,7 +555,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.2),
+                                    color: Colors.blue.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Text(

@@ -43,9 +43,6 @@ class FAQService {
         return _getFallbackFAQs();
       }
 
-      // Parse and group by category
-      final Map<String, List<Map<String, dynamic>>> categorizedFAQs = {};
-
       // In a real scenario, you'd parse the JSON response
       // For now, let's provide comprehensive FAQ content
       return _getComprehensiveFAQs();

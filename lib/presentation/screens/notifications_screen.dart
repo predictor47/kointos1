@@ -184,7 +184,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Color(int.parse(typeInfo['color'])).withOpacity(0.2),
+                  color: Color(int.parse(typeInfo['color']))
+                      .withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
@@ -350,7 +351,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.2),
+                color: Colors.amber.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Center(
@@ -478,12 +479,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     final success = await _notificationService.deletePriceAlert(alertId);
     if (success) {
       _loadData();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Price alert deleted'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Price alert deleted'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     }
   }
 
@@ -491,12 +494,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     final success = await _notificationService.clearAllNotifications();
     if (success) {
       _loadData();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All notifications cleared'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('All notifications cleared'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     }
   }
 
@@ -504,19 +509,23 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     final triggeredAlerts = await _notificationService.checkPriceAlerts();
     if (triggeredAlerts.isNotEmpty) {
       _loadData();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${triggeredAlerts.length} alerts triggered!'),
-          backgroundColor: Colors.amber,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${triggeredAlerts.length} alerts triggered!'),
+            backgroundColor: Colors.amber,
+          ),
+        );
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No alerts triggered'),
-          backgroundColor: Colors.grey,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No alerts triggered'),
+            backgroundColor: Colors.grey,
+          ),
+        );
+      }
     }
   }
 
@@ -708,24 +717,28 @@ class _CreatePriceAlertDialogState extends State<CreatePriceAlertDialog> {
       );
 
       if (success) {
-        Navigator.pop(context);
-        widget.onAlertCreated();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Price alert created successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (mounted) {
+          Navigator.pop(context);
+          widget.onAlertCreated();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Price alert created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else {
         throw Exception('Failed to create alert');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to create price alert. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to create price alert. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       setState(() => _isCreating = false);
     }
