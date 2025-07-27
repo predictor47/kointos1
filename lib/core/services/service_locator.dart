@@ -3,12 +3,16 @@ import 'package:kointos/core/constants/app_constants.dart';
 import 'package:kointos/core/services/amplify_storage_service.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/auth_service.dart';
+import 'package:kointos/core/services/crypto_news_service.dart';
 import 'package:kointos/core/services/crypto_sentiment_service.dart';
+import 'package:kointos/core/services/faq_service.dart';
 import 'package:kointos/core/services/gamification_service.dart';
 import 'package:kointos/core/services/kointos_ai_chatbot_service.dart';
 import 'package:kointos/core/services/llm_service.dart';
 import 'package:kointos/core/services/local_storage_service.dart';
+import 'package:kointos/core/services/notification_service.dart';
 import 'package:kointos/core/services/storage_interface.dart';
+import 'package:kointos/core/services/support_ticket_service.dart';
 import 'package:kointos/data/datasources/coingecko_service.dart';
 import 'package:kointos/data/repositories/article_repository.dart';
 import 'package:kointos/data/repositories/cryptocurrency_repository.dart';
@@ -54,6 +58,23 @@ Future<void> setupServiceLocator() async {
 
   serviceLocator.registerLazySingleton<KointosAIChatbotService>(
     () => KointosAIChatbotService(),
+  );
+
+  // Support Services
+  serviceLocator.registerLazySingleton<FAQService>(
+    () => FAQService(),
+  );
+
+  serviceLocator.registerLazySingleton<SupportTicketService>(
+    () => SupportTicketService(),
+  );
+
+  serviceLocator.registerLazySingleton<CryptoNewsService>(
+    () => CryptoNewsService(serviceLocator<LocalStorageService>()),
+  );
+
+  serviceLocator.registerLazySingleton<NotificationService>(
+    () => NotificationService(serviceLocator<CryptocurrencyRepository>()),
   );
 
   // Data Sources

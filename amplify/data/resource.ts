@@ -65,13 +65,13 @@ const schema = a.schema({
     })
     .authorization(allow => [allow.owner()]),
 
-  // Portfolio Holdings
+  // Portfolio Holdings (Tracking only - no actual trading)
   PortfolioHolding: a
     .model({
       portfolioId: a.id().required(),
       cryptoSymbol: a.string().required(),
       amount: a.float().required(),
-      averageBuyPrice: a.float(),
+      averagePrice: a.float(), // Price for tracking purposes only
       currentValue: a.float(),
       profitLoss: a.float(),
       profitLossPercentage: a.float(),
@@ -79,16 +79,15 @@ const schema = a.schema({
     })
     .authorization(allow => [allow.owner()]),
 
-  // Transactions
+  // Transactions (Portfolio tracking only - no actual trading)
   Transaction: a
     .model({
       portfolioId: a.id().required(),
       cryptoSymbol: a.string().required(),
-      type: a.enum(['BUY', 'SELL', 'TRANSFER_IN', 'TRANSFER_OUT']),
+      type: a.enum(['MANUAL_ADD', 'MANUAL_REMOVE', 'TRANSFER_IN', 'TRANSFER_OUT']),
       amount: a.float().required(),
       price: a.float().required(),
       totalValue: a.float().required(),
-      fees: a.float().default(0),
       notes: a.string(),
       transactionDate: a.datetime().required(),
       createdAt: a.datetime(),
@@ -143,24 +142,6 @@ const schema = a.schema({
     })
     .authorization(allow => [allow.owner()]),
 
-  // Trading Signals
-  TradingSignal: a
-    .model({
-      userId: a.id().required(),
-      cryptoSymbol: a.string().required(),
-      signalType: a.enum(['BUY', 'SELL', 'HOLD']),
-      targetPrice: a.float(),
-      stopLoss: a.float(),
-      confidence: a.integer(), // 1-100
-      reasoning: a.string(),
-      expiresAt: a.datetime(),
-      isActive: a.boolean().default(true),
-      performanceRating: a.float(),
-      createdAt: a.datetime(),
-      updatedAt: a.datetime(),
-    })
-    .authorization(allow => [allow.owner(), allow.authenticated().to(['read'])]),
-
   // Watchlist
   Watchlist: a
     .model({
@@ -208,25 +189,6 @@ const schema = a.schema({
       updatedAt: a.datetime(),
     })
     .authorization(allow => [allow.owner(), allow.authenticated().to(['read'])]),
-
-  // Payment Methods
-  PaymentMethod: a
-    .model({
-      userId: a.id().required(),
-      type: a.enum(['BANK_ACCOUNT', 'CREDIT_CARD', 'DEBIT_CARD', 'CRYPTO_WALLET']),
-      name: a.string().required(),
-      last4: a.string(), // Last 4 digits for cards
-      expiryMonth: a.integer(),
-      expiryYear: a.integer(),
-      bankName: a.string(),
-      accountType: a.string(),
-      walletAddress: a.string(),
-      isDefault: a.boolean().default(false),
-      isActive: a.boolean().default(true),
-      createdAt: a.datetime(),
-      updatedAt: a.datetime(),
-    })
-    .authorization(allow => [allow.owner()]),
 
   // Support Tickets
   SupportTicket: a

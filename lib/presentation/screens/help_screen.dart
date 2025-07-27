@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kointos/core/services/api_service.dart';
-import 'package:kointos/core/services/auth_service.dart';
+import 'package:kointos/core/services/faq_service.dart';
+import 'package:kointos/core/services/service_locator.dart';
+import 'package:kointos/core/services/support_ticket_service.dart';
 
 class HelpScreen extends StatefulWidget {
   const HelpScreen({super.key});
@@ -10,29 +11,21 @@ class HelpScreen extends StatefulWidget {
 }
 
 class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
-  late final AuthService _authService;
-  late final ApiService _apiService;
+  late final FAQService _faqService;
+  late final SupportTicketService _supportService;
   late final TabController _tabController;
 
-  List<Map<String, dynamic>> _faqs = [];
+  Map<String, List<Map<String, dynamic>>> _faqsByCategory = {};
   bool _isLoading = true;
   String? _selectedCategory;
-
-  final List<String> _categories = [
-    'Getting Started',
-    'Account',
-    'Trading',
-    'Security',
-    'Technical',
-    'Other'
-  ];
+  List<String> _categories = [];
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _authService = AuthService();
-    _apiService = ApiService(
-        baseUrl: 'https://api.example.com', authService: _authService);
+    _faqService = getService<FAQService>();
+    _supportService = getService<SupportTicketService>();
     _tabController = TabController(length: 2, vsync: this);
     _loadFAQs();
   }
@@ -45,82 +38,63 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
 
   Future<void> _loadFAQs() async {
     try {
-      final faqs = await _apiService.getFAQs();
+      final faqsByCategory = await _faqService.getFAQsByCategory();
       setState(() {
-        _faqs = faqs;
+        _faqsByCategory = faqsByCategory;
+        _categories = faqsByCategory.keys.toList();
+        _selectedCategory = _categories.isNotEmpty ? _categories.first : null;
         _isLoading = false;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
-      // Generate some sample FAQs for demo
-      _faqs = _generateSampleFAQs();
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-  List<Map<String, dynamic>> _generateSampleFAQs() {
-    return [
-      {
-        'id': '1',
-        'question': 'How do I create an account?',
-        'answer':
-            'To create an account, tap the "Sign Up" button on the login screen and follow the instructions. You\'ll need to provide your email and create a secure password.',
-        'category': 'Getting Started',
-      },
-      {
-        'id': '2',
-        'question': 'How do I add cryptocurrencies to my portfolio?',
-        'answer':
-            'Go to the Portfolio tab and tap the "+" button. Search for the cryptocurrency you want to add, enter the amount you own, and save.',
-        'category': 'Trading',
-      },
-      {
-        'id': '3',
-        'question': 'Is my data secure?',
-        'answer':
-            'Yes, we use industry-standard encryption and security measures to protect your data. We never store your private keys or sensitive financial information.',
-        'category': 'Security',
-      },
-      {
-        'id': '4',
-        'question': 'How do I enable two-factor authentication?',
-        'answer':
-            'Go to Settings > Security > Two-Factor Authentication and follow the setup instructions using your preferred authenticator app.',
-        'category': 'Security',
-      },
-      {
-        'id': '5',
-        'question': 'How do I contact support?',
-        'answer':
-            'You can contact support through the Contact Support option in the Settings menu, or email us directly at support@kointos.com.',
-        'category': 'Other',
-      },
-      {
-        'id': '6',
-        'question': 'Can I export my transaction history?',
-        'answer':
-            'Yes, you can export your transaction history from the Transaction History screen by tapping the export button.',
-        'category': 'Account',
-      },
-    ];
-  }
+  List<Map<String, dynamic>> _getFilteredFAQs() {
+    List<Map<String, dynamic>> allFAQs = [];
 
-  List<Map<String, dynamic>> get _filteredFAQs {
-    if (_selectedCategory == null) return _faqs;
-    return _faqs.where((faq) => faq['category'] == _selectedCategory).toList();
+    if (_selectedCategory != null) {
+      allFAQs = _faqsByCategory[_selectedCategory!] ?? [];
+    } else {
+      // Show all FAQs
+      _faqsByCategory.forEach((category, faqs) {
+        for (final faq in faqs) {
+          allFAQs.add({...faq, 'category': category});
+        }
+      });
+    }
+
+    if (_searchQuery.isNotEmpty) {
+      final query = _searchQuery.toLowerCase();
+      allFAQs = allFAQs.where((faq) {
+        final question = faq['question']?.toString().toLowerCase() ?? '';
+        final answer = faq['answer']?.toString().toLowerCase() ?? '';
+        return question.contains(query) || answer.contains(query);
+      }).toList();
+    }
+
+    return allFAQs;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Help & Support'),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
+        title:
+            const Text('Help & Support', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
         bottom: TabBar(
           controller: _tabController,
+          indicatorColor: Colors.amber,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey,
           tabs: const [
             Tab(text: 'FAQ'),
-            Tab(text: 'Guides'),
+            Tab(text: 'Contact Support'),
           ],
         ),
       ),
@@ -128,21 +102,47 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
         controller: _tabController,
         children: [
           _buildFAQTab(),
-          _buildGuidesTab(),
+          _buildSupportTab(),
         ],
       ),
     );
   }
 
   Widget _buildFAQTab() {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.amber),
+      );
+    }
+
     return Column(
       children: [
-        // Category filter
+        // Search bar
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            onChanged: (value) => setState(() => _searchQuery = value),
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: 'Search FAQs...',
+              hintStyle: const TextStyle(color: Colors.grey),
+              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              filled: true,
+              fillColor: Colors.grey[900],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+
+        // Category chips
         SizedBox(
           height: 50,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: _categories.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
@@ -154,166 +154,64 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
             },
           ),
         ),
+
+        const SizedBox(height: 16),
+
         // FAQ list
         Expanded(
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _filteredFAQs.isEmpty
-                  ? _buildEmptyState()
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _filteredFAQs.length,
-                      itemBuilder: (context, index) {
-                        final faq = _filteredFAQs[index];
-                        return _buildFAQCard(faq);
-                      },
-                    ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGuidesTab() {
-    final guides = [
-      {
-        'title': 'Getting Started with Kointos',
-        'description':
-            'Learn the basics of using Kointos for crypto portfolio tracking',
-        'icon': Icons.rocket_launch,
-      },
-      {
-        'title': 'Portfolio Management',
-        'description':
-            'How to effectively track and manage your cryptocurrency investments',
-        'icon': Icons.pie_chart,
-      },
-      {
-        'title': 'Security Best Practices',
-        'description':
-            'Keep your account and data safe with these security tips',
-        'icon': Icons.security,
-      },
-      {
-        'title': 'Understanding Market Data',
-        'description':
-            'Learn how to read and interpret cryptocurrency market information',
-        'icon': Icons.trending_up,
-      },
-      {
-        'title': 'Social Features',
-        'description':
-            'Connect with other crypto enthusiasts and share insights',
-        'icon': Icons.people,
-      },
-    ];
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: guides.length,
-      itemBuilder: (context, index) {
-        final guide = guides[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor:
-                  Theme.of(context).primaryColor.withValues(alpha: 0.1),
-              child: Icon(guide['icon'] as IconData,
-                  color: Theme.of(context).primaryColor),
-            ),
-            title: Text(guide['title'] as String),
-            subtitle: Text(guide['description'] as String),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              _showHelpGuide(guide);
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _getFilteredFAQs().length,
+            itemBuilder: (context, index) {
+              final faq = _getFilteredFAQs()[index];
+              return _buildFAQItem(faq);
             },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 
   Widget _buildCategoryChip(String category, bool isSelected) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
+      child: ChoiceChip(
         label: Text(category),
         selected: isSelected,
         onSelected: (selected) {
           setState(() {
-            _selectedCategory =
-                selected ? (category == 'All' ? null : category) : null;
+            _selectedCategory = selected ? category : null;
+            if (category == 'All') _selectedCategory = null;
           });
         },
-        selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
-        checkmarkColor: Theme.of(context).primaryColor,
+        selectedColor: Colors.amber,
+        backgroundColor: Colors.grey[800],
+        labelStyle: TextStyle(
+          color: isSelected ? Colors.black : Colors.white,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.help_outline,
-            size: 64,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No FAQs Found',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            _selectedCategory != null
-                ? 'No FAQs found for the selected category'
-                : 'Check back later for helpful information',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[500],
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFAQCard(Map<String, dynamic> faq) {
+  Widget _buildFAQItem(Map<String, dynamic> faq) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      color: Colors.grey[900],
+      margin: const EdgeInsets.only(bottom: 8),
       child: ExpansionTile(
         title: Text(
-          faq['question'] ?? 'Question',
-          style: const TextStyle(fontWeight: FontWeight.w500),
+          faq['question'] ?? '',
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
+        iconColor: Colors.amber,
+        collapsedIconColor: Colors.grey,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  faq['answer'] ?? 'Answer',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                if (faq['category'] != null) ...[
-                  const SizedBox(height: 12),
-                  Chip(
-                    label: Text(faq['category']),
-                    backgroundColor:
-                        Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                    labelStyle: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ],
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              faq['answer'] ?? '',
+              style: const TextStyle(color: Colors.grey[300], height: 1.5),
             ),
           ),
         ],
@@ -321,90 +219,449 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _showHelpGuide(Map<String, dynamic> guide) {
+  Widget _buildSupportTab() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Need more help?',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Can\'t find what you\'re looking for? Contact our support team.',
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+          ),
+          const SizedBox(height: 24),
+
+          // Support categories
+          const Text(
+            'What do you need help with?',
+            style: TextStyle(
+                color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
+
+          Expanded(
+            child: ListView.builder(
+              itemCount: _supportService.getSupportCategories().length,
+              itemBuilder: (context, index) {
+                final category = _supportService.getSupportCategories()[index];
+                return _buildSupportCategoryCard(category);
+              },
+            ),
+          ),
+
+          // Quick actions
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _showCreateTicketDialog(),
+                  icon: const Icon(Icons.support_agent),
+                  label: const Text('Create Ticket'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _showMyTickets(),
+                  icon: const Icon(Icons.history),
+                  label: const Text('My Tickets'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.grey),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupportCategoryCard(Map<String, dynamic> category) {
+    return Card(
+      color: Colors.grey[900],
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: Text(
+          category['icon'] ?? '💬',
+          style: const TextStyle(fontSize: 24),
+        ),
+        title: Text(
+          category['label'] ?? '',
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          category['description'] ?? '',
+          style: const TextStyle(color: Colors.grey),
+        ),
+        trailing:
+            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+        onTap: () =>
+            _showCreateTicketDialog(selectedCategory: category['value']),
+      ),
+    );
+  }
+
+  void _showCreateTicketDialog({String? selectedCategory}) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(
-              guide['icon'] as IconData,
-              color: Theme.of(context).primaryColor,
-            ),
-            const SizedBox(width: 8),
-            Expanded(child: Text(guide['title'] as String)),
-          ],
-        ),
-        content: SingleChildScrollView(
+      builder: (context) => CreateSupportTicketDialog(
+        initialCategory: selectedCategory,
+        supportService: _supportService,
+      ),
+    );
+  }
+
+  void _showMyTickets() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyTicketsScreen(supportService: _supportService),
+      ),
+    );
+  }
+}
+
+class CreateSupportTicketDialog extends StatefulWidget {
+  final String? initialCategory;
+  final SupportTicketService supportService;
+
+  const CreateSupportTicketDialog({
+    super.key,
+    this.initialCategory,
+    required this.supportService,
+  });
+
+  @override
+  State<CreateSupportTicketDialog> createState() =>
+      _CreateSupportTicketDialogState();
+}
+
+class _CreateSupportTicketDialogState extends State<CreateSupportTicketDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _subjectController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  String? _selectedCategory;
+  String _selectedPriority = 'MEDIUM';
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategory = widget.initialCategory;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.grey[900],
+      title: const Text('Create Support Ticket',
+          style: TextStyle(color: Colors.white)),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Form(
+          key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(guide['description'] as String),
-              const SizedBox(height: 16),
-              const Text(
-                'Detailed Help:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              // Category dropdown
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                decoration: const InputDecoration(
+                  labelText: 'Category',
+                  labelStyle: TextStyle(color: Colors.grey),
+                ),
+                dropdownColor: Colors.grey[800],
+                style: const TextStyle(color: Colors.white),
+                items: widget.supportService
+                    .getSupportCategories()
+                    .map((category) {
+                  return DropdownMenuItem(
+                    value: category['value'],
+                    child: Text('${category['icon']} ${category['label']}'),
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() => _selectedCategory = value),
+                validator: (value) =>
+                    value == null ? 'Please select a category' : null,
               ),
-              const SizedBox(height: 8),
-              Text(_getDetailedHelpContent(guide['title'] as String)),
+              const SizedBox(height: 16),
+
+              // Priority dropdown
+              DropdownButtonFormField<String>(
+                value: _selectedPriority,
+                decoration: const InputDecoration(
+                  labelText: 'Priority',
+                  labelStyle: TextStyle(color: Colors.grey),
+                ),
+                dropdownColor: Colors.grey[800],
+                style: const TextStyle(color: Colors.white),
+                items:
+                    widget.supportService.getPriorityLevels().map((priority) {
+                  return DropdownMenuItem(
+                    value: priority['value'],
+                    child: Text(priority['label']),
+                  );
+                }).toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedPriority = value!),
+              ),
+              const SizedBox(height: 16),
+
+              // Subject field
+              TextFormField(
+                controller: _subjectController,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Subject',
+                  labelStyle: TextStyle(color: Colors.grey),
+                ),
+                validator: (value) =>
+                    value?.isEmpty == true ? 'Please enter a subject' : null,
+              ),
+              const SizedBox(height: 16),
+
+              // Description field
+              TextFormField(
+                controller: _descriptionController,
+                style: const TextStyle(color: Colors.white),
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  alignLabelWithHint: true,
+                ),
+                validator: (value) => value?.isEmpty == true
+                    ? 'Please enter a description'
+                    : null,
+              ),
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+        ),
+        ElevatedButton(
+          onPressed: _isSubmitting ? null : _submitTicket,
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+          child: _isSubmitting
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Submit', style: TextStyle(color: Colors.black)),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _submitTicket() async {
+    if (!_formKey.currentState!.validate() || _selectedCategory == null) return;
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final ticketId = await widget.supportService.createSupportTicket(
+        subject: _subjectController.text,
+        description: _descriptionController.text,
+        category: _selectedCategory!,
+        priority: _selectedPriority,
+      );
+
+      if (ticketId != null) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Support ticket created successfully!'),
+            backgroundColor: Colors.green,
           ),
-        ],
+        );
+      } else {
+        throw Exception('Failed to create ticket');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to create support ticket. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() => _isSubmitting = false);
+    }
+  }
+}
+
+class MyTicketsScreen extends StatefulWidget {
+  final SupportTicketService supportService;
+
+  const MyTicketsScreen({super.key, required this.supportService});
+
+  @override
+  State<MyTicketsScreen> createState() => _MyTicketsScreenState();
+}
+
+class _MyTicketsScreenState extends State<MyTicketsScreen> {
+  List<Map<String, dynamic>> _tickets = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTickets();
+  }
+
+  Future<void> _loadTickets() async {
+    try {
+      final tickets = await widget.supportService.getUserSupportTickets();
+      setState(() {
+        _tickets = tickets;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text('My Support Tickets',
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.amber))
+          : _tickets.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No support tickets found',
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _tickets.length,
+                  itemBuilder: (context, index) {
+                    final ticket = _tickets[index];
+                    return _buildTicketCard(ticket);
+                  },
+                ),
+    );
+  }
+
+  Widget _buildTicketCard(Map<String, dynamic> ticket) {
+    final statusInfo = widget.supportService.getStatusInfo();
+    final status = ticket['status'] as String;
+    final currentStatus = statusInfo[status] ?? statusInfo['OPEN']!;
+
+    return Card(
+      color: Colors.grey[900],
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  currentStatus['icon'],
+                  style: const TextStyle(fontSize: 20),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    ticket['subject'] ?? '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Color(int.parse(currentStatus['color'])),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    currentStatus['label'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              ticket['description'] ?? '',
+              style: const TextStyle(color: Colors.grey[300]),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Text(
+                  'Category: ${ticket['category']}',
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  'Priority: ${ticket['priority']}',
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Created: ${_formatDate(ticket['createdAt'])}',
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  String _getDetailedHelpContent(String title) {
-    switch (title) {
-      case 'Getting Started':
-        return '''
-1. Create your account or log in
-2. Set up your profile with your preferences
-3. Explore the market to discover cryptocurrencies
-4. Start building your portfolio
-5. Join the community discussions
-''';
-      case 'Trading Basics':
-        return '''
-• Market Orders: Buy/sell immediately at current price
-• Limit Orders: Set your desired price and wait
-• Stop Loss: Protect your investments from large losses
-• Portfolio Diversification: Don't put all eggs in one basket
-• Research before investing: Use our analysis tools
-''';
-      case 'Portfolio Management':
-        return '''
-• Track your holdings in real-time
-• Set price alerts for your cryptocurrencies
-• Review performance metrics regularly
-• Rebalance your portfolio periodically
-• Use our tools to analyze your investment strategy
-''';
-      case 'Security Best Practices':
-        return '''
-• Enable two-factor authentication
-• Use a strong, unique password
-• Never share your login credentials
-• Be aware of phishing attempts
-• Keep your app updated to the latest version
-''';
-      case 'Understanding Fees':
-        return '''
-• Trading fees: Small percentage on each transaction
-• Network fees: Required for blockchain transactions
-• No hidden fees: All costs are transparent
-• Fee discounts available for high-volume traders
-• Premium features may have additional costs
-''';
-      default:
-        return 'Comprehensive help content for $title is available. Please check our documentation or contact support for more details.';
+  String _formatDate(String? dateString) {
+    if (dateString == null) return 'Unknown';
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.day}/${date.month}/${date.year}';
+    } catch (e) {
+      return 'Unknown';
     }
   }
 }

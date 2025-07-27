@@ -10,6 +10,8 @@ import 'package:kointos/presentation/screens/real_leaderboard_screen.dart';
 import 'package:kointos/presentation/screens/real_portfolio_screen.dart';
 import 'package:kointos/presentation/screens/real_market_screen.dart';
 import 'package:kointos/presentation/screens/kointos_bot_screen.dart';
+import 'package:kointos/presentation/screens/news_screen.dart';
+import 'package:kointos/presentation/screens/notifications_screen.dart';
 
 class AdaptiveMainScreen extends StatefulWidget {
   const AdaptiveMainScreen({super.key});
@@ -26,10 +28,12 @@ class _AdaptiveMainScreenState extends State<AdaptiveMainScreen>
   final List<Widget> _screens = [
     const RealSocialFeedScreen(),
     const RealArticlesScreen(),
+    const NewsScreen(),
     const RealPortfolioScreen(),
     const RealMarketScreen(),
     const RealLeaderboardScreen(),
     const KointosBotScreen(),
+    const NotificationsScreen(),
     const ProfileScreen(),
   ];
 
@@ -43,6 +47,11 @@ class _AdaptiveMainScreenState extends State<AdaptiveMainScreen>
       icon: Icons.article_outlined,
       label: 'Articles',
       activeIcon: Icons.article,
+    ),
+    NavigationItem(
+      icon: Icons.newspaper_outlined,
+      label: 'News',
+      activeIcon: Icons.newspaper,
     ),
     NavigationItem(
       icon: Icons.account_balance_wallet_outlined,
@@ -63,6 +72,11 @@ class _AdaptiveMainScreenState extends State<AdaptiveMainScreen>
       icon: Icons.smart_toy_outlined,
       label: 'AI Assistant',
       activeIcon: Icons.smart_toy,
+    ),
+    NavigationItem(
+      icon: Icons.notifications_outlined,
+      label: 'Notifications',
+      activeIcon: Icons.notifications,
     ),
     NavigationItem(
       icon: Icons.person_outline,
