@@ -21,7 +21,7 @@ class MarketHeader extends StatelessWidget {
         color: AppTheme.primaryBlack,
         border: Border(
           bottom: BorderSide(
-            color: AppTheme.pureWhite.withOpacity(0.25),
+            color: AppTheme.pureWhite.withValues(alpha: 0.25),
           ),
         ),
       ),
@@ -145,7 +145,7 @@ class MarketHeader extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isSelected
               ? AppTheme.pureWhite
-              : AppTheme.pureWhite.withOpacity(0.25),
+              : AppTheme.pureWhite.withValues(alpha: 0.25),
           foregroundColor: isSelected ? Colors.white : AppTheme.pureWhite,
           elevation: 0,
           shape: RoundedRectangleBorder(

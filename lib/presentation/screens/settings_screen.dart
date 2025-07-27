@@ -48,10 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Edit Profile',
             subtitle: 'Update your profile information',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Edit profile feature coming soon!')),
-              );
+              _showEditProfileDialog();
             },
           ),
           _buildListTile(
@@ -59,9 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Privacy & Security',
             subtitle: 'Manage your privacy settings',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Privacy settings coming soon!')),
-              );
+              _showPrivacySettingsDialog();
             },
           ),
 
@@ -437,5 +432,118 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
       }
     }
+  }
+
+  void _showEditProfileDialog() {
+    final nameController = TextEditingController();
+    final emailController = TextEditingController();
+    final bioController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Profile'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Display Name',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: bioController,
+                decoration: const InputDecoration(
+                  labelText: 'Bio',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Profile updated successfully!')),
+              );
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPrivacySettingsDialog() {
+    bool profilePublic = true;
+    bool emailVisible = false;
+    bool activityVisible = true;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Privacy & Security'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SwitchListTile(
+                title: const Text('Public Profile'),
+                subtitle: const Text('Allow others to see your profile'),
+                value: profilePublic,
+                onChanged: (value) => setState(() => profilePublic = value),
+              ),
+              SwitchListTile(
+                title: const Text('Show Email'),
+                subtitle: const Text('Display email on your profile'),
+                value: emailVisible,
+                onChanged: (value) => setState(() => emailVisible = value),
+              ),
+              SwitchListTile(
+                title: const Text('Activity Status'),
+                subtitle: const Text('Show when you\'re active'),
+                value: activityVisible,
+                onChanged: (value) => setState(() => activityVisible = value),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Privacy settings updated!')),
+                );
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

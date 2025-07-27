@@ -6,14 +6,15 @@ import 'package:kointos/core/services/service_locator.dart';
 
 class InteractiveTutorialScreen extends StatefulWidget {
   final VoidCallback onComplete;
-  
+
   const InteractiveTutorialScreen({
     super.key,
     required this.onComplete,
   });
 
   @override
-  State<InteractiveTutorialScreen> createState() => _InteractiveTutorialScreenState();
+  State<InteractiveTutorialScreen> createState() =>
+      _InteractiveTutorialScreenState();
 }
 
 class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
@@ -21,7 +22,7 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
   late PageController _pageController;
   late AnimationController _animationController;
   int _currentPage = 0;
-  
+
   final List<TutorialStep> _steps = [
     TutorialStep(
       title: "Welcome to Kointos",
@@ -122,7 +123,7 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.primaryBlack,
       body: Stack(
         children: [
           // Background gradient
@@ -132,13 +133,13 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppTheme.backgroundColor,
-                  AppTheme.backgroundColor.withOpacity(0.8),
+                  AppTheme.primaryBlack,
+                  AppTheme.primaryBlack.withValues(alpha: 0.8),
                 ],
               ),
             ),
           ),
-          
+
           // Main content
           PageView.builder(
             controller: _pageController,
@@ -154,7 +155,7 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
               return _buildTutorialPage(_steps[index]);
             },
           ),
-          
+
           // Skip button
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
@@ -164,12 +165,12 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
               child: Text(
                 'Skip',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white70,
-                ),
+                      color: Colors.white70,
+                    ),
               ),
             ),
           ),
-          
+
           // Bottom navigation
           Positioned(
             bottom: MediaQuery.of(context).padding.bottom + 32,
@@ -193,7 +194,7 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: step.color.withOpacity(0.2),
+              color: step.color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(60),
             ),
             child: Icon(
@@ -201,39 +202,42 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
               size: 60,
               color: step.color,
             ),
-          ).animate(controller: _animationController)
+          )
+              .animate(controller: _animationController)
               .scale(duration: 600.ms, curve: Curves.elasticOut)
               .fadeIn(duration: 400.ms),
-          
+
           const SizedBox(height: AppTheme.largeSpacing),
-          
+
           // Title
           Text(
             step.title,
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
-          ).animate(controller: _animationController)
+          )
+              .animate(controller: _animationController)
               .slideY(begin: 0.3, duration: 600.ms, curve: Curves.easeOut)
               .fadeIn(duration: 600.ms, delay: 200.ms),
-          
+
           const SizedBox(height: AppTheme.spacing),
-          
+
           // Description
           Text(
             step.description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.white70,
-            ),
+                  color: Colors.white70,
+                ),
             textAlign: TextAlign.center,
-          ).animate(controller: _animationController)
+          )
+              .animate(controller: _animationController)
               .slideY(begin: 0.3, duration: 600.ms, curve: Curves.easeOut)
               .fadeIn(duration: 600.ms, delay: 400.ms),
-          
+
           const SizedBox(height: AppTheme.largeSpacing * 2),
-          
+
           // Interactive demo
           if (step.interactive)
             _buildInteractiveDemo(step)
@@ -459,7 +463,7 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.pureWhite,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Icon(Icons.person, color: Colors.white),
@@ -571,9 +575,10 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.pureWhite,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
@@ -618,7 +623,7 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
           )
         else
           const SizedBox(width: 100),
-        
+
         // Page indicator
         Row(
           children: List.generate(_steps.length, (index) {
@@ -627,26 +632,24 @@ class _InteractiveTutorialScreenState extends State<InteractiveTutorialScreen>
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: index == _currentPage
-                    ? AppTheme.primaryColor
-                    : Colors.white30,
+                color:
+                    index == _currentPage ? AppTheme.pureWhite : Colors.white30,
                 borderRadius: BorderRadius.circular(4),
               ),
             );
           }),
         ),
-        
+
         // Next/Complete button
         ElevatedButton.icon(
           onPressed: _nextPage,
-          icon: Icon(_currentPage == _steps.length - 1 
-              ? Icons.check 
+          icon: Icon(_currentPage == _steps.length - 1
+              ? Icons.check
               : Icons.arrow_forward),
-          label: Text(_currentPage == _steps.length - 1 
-              ? 'Get Started' 
-              : 'Next'),
+          label:
+              Text(_currentPage == _steps.length - 1 ? 'Get Started' : 'Next'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
+            backgroundColor: AppTheme.pureWhite,
             foregroundColor: Colors.white,
           ),
         ),

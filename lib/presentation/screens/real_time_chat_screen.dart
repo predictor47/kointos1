@@ -3,6 +3,7 @@ import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/services/auth_service.dart';
+import 'package:kointos/core/services/logger_service.dart';
 import 'dart:async';
 
 // Define required classes
@@ -21,7 +22,7 @@ class ChatMessage {
   const ChatMessage({
     required this.id,
     required this.senderId,
-    required this.senderName,  
+    required this.senderName,
     required this.content,
     required this.timestamp,
     required this.isCurrentUser,
@@ -35,7 +36,7 @@ class RealTimeChatScreen extends StatefulWidget {
   final String chatName;
   final String? recipientId;
   final String? recipientName;
-  
+
   const RealTimeChatScreen({
     super.key,
     required this.chatId,
@@ -67,7 +68,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     )..repeat();
-    
+
     _initializeChat();
     _startMessagePolling();
   }
@@ -86,7 +87,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
       _currentUserId = await _authService.getCurrentUserId();
       await _loadChatHistory();
     } catch (e) {
-      debugPrint('Error initializing chat: $e');
+      LoggerService.error('Error initializing chat: $e');
     }
   }
 
@@ -101,7 +102,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
     try {
       // Simulate loading chat history
       setState(() {
-        _messages.clear();    
+        _messages.clear();
         _messages.addAll([
           ChatMessage(
             id: '1',
@@ -125,7 +126,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
       });
       _scrollToBottom();
     } catch (e) {
-      debugPrint('Error loading chat history: $e');
+      LoggerService.error('Error loading chat history: $e');
     }
   }
 
@@ -137,7 +138,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
         setState(() {
           _recipientTyping = true;
         });
-        
+
         Timer(const Duration(seconds: 3), () {
           if (mounted) {
             setState(() {
@@ -152,7 +153,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.primaryBlack,
       appBar: AppBar(
         backgroundColor: AppTheme.cardColor,
         elevation: 0,
@@ -171,7 +172,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
               const Text(
                 'typing...',
                 style: TextStyle(
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.pureWhite,
                   fontSize: 12,
                 ),
               ),
@@ -204,7 +205,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
         if (index == _messages.length && _recipientTyping) {
           return _buildTypingIndicator();
         }
-        
+
         final message = _messages[index];
         return _buildMessageBubble(message);
       },
@@ -213,9 +214,8 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
 
   Widget _buildMessageBubble(ChatMessage message) {
     return Align(
-      alignment: message.isCurrentUser 
-          ? Alignment.centerRight 
-          : Alignment.centerLeft,
+      alignment:
+          message.isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -223,15 +223,14 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: message.isCurrentUser 
-              ? AppTheme.primaryColor 
-              : AppTheme.cardColor,
+          color:
+              message.isCurrentUser ? AppTheme.pureWhite : AppTheme.cardColor,
           borderRadius: BorderRadius.circular(18).copyWith(
-            bottomRight: message.isCurrentUser 
-                ? const Radius.circular(4) 
+            bottomRight: message.isCurrentUser
+                ? const Radius.circular(4)
                 : const Radius.circular(18),
-            bottomLeft: message.isCurrentUser 
-                ? const Radius.circular(18) 
+            bottomLeft: message.isCurrentUser
+                ? const Radius.circular(18)
                 : const Radius.circular(4),
           ),
         ),
@@ -242,7 +241,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
               Text(
                 message.senderName,
                 style: const TextStyle(
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.pureWhite,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -259,16 +258,14 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
             Text(
               _formatTimestamp(message.timestamp),
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 11,
               ),
             ),
           ],
         ),
       ),
-    ).animate()
-        .fadeIn(duration: 300.ms)
-        .slideY(begin: 0.1, end: 0);
+    ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildTypingIndicator() {
@@ -295,10 +292,11 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
                     final animation = Tween(begin: 0.0, end: 1.0).animate(
                       CurvedAnimation(
                         parent: _typingAnimationController,
-                        curve: Interval(delay, delay + 0.3, curve: Curves.easeInOut),
+                        curve: Interval(delay, delay + 0.3,
+                            curve: Curves.easeInOut),
                       ),
                     );
-                    
+
                     return AnimatedBuilder(
                       animation: animation,
                       builder: (context, child) {
@@ -307,7 +305,8 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.5 + 0.5 * animation.value),
+                            color: Colors.white
+                                .withValues(alpha: 0.5 + 0.5 * animation.value),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         );
@@ -330,7 +329,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
         color: AppTheme.cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -346,7 +345,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppTheme.backgroundColor,
+                  color: AppTheme.primaryBlack,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: TextField(
@@ -374,7 +373,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
                 icon: Icon(
                   Icons.send,
                   color: _messageController.text.trim().isNotEmpty
-                      ? AppTheme.primaryColor
+                      ? AppTheme.pureWhite
                       : Colors.white54,
                 ),
               ),
@@ -390,7 +389,7 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
       setState(() {
         _isTyping = true;
       });
-      
+
       // Simulate sending typing indicator
       Timer(const Duration(seconds: 2), () {
         if (mounted) {
@@ -423,19 +422,11 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
 
     _scrollToBottom();
 
-    // Simulate response after a delay
+    // Generate intelligent response based on message content
     Timer(const Duration(seconds: 2), () {
       if (mounted) {
-        final responses = [
-          'That\'s interesting!',
-          'I agree with you 👍',
-          'Really? Tell me more!',
-          'Sounds good to me',
-          'Thanks for sharing!',
-        ];
-        
-        final response = responses[DateTime.now().millisecond % responses.length];
-        
+        final response = _generateIntelligentResponse(message);
+
         final responseMessage = ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           senderId: widget.recipientId ?? 'other',
@@ -467,6 +458,73 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
     });
   }
 
+  String _generateIntelligentResponse(String message) {
+    final lowerMessage = message.toLowerCase();
+
+    // Crypto-related responses
+    if (lowerMessage.contains('bitcoin') || lowerMessage.contains('btc')) {
+      return 'Bitcoin is always an exciting topic! 🚀 What\'s your take on its current trend?';
+    }
+    if (lowerMessage.contains('ethereum') || lowerMessage.contains('eth')) {
+      return 'Ethereum has so much potential with its smart contracts! Are you following any DeFi projects?';
+    }
+    if (lowerMessage.contains('portfolio') ||
+        lowerMessage.contains('trading')) {
+      return 'Nice! How\'s your portfolio performing? I\'d love to learn from your strategy! 📈';
+    }
+    if (lowerMessage.contains('price') ||
+        lowerMessage.contains('pump') ||
+        lowerMessage.contains('dump')) {
+      return 'Market movements can be crazy! What indicators are you watching?';
+    }
+    if (lowerMessage.contains('bullish') || lowerMessage.contains('bearish')) {
+      return 'Interesting perspective! What\'s driving your sentiment?';
+    }
+
+    // General conversation responses
+    if (lowerMessage.contains('?')) {
+      return 'That\'s a great question! Let me think about that... 🤔';
+    }
+    if (lowerMessage.contains('thanks') || lowerMessage.contains('thank you')) {
+      return 'You\'re welcome! Happy to chat with fellow crypto enthusiasts! 😊';
+    }
+    if (lowerMessage.contains('hello') ||
+        lowerMessage.contains('hi') ||
+        lowerMessage.contains('hey')) {
+      return 'Hey there! How\'s the crypto market treating you today?';
+    }
+
+    // Default responses based on sentiment
+    final positiveWords = [
+      'good',
+      'great',
+      'awesome',
+      'amazing',
+      'love',
+      'like',
+      'yes'
+    ];
+    final negativeWords = ['bad', 'terrible', 'hate', 'no', 'down', 'loss'];
+
+    if (positiveWords.any((word) => lowerMessage.contains(word))) {
+      return 'That\'s fantastic! 🎉 The crypto space needs more positive energy!';
+    }
+    if (negativeWords.any((word) => lowerMessage.contains(word))) {
+      return 'I hear you... the market can be tough sometimes. But hodling strong! 💪';
+    }
+
+    // Fallback responses
+    final fallbacks = [
+      'That\'s really interesting! Tell me more about your thoughts on this.',
+      'I see what you mean! The crypto world is full of surprises.',
+      'Thanks for sharing! What made you think about this?',
+      'That\'s a solid point! How long have you been following crypto?',
+      'Absolutely! The community here is amazing for these discussions.',
+    ];
+
+    return fallbacks[DateTime.now().millisecond % fallbacks.length];
+  }
+
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
@@ -496,17 +554,21 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
             children: [
               ListTile(
                 leading: const Icon(Icons.search, color: Colors.white70),
-                title: const Text('Search', style: TextStyle(color: Colors.white)),
+                title:
+                    const Text('Search', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pop(context),
               ),
               ListTile(
-                leading: const Icon(Icons.notifications_off, color: Colors.white70),
-                title: const Text('Mute', style: TextStyle(color: Colors.white)),
+                leading:
+                    const Icon(Icons.notifications_off, color: Colors.white70),
+                title:
+                    const Text('Mute', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pop(context),
               ),
               ListTile(
                 leading: const Icon(Icons.block, color: Colors.red),
-                title: const Text('Block User', style: TextStyle(color: Colors.red)),
+                title: const Text('Block User',
+                    style: TextStyle(color: Colors.red)),
                 onTap: () => Navigator.pop(context),
               ),
             ],
@@ -530,17 +592,20 @@ class _RealTimeChatScreenState extends State<RealTimeChatScreen>
             children: [
               ListTile(
                 leading: const Icon(Icons.photo, color: Colors.white70),
-                title: const Text('Photo', style: TextStyle(color: Colors.white)),
+                title:
+                    const Text('Photo', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pop(context),
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: Colors.white70),
-                title: const Text('Camera', style: TextStyle(color: Colors.white)),
+                title:
+                    const Text('Camera', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pop(context),
               ),
               ListTile(
                 leading: const Icon(Icons.attach_file, color: Colors.white70),
-                title: const Text('Document', style: TextStyle(color: Colors.white)),
+                title: const Text('Document',
+                    style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pop(context),
               ),
             ],

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
-import 'package:kointos/presentation/widgets/social_post_card.dart';
+import 'package:kointos/core/services/service_locator.dart';
+import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/presentation/widgets/create_post_widget.dart';
-import 'package:kointos/presentation/widgets/story_bar.dart';
 
 class SocialFeedScreen extends StatefulWidget {
   const SocialFeedScreen({super.key});
@@ -16,10 +15,18 @@ class SocialFeedScreen extends StatefulWidget {
 class _SocialFeedScreenState extends State<SocialFeedScreen>
     with AutomaticKeepAliveClientMixin {
   final ScrollController _scrollController = ScrollController();
-  bool _showCreatePost = false;
+  List<Map<String, dynamic>> _posts = [];
+  bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPosts();
+  }
 
   @override
   void dispose() {
@@ -27,19 +34,54 @@ class _SocialFeedScreenState extends State<SocialFeedScreen>
     super.dispose();
   }
 
+  Future<void> _loadPosts() async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+
+    try {
+      final apiService = getService<ApiService>();
+      final posts = await apiService.getSocialPosts(limit: 20);
+
+      if (mounted) {
+        setState(() {
+          _posts = posts;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _onPostCreated() async {
+    await _loadPosts();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     return Scaffold(
+      backgroundColor: AppTheme.primaryBlack,
       body: CustomScrollView(
         controller: _scrollController,
+        primary: false,
         slivers: [
           // App Bar
           SliverAppBar(
             floating: true,
             snap: true,
             backgroundColor: AppTheme.primaryBlack,
+            elevation: 0,
             title: Row(
               children: [
                 Container(
@@ -52,7 +94,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen>
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
-                    'Social',
+                    'Social Feed',
                     style: TextStyle(
                       color: AppTheme.primaryBlack,
                       fontWeight: FontWeight.bold,
@@ -60,58 +102,236 @@ class _SocialFeedScreenState extends State<SocialFeedScreen>
                     ),
                   ),
                 ),
-                const Spacer(),
-
-                // Points indicator
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.pureWhite.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.stars_rounded,
-                        color: AppTheme.cryptoGold,
-                        size: 16,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        '1,250',
-                        style: TextStyle(
-                          color: AppTheme.pureWhite,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
             actions: [
               IconButton(
-                onPressed: () {
-                  // Notifications
-                },
-                icon: Stack(
+                icon: const Icon(Icons.refresh, color: AppTheme.pureWhite),
+                onPressed: _loadPosts,
+              ),
+            ],
+          ),
+
+          // Create Post Widget
+          SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppTheme.cardBlack,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppTheme.pureWhite.withValues(alpha: 0.1),
+                ),
+              ),
+              child: CreatePostWidget(onPostCreated: _onPostCreated),
+            ),
+          ),
+
+          // Posts Content
+          if (_isLoading)
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.all(32),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(AppTheme.cryptoGold),
+                  ),
+                ),
+              ),
+            )
+          else if (_hasError)
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.all(32),
+                child: Column(
                   children: [
-                    const Icon(Icons.notifications_rounded),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: AppTheme.errorRed,
-                          shape: BoxShape.circle,
-                        ),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: AppTheme.greyText,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Failed to load posts',
+                      style: TextStyle(
+                        color: AppTheme.greyText,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _loadPosts,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.cryptoGold,
+                        foregroundColor: AppTheme.primaryBlack,
+                      ),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else if (_posts.isEmpty)
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.chat_bubble_outline,
+                      size: 64,
+                      color: AppTheme.greyText,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'No posts yet',
+                      style: TextStyle(
+                        color: AppTheme.greyText,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Be the first to create a post!',
+                      style: TextStyle(
+                        color: AppTheme.greyText.withValues(alpha: 0.7),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            // Posts List
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final post = _posts[index];
+                  return PostCard(
+                    post: post,
+                    onLike: () => _handleLike(post['id']),
+                    onComment: () => _handleComment(post),
+                  ).animate().fadeIn(
+                        delay: Duration(milliseconds: index * 100),
+                      );
+                },
+                childCount: _posts.length,
+              ),
+            ),
+
+          // Bottom padding
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 100),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleLike(String postId) async {
+    try {
+      final apiService = getService<ApiService>();
+      await apiService.likePost(postId);
+
+      // Update the post in the list
+      setState(() {
+        final postIndex = _posts.indexWhere((p) => p['id'] == postId);
+        if (postIndex != -1) {
+          _posts[postIndex]['likesCount'] =
+              (_posts[postIndex]['likesCount'] ?? 0) + 1;
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to like post: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _handleComment(Map<String, dynamic> post) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.cardBlack,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => CommentBottomSheet(
+        postId: post['id'],
+        onCommentAdded: () {
+          // Refresh this specific post
+          _loadPosts();
+        },
+      ),
+    );
+  }
+}
+
+class PostCard extends StatelessWidget {
+  final Map<String, dynamic> post;
+  final VoidCallback onLike;
+  final VoidCallback onComment;
+
+  const PostCard({
+    super.key,
+    required this.post,
+    required this.onLike,
+    required this.onComment,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBlack,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.pureWhite.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // User info
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: AppTheme.cryptoGold,
+                child: Text(
+                  post['userId']?.substring(0, 1).toUpperCase() ?? 'U',
+                  style: const TextStyle(
+                    color: AppTheme.primaryBlack,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'User ${post['userId']?.substring(0, 8) ?? 'Unknown'}',
+                      style: const TextStyle(
+                        color: AppTheme.pureWhite,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      _formatTime(post['createdAt']),
+                      style: const TextStyle(
+                        color: AppTheme.greyText,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -120,157 +340,238 @@ class _SocialFeedScreenState extends State<SocialFeedScreen>
             ],
           ),
 
-          // Stories
-          const SliverToBoxAdapter(
-            child: StoryBar(),
-          ),
+          const SizedBox(height: 12),
 
-          // Create Post Section
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: CreatePostWidget(),
+          // Post content
+          Text(
+            post['content'] ?? '',
+            style: const TextStyle(
+              color: AppTheme.pureWhite,
+              fontSize: 16,
             ),
           ),
 
-          // Feed Posts
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: AppTheme.normalAnimation,
-                  child: SlideAnimation(
-                    verticalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: SocialPostCard(
-                          post: _dummyPosts[index % _dummyPosts.length],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-              childCount: 10, // Load more posts
-            ),
-          ),
+          const SizedBox(height: 16),
 
-          // Loading indicator
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    AppTheme.pureWhite,
-                  ),
-                ),
+          // Actions
+          Row(
+            children: [
+              _buildActionButton(
+                icon: Icons.favorite_border,
+                count: post['likesCount'] ?? 0,
+                onTap: onLike,
               ),
+              const SizedBox(width: 24),
+              _buildActionButton(
+                icon: Icons.chat_bubble_outline,
+                count: post['commentsCount'] ?? 0,
+                onTap: onComment,
+              ),
+              const SizedBox(width: 24),
+              _buildActionButton(
+                icon: Icons.share_outlined,
+                count: post['sharesCount'] ?? 0,
+                onTap: () {
+                  // Handle share
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required int count,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: AppTheme.greyText,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            count.toString(),
+            style: const TextStyle(
+              color: AppTheme.greyText,
+              fontSize: 14,
             ),
           ),
         ],
       ),
-
-      // Floating Action Button for quick post
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _showCreatePost = !_showCreatePost;
-          });
-        },
-        child: Icon(
-          _showCreatePost ? Icons.close : Icons.add,
-        ),
-      ).animate().fadeIn(delay: const Duration(milliseconds: 800)).scale(
-            duration: AppTheme.normalAnimation,
-            curve: Curves.easeOutBack,
-          ),
     );
+  }
+
+  String _formatTime(String? timestamp) {
+    if (timestamp == null) return 'Unknown';
+    try {
+      final dateTime = DateTime.parse(timestamp);
+      final now = DateTime.now();
+      final difference = now.difference(dateTime);
+
+      if (difference.inDays > 0) {
+        return '${difference.inDays}d ago';
+      } else if (difference.inHours > 0) {
+        return '${difference.inHours}h ago';
+      } else if (difference.inMinutes > 0) {
+        return '${difference.inMinutes}m ago';
+      } else {
+        return 'Now';
+      }
+    } catch (e) {
+      return 'Unknown';
+    }
   }
 }
 
-// Dummy data for posts
-final List<SocialPost> _dummyPosts = [
-  SocialPost(
-    id: '1',
-    userId: 'user1',
-    userName: 'CryptoTrader_Pro',
-    userAvatar: '',
-    content:
-        'Just made a 25% gain on my Bitcoin trade! 🚀 The technical analysis was spot on. Who else is bullish on BTC?',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
-    likes: 142,
-    comments: 23,
-    shares: 8,
-    cryptoMentions: ['BTC'],
-    isLiked: false,
-    points: 15,
-  ),
-  SocialPost(
-    id: '2',
-    userId: 'user2',
-    userName: 'ETH_Maximalist',
-    userAvatar: '',
-    content:
-        'Ethereum 2.0 staking rewards are looking amazing! Just crossed 100 ETH staked. The future is bright for DeFi! 💎',
-    timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-    likes: 89,
-    comments: 15,
-    shares: 12,
-    cryptoMentions: ['ETH'],
-    isLiked: true,
-    points: 12,
-  ),
-  SocialPost(
-    id: '3',
-    userId: 'user3',
-    userName: 'AltcoinHunter',
-    userAvatar: '',
-    content:
-        'Found this gem at 0.05! Already up 400%. Sometimes the best trades are the ones nobody talks about 🔍',
-    timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-    likes: 256,
-    comments: 45,
-    shares: 23,
-    cryptoMentions: [],
-    isLiked: false,
-    points: 25,
-  ),
-];
+class CommentBottomSheet extends StatefulWidget {
+  final String postId;
+  final VoidCallback onCommentAdded;
 
-class SocialPost {
-  final String id;
-  final String userId;
-  final String userName;
-  final String userAvatar;
-  final String content;
-  final DateTime timestamp;
-  final int likes;
-  final int comments;
-  final int shares;
-  final List<String> cryptoMentions;
-  final bool isLiked;
-  final int points;
-  final String? imageUrl;
-
-  SocialPost({
-    required this.id,
-    required this.userId,
-    required this.userName,
-    required this.userAvatar,
-    required this.content,
-    required this.timestamp,
-    required this.likes,
-    required this.comments,
-    required this.shares,
-    required this.cryptoMentions,
-    required this.isLiked,
-    required this.points,
-    this.imageUrl,
+  const CommentBottomSheet({
+    super.key,
+    required this.postId,
+    required this.onCommentAdded,
   });
+
+  @override
+  State<CommentBottomSheet> createState() => _CommentBottomSheetState();
+}
+
+class _CommentBottomSheetState extends State<CommentBottomSheet> {
+  final TextEditingController _controller = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _addComment() async {
+    if (_controller.text.trim().isEmpty) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final apiService = getService<ApiService>();
+      await apiService.createComment(
+        postId: widget.postId,
+        content: _controller.text.trim(),
+      );
+
+      if (mounted) {
+        Navigator.pop(context);
+        widget.onCommentAdded();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Comment added successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add comment: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(top: 12, bottom: 20),
+            decoration: BoxDecoration(
+              color: AppTheme.greyText,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    style: const TextStyle(color: AppTheme.pureWhite),
+                    decoration: InputDecoration(
+                      hintText: 'Write a comment...',
+                      hintStyle: const TextStyle(color: AppTheme.greyText),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: const BorderSide(color: AppTheme.greyText),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide:
+                            const BorderSide(color: AppTheme.cryptoGold),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  decoration: const BoxDecoration(
+                    color: AppTheme.cryptoGold,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: _isLoading ? null : _addComment,
+                    icon: _isLoading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppTheme.primaryBlack,
+                              ),
+                            ),
+                          )
+                        : const Icon(
+                            Icons.send,
+                            color: AppTheme.primaryBlack,
+                          ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

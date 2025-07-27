@@ -98,7 +98,7 @@ class _AdvancedCryptoChartState extends State<AdvancedCryptoChart>
                   ),
                   decoration: BoxDecoration(
                     color: _selectedTimeframe == timeframe
-                        ? AppTheme.primaryColor
+                        ? AppTheme.pureWhite
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -150,7 +150,7 @@ class _AdvancedCryptoChartState extends State<AdvancedCryptoChart>
                   Switch(
                     value: _showVolume,
                     onChanged: (value) => setState(() => _showVolume = value),
-                    activeColor: AppTheme.primaryColor,
+                    activeColor: AppTheme.pureWhite,
                   ),
                   const SizedBox(width: 8),
                   const Text(
@@ -168,7 +168,7 @@ class _AdvancedCryptoChartState extends State<AdvancedCryptoChart>
                   Switch(
                     value: _showGrid,
                     onChanged: (value) => setState(() => _showGrid = value),
-                    activeColor: AppTheme.primaryColor,
+                    activeColor: AppTheme.pureWhite,
                   ),
                   const SizedBox(width: 8),
                   const Text(
@@ -264,12 +264,12 @@ class _AdvancedCryptoChartState extends State<AdvancedCryptoChart>
                   });
                 },
                 backgroundColor: Colors.transparent,
-                selectedColor: AppTheme.primaryColor.withOpacity(0.3),
+                selectedColor: AppTheme.pureWhite.withValues(alpha: 0.3),
                 labelStyle: TextStyle(
-                  color: isSelected ? AppTheme.primaryColor : Colors.white70,
+                  color: isSelected ? AppTheme.pureWhite : Colors.white70,
                 ),
                 side: BorderSide(
-                  color: isSelected ? AppTheme.primaryColor : Colors.white30,
+                  color: isSelected ? AppTheme.pureWhite : Colors.white30,
                 ),
               );
             }).toList(),
@@ -340,7 +340,7 @@ class ChartPainter extends CustomPainter {
     if (priceHistory.isEmpty) return;
 
     final paint = Paint()
-      ..color = AppTheme.primaryColor
+      ..color = AppTheme.pureWhite
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -368,7 +368,7 @@ class ChartPainter extends CustomPainter {
 
   void _drawGrid(Canvas canvas, Size size) {
     final gridPaint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = Colors.white.withValues(alpha: 0.1)
       ..strokeWidth = 1;
 
     // Vertical grid lines
@@ -443,7 +443,7 @@ class ChartPainter extends CustomPainter {
       );
 
       final paint = Paint()
-        ..color = AppTheme.primaryColor
+        ..color = AppTheme.pureWhite
         ..style = PaintingStyle.fill;
 
       canvas.drawRect(rect, paint);
@@ -479,7 +479,7 @@ class ChartPainter extends CustomPainter {
     path.close();
 
     final fillPaint = Paint()
-      ..color = AppTheme.primaryColor.withOpacity(0.3)
+      ..color = AppTheme.pureWhite.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
 
     canvas.drawPath(path, fillPaint);
@@ -547,7 +547,7 @@ class VolumeChartPainter extends CustomPainter {
       );
 
       final paint = Paint()
-        ..color = AppTheme.primaryColor.withOpacity(0.7)
+        ..color = AppTheme.pureWhite.withValues(alpha: 0.7)
         ..style = PaintingStyle.fill;
 
       canvas.drawRect(rect, paint);

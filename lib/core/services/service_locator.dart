@@ -3,6 +3,8 @@ import 'package:kointos/core/constants/app_constants.dart';
 import 'package:kointos/core/services/amplify_storage_service.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/auth_service.dart';
+import 'package:kointos/core/services/kointos_ai_chatbot_service.dart';
+import 'package:kointos/core/services/llm_service.dart';
 import 'package:kointos/core/services/local_storage_service.dart';
 import 'package:kointos/core/services/storage_interface.dart';
 import 'package:kointos/data/datasources/coingecko_service.dart';
@@ -33,6 +35,15 @@ Future<void> setupServiceLocator() async {
 
   serviceLocator.registerLazySingleton<StorageInterface>(
     () => AmplifyStorageService(),
+  );
+
+  // AI Services
+  serviceLocator.registerLazySingleton<LLMService>(
+    () => LLMService(),
+  );
+
+  serviceLocator.registerLazySingleton<KointosAIChatbotService>(
+    () => KointosAIChatbotService(),
   );
 
   // Data Sources

@@ -6,7 +6,9 @@ import 'package:kointos/core/theme/modern_theme.dart';
 enum AuthMode { signIn, signUp, verification }
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+  final VoidCallback? onAuthStateChanged;
+
+  const AuthScreen({super.key, this.onAuthStateChanged});
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -39,10 +41,11 @@ class _AuthScreenState extends State<AuthScreen> {
       );
 
       if (mounted) {
-        // Navigator will handle this in parent widget
         setState(() {
           _isLoading = false;
         });
+        // Notify parent about auth state change
+        widget.onAuthStateChanged?.call();
       }
     } catch (e) {
       if (mounted) {
@@ -99,10 +102,25 @@ class _AuthScreenState extends State<AuthScreen> {
       );
 
       if (mounted) {
-        setState(() {
-          _mode = AuthMode.signIn;
-          _isLoading = false;
-        });
+        // After successful verification, sign the user in automatically
+        try {
+          await _authService.signIn(
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
+          setState(() {
+            _isLoading = false;
+          });
+          // Notify parent about auth state change
+          widget.onAuthStateChanged?.call();
+        } catch (signInError) {
+          // If auto sign-in fails, just go back to sign-in mode
+          setState(() {
+            _mode = AuthMode.signIn;
+            _isLoading = false;
+            _errorMessage = 'Email verified! Please sign in.';
+          });
+        }
       }
     } catch (e) {
       if (mounted) {

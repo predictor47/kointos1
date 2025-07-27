@@ -3,7 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:kointos/core/services/logger_service.dart';
-import 'package:kointos/amplify_outputs.dart';
+import 'package:flutter/services.dart';
 
 class KointosAmplifyConfig {
   static bool _isConfigured = false;
@@ -16,11 +16,14 @@ class KointosAmplifyConfig {
       final auth = AmplifyAuthCognito();
       final api = AmplifyAPI();
       final storage = AmplifyStorageS3();
-      
+
       await Amplify.addPlugins([auth, api, storage]);
 
+      // Load amplify_outputs.json from root directory
+      final configString = await rootBundle.loadString('amplify_outputs.json');
+
       // Configure Amplify with Gen 2 outputs
-      await Amplify.configure(amplifyConfig);
+      await Amplify.configure(configString);
       _isConfigured = true;
       LoggerService.info('Amplify Gen 2 configured successfully');
     } catch (e, stackTrace) {

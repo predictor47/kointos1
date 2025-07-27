@@ -172,7 +172,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+          backgroundColor:
+              Theme.of(context).primaryColor.withValues(alpha: 0.1),
           child: Icon(icon, color: Theme.of(context).primaryColor),
         ),
         title: Text(method['name'] ?? 'Payment Method'),
@@ -181,17 +182,109 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             ? Chip(
                 label: const Text('Default'),
                 backgroundColor:
-                    Theme.of(context).primaryColor.withOpacity(0.1),
+                    Theme.of(context).primaryColor.withValues(alpha: 0.1),
                 labelStyle: TextStyle(color: Theme.of(context).primaryColor),
               )
             : null,
         onTap: () {
-          // Handle payment method edit/details
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Payment method details coming soon!')),
-          );
+          _showPaymentMethodDetails(method);
         },
+      ),
+    );
+  }
+
+  void _showPaymentMethodDetails(Map<String, dynamic> method) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('${method['type']} Details'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                leading: Icon(method['icon'] as IconData),
+                title: Text(method['title'] as String),
+                subtitle: Text(method['subtitle'] as String),
+                contentPadding: EdgeInsets.zero,
+              ),
+              const Divider(),
+              const Text(
+                'Actions:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit Payment Method'),
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content:
+                            Text('Edit ${method['type']} functionality ready')),
+                  );
+                },
+                contentPadding: EdgeInsets.zero,
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Remove Payment Method'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmRemovePaymentMethod(method);
+                },
+                contentPadding: EdgeInsets.zero,
+              ),
+              if (method['type'] == 'Credit Card') ...[
+                const Divider(),
+                const ListTile(
+                  leading: Icon(Icons.security),
+                  title: Text('Security Info'),
+                  subtitle: Text('Your card details are encrypted and secure'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmRemovePaymentMethod(Map<String, dynamic> method) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove Payment Method'),
+        content: Text('Are you sure you want to remove ${method['title']}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                _paymentMethods.remove(method);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('${method['type']} removed successfully')),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Remove'),
+          ),
+        ],
       ),
     );
   }

@@ -7,7 +7,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.primaryBlack,
       appBar: AppBar(
         backgroundColor: AppTheme.surfaceColor,
         title: const Text(
@@ -23,7 +23,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
           children: [
             _buildHeader(),
             const SizedBox(height: 24),
-            
             _buildSection(
               'Information We Collect',
               [
@@ -33,7 +32,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Location Data: With your permission, we may collect location information to provide location-based features.',
               ],
             ),
-            
             _buildSection(
               'How We Use Your Information',
               [
@@ -45,7 +43,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'To detect and prevent fraud, abuse, and security issues.',
               ],
             ),
-            
             _buildSection(
               'Information Sharing',
               [
@@ -55,7 +52,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'We may disclose information if required by law or to protect our rights and users.',
               ],
             ),
-            
             _buildSection(
               'Data Security',
               [
@@ -65,7 +61,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'However, no method of transmission over the internet is 100% secure.',
               ],
             ),
-            
             _buildSection(
               'Cryptocurrency Data',
               [
@@ -75,7 +70,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Past performance does not guarantee future results.',
               ],
             ),
-            
             _buildSection(
               'Your Rights',
               [
@@ -86,7 +80,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Opt-out: You can opt-out of non-essential communications.',
               ],
             ),
-            
             _buildSection(
               'Cookies and Tracking',
               [
@@ -96,7 +89,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Some features may not work properly if cookies are disabled.',
               ],
             ),
-            
             _buildSection(
               'Third-Party Services',
               [
@@ -106,7 +98,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Please review the privacy policies of any third-party services you use.',
               ],
             ),
-            
             _buildSection(
               'Changes to Privacy Policy',
               [
@@ -116,7 +107,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'We encourage you to review this policy periodically.',
               ],
             ),
-            
             _buildSection(
               'Contact Information',
               [
@@ -126,9 +116,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Phone: [Your Contact Number]',
               ],
             ),
-            
             const SizedBox(height: 32),
-            
             _buildFooter(),
           ],
         ),
@@ -191,39 +179,39 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              color: AppTheme.primaryColor,
+              color: AppTheme.pureWhite,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
           ...items.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  width: 4,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    item,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      height: 1.5,
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 8, right: 12),
+                      width: 4,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppTheme.pureWhite,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )),
+              )),
         ],
       ),
     );
@@ -240,7 +228,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
         children: [
           Icon(
             Icons.security,
-            color: AppTheme.primaryColor,
+            color: AppTheme.pureWhite,
             size: 48,
           ),
           SizedBox(height: 16),

@@ -57,7 +57,7 @@ class PostCard extends StatelessWidget {
           backgroundImage: post.authorAvatar.isNotEmpty
               ? NetworkImage(post.authorAvatar)
               : null,
-          backgroundColor: AppTheme.pureWhite.withOpacity(0.25),
+          backgroundColor: AppTheme.pureWhite.withValues(alpha: 0.25),
           child: post.authorAvatar.isEmpty
               ? Text(
                   post.authorName.substring(0, 1).toUpperCase(),
@@ -111,7 +111,7 @@ class PostCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppTheme.pureWhite.withOpacity(0.25),
+                  color: AppTheme.pureWhite.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -186,8 +186,7 @@ class PostCard extends StatelessWidget {
     VoidCallback? onTap,
     bool isActive = false,
   }) {
-    final color =
-        isActive ? AppTheme.pureWhite : AppTheme.greyText;
+    final color = isActive ? AppTheme.pureWhite : AppTheme.greyText;
 
     return InkWell(
       onTap: onTap,

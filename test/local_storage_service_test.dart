@@ -44,9 +44,9 @@ void main() {
     test('should clear all data', () async {
       await storageService.set('key1', 'value1');
       await storageService.set('key2', 'value2');
-      
+
       await storageService.clear();
-      
+
       final retrieved1 = await storageService.get('key1');
       final retrieved2 = await storageService.get('key2');
 
@@ -57,10 +57,10 @@ void main() {
     test('should handle expiry correctly', () async {
       const key = 'expiry_test';
       const value = 'expiry_value';
-      final shortExpiry = const Duration(milliseconds: 100);
+      const shortExpiry = Duration(milliseconds: 100);
 
       await storageService.set(key, value, expiry: shortExpiry);
-      
+
       // Should be available immediately
       final immediate = await storageService.get(key);
       expect(immediate, equals(value));
@@ -68,12 +68,12 @@ void main() {
 
       // Wait for expiry
       await Future.delayed(const Duration(milliseconds: 150));
-      
+
       // Value should still exist but be expired
       final stillExists = await storageService.get(key);
       expect(stillExists, equals(value)); // Value still exists
       expect(await storageService.hasExpired(key), true); // But is expired
-      
+
       // Clean up expired data
       await storageService.clearExpired();
       final afterCleanup = await storageService.get(key);

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
-import 'package:kointos/presentation/screens/social_feed_screen.dart';
 
 class SocialPostCard extends StatefulWidget {
-  final SocialPost post;
+  final Map<String, dynamic> post;
 
   const SocialPostCard({
     super.key,
@@ -34,8 +33,8 @@ class _SocialPostCardState extends State<SocialPostCard>
       vsync: this,
     );
 
-    _isLiked = widget.post.isLiked;
-    _likeCount = widget.post.likes;
+    _isLiked = widget.post['isLiked'] as bool? ?? false;
+    _likeCount = widget.post['likesCount'] as int? ?? 0;
   }
 
   @override
@@ -118,7 +117,7 @@ class _SocialPostCardState extends State<SocialPostCard>
                       Row(
                         children: [
                           Text(
-                            widget.post.userName,
+                            widget.post['userId'] as String? ?? 'Unknown User',
                             style: const TextStyle(
                               color: AppTheme.pureWhite,
                               fontWeight: FontWeight.w600,
@@ -126,7 +125,7 @@ class _SocialPostCardState extends State<SocialPostCard>
                             ),
                           ),
                           const SizedBox(width: 4),
-                          if (widget.post.points > 0) ...[
+                          if ((widget.post['likesCount'] as int? ?? 0) > 0) ...[
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 6,
@@ -137,7 +136,7 @@ class _SocialPostCardState extends State<SocialPostCard>
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                '+${widget.post.points}',
+                                '+${widget.post['likesCount'] as int? ?? 0}',
                                 style: const TextStyle(
                                   color: AppTheme.primaryBlack,
                                   fontSize: 10,
@@ -149,7 +148,9 @@ class _SocialPostCardState extends State<SocialPostCard>
                         ],
                       ),
                       Text(
-                        _formatTimeAgo(widget.post.timestamp),
+                        _formatTimeAgo(DateTime.tryParse(
+                                widget.post['createdAt'] as String? ?? '') ??
+                            DateTime.now()),
                         style: const TextStyle(
                           color: AppTheme.greyText,
                           fontSize: 12,
@@ -177,7 +178,7 @@ class _SocialPostCardState extends State<SocialPostCard>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              widget.post.content,
+              widget.post['content'] as String? ?? '',
               style: const TextStyle(
                 color: AppTheme.pureWhite,
                 fontSize: 15,
@@ -187,24 +188,27 @@ class _SocialPostCardState extends State<SocialPostCard>
           ),
 
           // Crypto mentions
-          if (widget.post.cryptoMentions.isNotEmpty) ...[
+          if ((widget.post['mentionedCryptos'] as List<dynamic>? ?? [])
+              .isNotEmpty) ...[
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Wrap(
                 spacing: 8,
                 runSpacing: 4,
-                children: widget.post.cryptoMentions.map((crypto) {
+                children:
+                    (widget.post['mentionedCryptos'] as List<dynamic>? ?? [])
+                        .map<Widget>((crypto) {
                   return Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.cryptoGold.withOpacity(0.2),
+                      color: AppTheme.cryptoGold.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppTheme.cryptoGold.withOpacity(0.5),
+                        color: AppTheme.cryptoGold.withValues(alpha: 0.5),
                         width: 1,
                       ),
                     ),
@@ -282,7 +286,7 @@ class _SocialPostCardState extends State<SocialPostCard>
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        widget.post.comments.toString(),
+                        (widget.post['comments'] as int? ?? 0).toString(),
                         style: const TextStyle(
                           color: AppTheme.greyText,
                           fontSize: 14,
@@ -313,7 +317,7 @@ class _SocialPostCardState extends State<SocialPostCard>
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              widget.post.shares.toString(),
+                              (widget.post['shares'] as int? ?? 0).toString(),
                               style: const TextStyle(
                                 color: AppTheme.greyText,
                                 fontSize: 14,
@@ -451,7 +455,8 @@ class _SocialPostCardState extends State<SocialPostCard>
                                 height: 32,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: AppTheme.greyText.withOpacity(0.3),
+                                  color:
+                                      AppTheme.greyText.withValues(alpha: 0.3),
                                 ),
                                 child: const Icon(
                                   Icons.person,

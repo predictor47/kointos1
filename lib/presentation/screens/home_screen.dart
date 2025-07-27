@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/feed_screen.dart';
 import '../screens/market_screen.dart';
-import '../screens/portfolio_screen.dart';
+import '../screens/real_portfolio_screen.dart';
 import '../screens/profile_screen.dart';
 import '../widgets/search_dialog.dart';
 import '../../core/services/auth_service.dart';
@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = const [
     FeedScreen(),
     MarketScreen(),
-    PortfolioScreen(),
+    RealPortfolioScreen(),
     ProfileScreen(),
   ];
 

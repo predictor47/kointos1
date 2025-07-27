@@ -1,0 +1,1117 @@
+# this is an auto generated file. This will be overwritten
+
+subscription OnCreateArticle(
+  $filter: ModelSubscriptionArticleFilterInput
+  $owner: String
+) {
+  onCreateArticle(filter: $filter, owner: $owner) {
+    authorId
+    authorName
+    commentsCount
+    content
+    contentKey
+    coverImageUrl
+    createdAt
+    id
+    images
+    isPublic
+    likesCount
+    owner
+    publishedAt
+    status
+    summary
+    tags
+    title
+    updatedAt
+    viewsCount
+    __typename
+  }
+}
+
+subscription OnCreateComment(
+  $filter: ModelSubscriptionCommentFilterInput
+  $owner: String
+) {
+  onCreateComment(filter: $filter, owner: $owner) {
+    content
+    createdAt
+    id
+    likesCount
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnCreateCryptocurrency(
+  $filter: ModelSubscriptionCryptocurrencyFilterInput
+  $owner: String
+) {
+  onCreateCryptocurrency(filter: $filter, owner: $owner) {
+    createdAt
+    currentPrice
+    description
+    id
+    lastUpdated
+    logoUrl
+    marketCap
+    name
+    owner
+    priceChange24h
+    priceChangePercentage24h
+    symbol
+    updatedAt
+    volume24h
+    website
+    __typename
+  }
+}
+
+subscription OnCreateFAQ($filter: ModelSubscriptionFAQFilterInput) {
+  onCreateFAQ(filter: $filter) {
+    answer
+    category
+    createdAt
+    id
+    isPublished
+    order
+    question
+    tags
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnCreateFollow(
+  $filter: ModelSubscriptionFollowFilterInput
+  $owner: String
+) {
+  onCreateFollow(filter: $filter, owner: $owner) {
+    createdAt
+    followerId
+    followingId
+    id
+    owner
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnCreateLike(
+  $filter: ModelSubscriptionLikeFilterInput
+  $owner: String
+) {
+  onCreateLike(filter: $filter, owner: $owner) {
+    commentId
+    createdAt
+    id
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnCreateNewsArticle(
+  $filter: ModelSubscriptionNewsArticleFilterInput
+) {
+  onCreateNewsArticle(filter: $filter) {
+    author
+    content
+    createdAt
+    id
+    imageUrl
+    mentionedCryptos
+    publishedAt
+    sentiment
+    sourceUrl
+    summary
+    tags
+    title
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnCreatePaymentMethod(
+  $filter: ModelSubscriptionPaymentMethodFilterInput
+  $owner: String
+) {
+  onCreatePaymentMethod(filter: $filter, owner: $owner) {
+    accountType
+    bankName
+    createdAt
+    expiryMonth
+    expiryYear
+    id
+    isActive
+    isDefault
+    last4
+    name
+    owner
+    type
+    updatedAt
+    userId
+    walletAddress
+    __typename
+  }
+}
+
+subscription OnCreatePortfolio(
+  $filter: ModelSubscriptionPortfolioFilterInput
+  $owner: String
+) {
+  onCreatePortfolio(filter: $filter, owner: $owner) {
+    createdAt
+    description
+    id
+    isPublic
+    name
+    owner
+    totalValue
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnCreatePortfolioHolding(
+  $filter: ModelSubscriptionPortfolioHoldingFilterInput
+  $owner: String
+) {
+  onCreatePortfolioHolding(filter: $filter, owner: $owner) {
+    amount
+    averageBuyPrice
+    createdAt
+    cryptoSymbol
+    currentValue
+    id
+    lastUpdated
+    owner
+    portfolioId
+    profitLoss
+    profitLossPercentage
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnCreatePost(
+  $filter: ModelSubscriptionPostFilterInput
+  $owner: String
+) {
+  onCreatePost(filter: $filter, owner: $owner) {
+    commentsCount
+    content
+    createdAt
+    id
+    imageUrl
+    isPublic
+    likesCount
+    mentionedCryptos
+    owner
+    sharesCount
+    tags
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnCreatePriceAlert(
+  $filter: ModelSubscriptionPriceAlertFilterInput
+  $owner: String
+) {
+  onCreatePriceAlert(filter: $filter, owner: $owner) {
+    alertType
+    createdAt
+    cryptoSymbol
+    id
+    isActive
+    owner
+    targetPrice
+    triggeredAt
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnCreateSupportTicket(
+  $filter: ModelSubscriptionSupportTicketFilterInput
+  $owner: String
+) {
+  onCreateSupportTicket(filter: $filter, owner: $owner) {
+    adminNotes
+    attachments
+    category
+    createdAt
+    description
+    id
+    owner
+    priority
+    resolvedAt
+    status
+    subject
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnCreateTradingSignal(
+  $filter: ModelSubscriptionTradingSignalFilterInput
+  $owner: String
+) {
+  onCreateTradingSignal(filter: $filter, owner: $owner) {
+    confidence
+    createdAt
+    cryptoSymbol
+    expiresAt
+    id
+    isActive
+    owner
+    performanceRating
+    reasoning
+    signalType
+    stopLoss
+    targetPrice
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnCreateTransaction(
+  $filter: ModelSubscriptionTransactionFilterInput
+  $owner: String
+) {
+  onCreateTransaction(filter: $filter, owner: $owner) {
+    amount
+    createdAt
+    cryptoSymbol
+    fees
+    id
+    notes
+    owner
+    portfolioId
+    price
+    totalValue
+    transactionDate
+    type
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnCreateUserProfile(
+  $filter: ModelSubscriptionUserProfileFilterInput
+  $owner: String
+) {
+  onCreateUserProfile(filter: $filter, owner: $owner) {
+    bio
+    createdAt
+    displayName
+    email
+    followersCount
+    followingCount
+    id
+    isPublic
+    owner
+    profilePicture
+    totalPortfolioValue
+    updatedAt
+    userId
+    username
+    __typename
+  }
+}
+
+subscription OnCreateUserSettings(
+  $filter: ModelSubscriptionUserSettingsFilterInput
+  $owner: String
+) {
+  onCreateUserSettings(filter: $filter, owner: $owner) {
+    biometricEnabled
+    createdAt
+    currency
+    dataRetention
+    emailNotifications
+    id
+    language
+    marketAlerts
+    notificationsEnabled
+    owner
+    portfolioPrivacy
+    pushNotifications
+    theme
+    twoFactorEnabled
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnCreateWatchlist(
+  $filter: ModelSubscriptionWatchlistFilterInput
+  $owner: String
+) {
+  onCreateWatchlist(filter: $filter, owner: $owner) {
+    createdAt
+    cryptoSymbols
+    id
+    isPublic
+    name
+    owner
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeleteArticle(
+  $filter: ModelSubscriptionArticleFilterInput
+  $owner: String
+) {
+  onDeleteArticle(filter: $filter, owner: $owner) {
+    authorId
+    authorName
+    commentsCount
+    content
+    contentKey
+    coverImageUrl
+    createdAt
+    id
+    images
+    isPublic
+    likesCount
+    owner
+    publishedAt
+    status
+    summary
+    tags
+    title
+    updatedAt
+    viewsCount
+    __typename
+  }
+}
+
+subscription OnDeleteComment(
+  $filter: ModelSubscriptionCommentFilterInput
+  $owner: String
+) {
+  onDeleteComment(filter: $filter, owner: $owner) {
+    content
+    createdAt
+    id
+    likesCount
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeleteCryptocurrency(
+  $filter: ModelSubscriptionCryptocurrencyFilterInput
+  $owner: String
+) {
+  onDeleteCryptocurrency(filter: $filter, owner: $owner) {
+    createdAt
+    currentPrice
+    description
+    id
+    lastUpdated
+    logoUrl
+    marketCap
+    name
+    owner
+    priceChange24h
+    priceChangePercentage24h
+    symbol
+    updatedAt
+    volume24h
+    website
+    __typename
+  }
+}
+
+subscription OnDeleteFAQ($filter: ModelSubscriptionFAQFilterInput) {
+  onDeleteFAQ(filter: $filter) {
+    answer
+    category
+    createdAt
+    id
+    isPublished
+    order
+    question
+    tags
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnDeleteFollow(
+  $filter: ModelSubscriptionFollowFilterInput
+  $owner: String
+) {
+  onDeleteFollow(filter: $filter, owner: $owner) {
+    createdAt
+    followerId
+    followingId
+    id
+    owner
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnDeleteLike(
+  $filter: ModelSubscriptionLikeFilterInput
+  $owner: String
+) {
+  onDeleteLike(filter: $filter, owner: $owner) {
+    commentId
+    createdAt
+    id
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeleteNewsArticle(
+  $filter: ModelSubscriptionNewsArticleFilterInput
+) {
+  onDeleteNewsArticle(filter: $filter) {
+    author
+    content
+    createdAt
+    id
+    imageUrl
+    mentionedCryptos
+    publishedAt
+    sentiment
+    sourceUrl
+    summary
+    tags
+    title
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnDeletePaymentMethod(
+  $filter: ModelSubscriptionPaymentMethodFilterInput
+  $owner: String
+) {
+  onDeletePaymentMethod(filter: $filter, owner: $owner) {
+    accountType
+    bankName
+    createdAt
+    expiryMonth
+    expiryYear
+    id
+    isActive
+    isDefault
+    last4
+    name
+    owner
+    type
+    updatedAt
+    userId
+    walletAddress
+    __typename
+  }
+}
+
+subscription OnDeletePortfolio(
+  $filter: ModelSubscriptionPortfolioFilterInput
+  $owner: String
+) {
+  onDeletePortfolio(filter: $filter, owner: $owner) {
+    createdAt
+    description
+    id
+    isPublic
+    name
+    owner
+    totalValue
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeletePortfolioHolding(
+  $filter: ModelSubscriptionPortfolioHoldingFilterInput
+  $owner: String
+) {
+  onDeletePortfolioHolding(filter: $filter, owner: $owner) {
+    amount
+    averageBuyPrice
+    createdAt
+    cryptoSymbol
+    currentValue
+    id
+    lastUpdated
+    owner
+    portfolioId
+    profitLoss
+    profitLossPercentage
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnDeletePost(
+  $filter: ModelSubscriptionPostFilterInput
+  $owner: String
+) {
+  onDeletePost(filter: $filter, owner: $owner) {
+    commentsCount
+    content
+    createdAt
+    id
+    imageUrl
+    isPublic
+    likesCount
+    mentionedCryptos
+    owner
+    sharesCount
+    tags
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeletePriceAlert(
+  $filter: ModelSubscriptionPriceAlertFilterInput
+  $owner: String
+) {
+  onDeletePriceAlert(filter: $filter, owner: $owner) {
+    alertType
+    createdAt
+    cryptoSymbol
+    id
+    isActive
+    owner
+    targetPrice
+    triggeredAt
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeleteSupportTicket(
+  $filter: ModelSubscriptionSupportTicketFilterInput
+  $owner: String
+) {
+  onDeleteSupportTicket(filter: $filter, owner: $owner) {
+    adminNotes
+    attachments
+    category
+    createdAt
+    description
+    id
+    owner
+    priority
+    resolvedAt
+    status
+    subject
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeleteTradingSignal(
+  $filter: ModelSubscriptionTradingSignalFilterInput
+  $owner: String
+) {
+  onDeleteTradingSignal(filter: $filter, owner: $owner) {
+    confidence
+    createdAt
+    cryptoSymbol
+    expiresAt
+    id
+    isActive
+    owner
+    performanceRating
+    reasoning
+    signalType
+    stopLoss
+    targetPrice
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeleteTransaction(
+  $filter: ModelSubscriptionTransactionFilterInput
+  $owner: String
+) {
+  onDeleteTransaction(filter: $filter, owner: $owner) {
+    amount
+    createdAt
+    cryptoSymbol
+    fees
+    id
+    notes
+    owner
+    portfolioId
+    price
+    totalValue
+    transactionDate
+    type
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnDeleteUserProfile(
+  $filter: ModelSubscriptionUserProfileFilterInput
+  $owner: String
+) {
+  onDeleteUserProfile(filter: $filter, owner: $owner) {
+    bio
+    createdAt
+    displayName
+    email
+    followersCount
+    followingCount
+    id
+    isPublic
+    owner
+    profilePicture
+    totalPortfolioValue
+    updatedAt
+    userId
+    username
+    __typename
+  }
+}
+
+subscription OnDeleteUserSettings(
+  $filter: ModelSubscriptionUserSettingsFilterInput
+  $owner: String
+) {
+  onDeleteUserSettings(filter: $filter, owner: $owner) {
+    biometricEnabled
+    createdAt
+    currency
+    dataRetention
+    emailNotifications
+    id
+    language
+    marketAlerts
+    notificationsEnabled
+    owner
+    portfolioPrivacy
+    pushNotifications
+    theme
+    twoFactorEnabled
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnDeleteWatchlist(
+  $filter: ModelSubscriptionWatchlistFilterInput
+  $owner: String
+) {
+  onDeleteWatchlist(filter: $filter, owner: $owner) {
+    createdAt
+    cryptoSymbols
+    id
+    isPublic
+    name
+    owner
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdateArticle(
+  $filter: ModelSubscriptionArticleFilterInput
+  $owner: String
+) {
+  onUpdateArticle(filter: $filter, owner: $owner) {
+    authorId
+    authorName
+    commentsCount
+    content
+    contentKey
+    coverImageUrl
+    createdAt
+    id
+    images
+    isPublic
+    likesCount
+    owner
+    publishedAt
+    status
+    summary
+    tags
+    title
+    updatedAt
+    viewsCount
+    __typename
+  }
+}
+
+subscription OnUpdateComment(
+  $filter: ModelSubscriptionCommentFilterInput
+  $owner: String
+) {
+  onUpdateComment(filter: $filter, owner: $owner) {
+    content
+    createdAt
+    id
+    likesCount
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdateCryptocurrency(
+  $filter: ModelSubscriptionCryptocurrencyFilterInput
+  $owner: String
+) {
+  onUpdateCryptocurrency(filter: $filter, owner: $owner) {
+    createdAt
+    currentPrice
+    description
+    id
+    lastUpdated
+    logoUrl
+    marketCap
+    name
+    owner
+    priceChange24h
+    priceChangePercentage24h
+    symbol
+    updatedAt
+    volume24h
+    website
+    __typename
+  }
+}
+
+subscription OnUpdateFAQ($filter: ModelSubscriptionFAQFilterInput) {
+  onUpdateFAQ(filter: $filter) {
+    answer
+    category
+    createdAt
+    id
+    isPublished
+    order
+    question
+    tags
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnUpdateFollow(
+  $filter: ModelSubscriptionFollowFilterInput
+  $owner: String
+) {
+  onUpdateFollow(filter: $filter, owner: $owner) {
+    createdAt
+    followerId
+    followingId
+    id
+    owner
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnUpdateLike(
+  $filter: ModelSubscriptionLikeFilterInput
+  $owner: String
+) {
+  onUpdateLike(filter: $filter, owner: $owner) {
+    commentId
+    createdAt
+    id
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdateNewsArticle(
+  $filter: ModelSubscriptionNewsArticleFilterInput
+) {
+  onUpdateNewsArticle(filter: $filter) {
+    author
+    content
+    createdAt
+    id
+    imageUrl
+    mentionedCryptos
+    publishedAt
+    sentiment
+    sourceUrl
+    summary
+    tags
+    title
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnUpdatePaymentMethod(
+  $filter: ModelSubscriptionPaymentMethodFilterInput
+  $owner: String
+) {
+  onUpdatePaymentMethod(filter: $filter, owner: $owner) {
+    accountType
+    bankName
+    createdAt
+    expiryMonth
+    expiryYear
+    id
+    isActive
+    isDefault
+    last4
+    name
+    owner
+    type
+    updatedAt
+    userId
+    walletAddress
+    __typename
+  }
+}
+
+subscription OnUpdatePortfolio(
+  $filter: ModelSubscriptionPortfolioFilterInput
+  $owner: String
+) {
+  onUpdatePortfolio(filter: $filter, owner: $owner) {
+    createdAt
+    description
+    id
+    isPublic
+    name
+    owner
+    totalValue
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdatePortfolioHolding(
+  $filter: ModelSubscriptionPortfolioHoldingFilterInput
+  $owner: String
+) {
+  onUpdatePortfolioHolding(filter: $filter, owner: $owner) {
+    amount
+    averageBuyPrice
+    createdAt
+    cryptoSymbol
+    currentValue
+    id
+    lastUpdated
+    owner
+    portfolioId
+    profitLoss
+    profitLossPercentage
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnUpdatePost(
+  $filter: ModelSubscriptionPostFilterInput
+  $owner: String
+) {
+  onUpdatePost(filter: $filter, owner: $owner) {
+    commentsCount
+    content
+    createdAt
+    id
+    imageUrl
+    isPublic
+    likesCount
+    mentionedCryptos
+    owner
+    sharesCount
+    tags
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdatePriceAlert(
+  $filter: ModelSubscriptionPriceAlertFilterInput
+  $owner: String
+) {
+  onUpdatePriceAlert(filter: $filter, owner: $owner) {
+    alertType
+    createdAt
+    cryptoSymbol
+    id
+    isActive
+    owner
+    targetPrice
+    triggeredAt
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdateSupportTicket(
+  $filter: ModelSubscriptionSupportTicketFilterInput
+  $owner: String
+) {
+  onUpdateSupportTicket(filter: $filter, owner: $owner) {
+    adminNotes
+    attachments
+    category
+    createdAt
+    description
+    id
+    owner
+    priority
+    resolvedAt
+    status
+    subject
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdateTradingSignal(
+  $filter: ModelSubscriptionTradingSignalFilterInput
+  $owner: String
+) {
+  onUpdateTradingSignal(filter: $filter, owner: $owner) {
+    confidence
+    createdAt
+    cryptoSymbol
+    expiresAt
+    id
+    isActive
+    owner
+    performanceRating
+    reasoning
+    signalType
+    stopLoss
+    targetPrice
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdateTransaction(
+  $filter: ModelSubscriptionTransactionFilterInput
+  $owner: String
+) {
+  onUpdateTransaction(filter: $filter, owner: $owner) {
+    amount
+    createdAt
+    cryptoSymbol
+    fees
+    id
+    notes
+    owner
+    portfolioId
+    price
+    totalValue
+    transactionDate
+    type
+    updatedAt
+    __typename
+  }
+}
+
+subscription OnUpdateUserProfile(
+  $filter: ModelSubscriptionUserProfileFilterInput
+  $owner: String
+) {
+  onUpdateUserProfile(filter: $filter, owner: $owner) {
+    bio
+    createdAt
+    displayName
+    email
+    followersCount
+    followingCount
+    id
+    isPublic
+    owner
+    profilePicture
+    totalPortfolioValue
+    updatedAt
+    userId
+    username
+    __typename
+  }
+}
+
+subscription OnUpdateUserSettings(
+  $filter: ModelSubscriptionUserSettingsFilterInput
+  $owner: String
+) {
+  onUpdateUserSettings(filter: $filter, owner: $owner) {
+    biometricEnabled
+    createdAt
+    currency
+    dataRetention
+    emailNotifications
+    id
+    language
+    marketAlerts
+    notificationsEnabled
+    owner
+    portfolioPrivacy
+    pushNotifications
+    theme
+    twoFactorEnabled
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+subscription OnUpdateWatchlist(
+  $filter: ModelSubscriptionWatchlistFilterInput
+  $owner: String
+) {
+  onUpdateWatchlist(filter: $filter, owner: $owner) {
+    createdAt
+    cryptoSymbols
+    id
+    isPublic
+    name
+    owner
+    updatedAt
+    userId
+    __typename
+  }
+}

@@ -1,0 +1,1129 @@
+# this is an auto generated file. This will be overwritten
+
+mutation CreateArticle(
+  $condition: ModelArticleConditionInput
+  $input: CreateArticleInput!
+) {
+  createArticle(condition: $condition, input: $input) {
+    authorId
+    authorName
+    commentsCount
+    content
+    contentKey
+    coverImageUrl
+    createdAt
+    id
+    images
+    isPublic
+    likesCount
+    owner
+    publishedAt
+    status
+    summary
+    tags
+    title
+    updatedAt
+    viewsCount
+    __typename
+  }
+}
+
+mutation CreateComment(
+  $condition: ModelCommentConditionInput
+  $input: CreateCommentInput!
+) {
+  createComment(condition: $condition, input: $input) {
+    content
+    createdAt
+    id
+    likesCount
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation CreateCryptocurrency(
+  $condition: ModelCryptocurrencyConditionInput
+  $input: CreateCryptocurrencyInput!
+) {
+  createCryptocurrency(condition: $condition, input: $input) {
+    createdAt
+    currentPrice
+    description
+    id
+    lastUpdated
+    logoUrl
+    marketCap
+    name
+    owner
+    priceChange24h
+    priceChangePercentage24h
+    symbol
+    updatedAt
+    volume24h
+    website
+    __typename
+  }
+}
+
+mutation CreateFAQ(
+  $condition: ModelFAQConditionInput
+  $input: CreateFAQInput!
+) {
+  createFAQ(condition: $condition, input: $input) {
+    answer
+    category
+    createdAt
+    id
+    isPublished
+    order
+    question
+    tags
+    updatedAt
+    __typename
+  }
+}
+
+mutation CreateFollow(
+  $condition: ModelFollowConditionInput
+  $input: CreateFollowInput!
+) {
+  createFollow(condition: $condition, input: $input) {
+    createdAt
+    followerId
+    followingId
+    id
+    owner
+    updatedAt
+    __typename
+  }
+}
+
+mutation CreateLike(
+  $condition: ModelLikeConditionInput
+  $input: CreateLikeInput!
+) {
+  createLike(condition: $condition, input: $input) {
+    commentId
+    createdAt
+    id
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation CreateNewsArticle(
+  $condition: ModelNewsArticleConditionInput
+  $input: CreateNewsArticleInput!
+) {
+  createNewsArticle(condition: $condition, input: $input) {
+    author
+    content
+    createdAt
+    id
+    imageUrl
+    mentionedCryptos
+    publishedAt
+    sentiment
+    sourceUrl
+    summary
+    tags
+    title
+    updatedAt
+    __typename
+  }
+}
+
+mutation CreatePaymentMethod(
+  $condition: ModelPaymentMethodConditionInput
+  $input: CreatePaymentMethodInput!
+) {
+  createPaymentMethod(condition: $condition, input: $input) {
+    accountType
+    bankName
+    createdAt
+    expiryMonth
+    expiryYear
+    id
+    isActive
+    isDefault
+    last4
+    name
+    owner
+    type
+    updatedAt
+    userId
+    walletAddress
+    __typename
+  }
+}
+
+mutation CreatePortfolio(
+  $condition: ModelPortfolioConditionInput
+  $input: CreatePortfolioInput!
+) {
+  createPortfolio(condition: $condition, input: $input) {
+    createdAt
+    description
+    id
+    isPublic
+    name
+    owner
+    totalValue
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation CreatePortfolioHolding(
+  $condition: ModelPortfolioHoldingConditionInput
+  $input: CreatePortfolioHoldingInput!
+) {
+  createPortfolioHolding(condition: $condition, input: $input) {
+    amount
+    averageBuyPrice
+    createdAt
+    cryptoSymbol
+    currentValue
+    id
+    lastUpdated
+    owner
+    portfolioId
+    profitLoss
+    profitLossPercentage
+    updatedAt
+    __typename
+  }
+}
+
+mutation CreatePost(
+  $condition: ModelPostConditionInput
+  $input: CreatePostInput!
+) {
+  createPost(condition: $condition, input: $input) {
+    commentsCount
+    content
+    createdAt
+    id
+    imageUrl
+    isPublic
+    likesCount
+    mentionedCryptos
+    owner
+    sharesCount
+    tags
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation CreatePriceAlert(
+  $condition: ModelPriceAlertConditionInput
+  $input: CreatePriceAlertInput!
+) {
+  createPriceAlert(condition: $condition, input: $input) {
+    alertType
+    createdAt
+    cryptoSymbol
+    id
+    isActive
+    owner
+    targetPrice
+    triggeredAt
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation CreateSupportTicket(
+  $condition: ModelSupportTicketConditionInput
+  $input: CreateSupportTicketInput!
+) {
+  createSupportTicket(condition: $condition, input: $input) {
+    adminNotes
+    attachments
+    category
+    createdAt
+    description
+    id
+    owner
+    priority
+    resolvedAt
+    status
+    subject
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation CreateTradingSignal(
+  $condition: ModelTradingSignalConditionInput
+  $input: CreateTradingSignalInput!
+) {
+  createTradingSignal(condition: $condition, input: $input) {
+    confidence
+    createdAt
+    cryptoSymbol
+    expiresAt
+    id
+    isActive
+    owner
+    performanceRating
+    reasoning
+    signalType
+    stopLoss
+    targetPrice
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation CreateTransaction(
+  $condition: ModelTransactionConditionInput
+  $input: CreateTransactionInput!
+) {
+  createTransaction(condition: $condition, input: $input) {
+    amount
+    createdAt
+    cryptoSymbol
+    fees
+    id
+    notes
+    owner
+    portfolioId
+    price
+    totalValue
+    transactionDate
+    type
+    updatedAt
+    __typename
+  }
+}
+
+mutation CreateUserProfile(
+  $condition: ModelUserProfileConditionInput
+  $input: CreateUserProfileInput!
+) {
+  createUserProfile(condition: $condition, input: $input) {
+    bio
+    createdAt
+    displayName
+    email
+    followersCount
+    followingCount
+    id
+    isPublic
+    owner
+    profilePicture
+    totalPortfolioValue
+    updatedAt
+    userId
+    username
+    __typename
+  }
+}
+
+mutation CreateUserSettings(
+  $condition: ModelUserSettingsConditionInput
+  $input: CreateUserSettingsInput!
+) {
+  createUserSettings(condition: $condition, input: $input) {
+    biometricEnabled
+    createdAt
+    currency
+    dataRetention
+    emailNotifications
+    id
+    language
+    marketAlerts
+    notificationsEnabled
+    owner
+    portfolioPrivacy
+    pushNotifications
+    theme
+    twoFactorEnabled
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation CreateWatchlist(
+  $condition: ModelWatchlistConditionInput
+  $input: CreateWatchlistInput!
+) {
+  createWatchlist(condition: $condition, input: $input) {
+    createdAt
+    cryptoSymbols
+    id
+    isPublic
+    name
+    owner
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeleteArticle(
+  $condition: ModelArticleConditionInput
+  $input: DeleteArticleInput!
+) {
+  deleteArticle(condition: $condition, input: $input) {
+    authorId
+    authorName
+    commentsCount
+    content
+    contentKey
+    coverImageUrl
+    createdAt
+    id
+    images
+    isPublic
+    likesCount
+    owner
+    publishedAt
+    status
+    summary
+    tags
+    title
+    updatedAt
+    viewsCount
+    __typename
+  }
+}
+
+mutation DeleteComment(
+  $condition: ModelCommentConditionInput
+  $input: DeleteCommentInput!
+) {
+  deleteComment(condition: $condition, input: $input) {
+    content
+    createdAt
+    id
+    likesCount
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeleteCryptocurrency(
+  $condition: ModelCryptocurrencyConditionInput
+  $input: DeleteCryptocurrencyInput!
+) {
+  deleteCryptocurrency(condition: $condition, input: $input) {
+    createdAt
+    currentPrice
+    description
+    id
+    lastUpdated
+    logoUrl
+    marketCap
+    name
+    owner
+    priceChange24h
+    priceChangePercentage24h
+    symbol
+    updatedAt
+    volume24h
+    website
+    __typename
+  }
+}
+
+mutation DeleteFAQ(
+  $condition: ModelFAQConditionInput
+  $input: DeleteFAQInput!
+) {
+  deleteFAQ(condition: $condition, input: $input) {
+    answer
+    category
+    createdAt
+    id
+    isPublished
+    order
+    question
+    tags
+    updatedAt
+    __typename
+  }
+}
+
+mutation DeleteFollow(
+  $condition: ModelFollowConditionInput
+  $input: DeleteFollowInput!
+) {
+  deleteFollow(condition: $condition, input: $input) {
+    createdAt
+    followerId
+    followingId
+    id
+    owner
+    updatedAt
+    __typename
+  }
+}
+
+mutation DeleteLike(
+  $condition: ModelLikeConditionInput
+  $input: DeleteLikeInput!
+) {
+  deleteLike(condition: $condition, input: $input) {
+    commentId
+    createdAt
+    id
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeleteNewsArticle(
+  $condition: ModelNewsArticleConditionInput
+  $input: DeleteNewsArticleInput!
+) {
+  deleteNewsArticle(condition: $condition, input: $input) {
+    author
+    content
+    createdAt
+    id
+    imageUrl
+    mentionedCryptos
+    publishedAt
+    sentiment
+    sourceUrl
+    summary
+    tags
+    title
+    updatedAt
+    __typename
+  }
+}
+
+mutation DeletePaymentMethod(
+  $condition: ModelPaymentMethodConditionInput
+  $input: DeletePaymentMethodInput!
+) {
+  deletePaymentMethod(condition: $condition, input: $input) {
+    accountType
+    bankName
+    createdAt
+    expiryMonth
+    expiryYear
+    id
+    isActive
+    isDefault
+    last4
+    name
+    owner
+    type
+    updatedAt
+    userId
+    walletAddress
+    __typename
+  }
+}
+
+mutation DeletePortfolio(
+  $condition: ModelPortfolioConditionInput
+  $input: DeletePortfolioInput!
+) {
+  deletePortfolio(condition: $condition, input: $input) {
+    createdAt
+    description
+    id
+    isPublic
+    name
+    owner
+    totalValue
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeletePortfolioHolding(
+  $condition: ModelPortfolioHoldingConditionInput
+  $input: DeletePortfolioHoldingInput!
+) {
+  deletePortfolioHolding(condition: $condition, input: $input) {
+    amount
+    averageBuyPrice
+    createdAt
+    cryptoSymbol
+    currentValue
+    id
+    lastUpdated
+    owner
+    portfolioId
+    profitLoss
+    profitLossPercentage
+    updatedAt
+    __typename
+  }
+}
+
+mutation DeletePost(
+  $condition: ModelPostConditionInput
+  $input: DeletePostInput!
+) {
+  deletePost(condition: $condition, input: $input) {
+    commentsCount
+    content
+    createdAt
+    id
+    imageUrl
+    isPublic
+    likesCount
+    mentionedCryptos
+    owner
+    sharesCount
+    tags
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeletePriceAlert(
+  $condition: ModelPriceAlertConditionInput
+  $input: DeletePriceAlertInput!
+) {
+  deletePriceAlert(condition: $condition, input: $input) {
+    alertType
+    createdAt
+    cryptoSymbol
+    id
+    isActive
+    owner
+    targetPrice
+    triggeredAt
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeleteSupportTicket(
+  $condition: ModelSupportTicketConditionInput
+  $input: DeleteSupportTicketInput!
+) {
+  deleteSupportTicket(condition: $condition, input: $input) {
+    adminNotes
+    attachments
+    category
+    createdAt
+    description
+    id
+    owner
+    priority
+    resolvedAt
+    status
+    subject
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeleteTradingSignal(
+  $condition: ModelTradingSignalConditionInput
+  $input: DeleteTradingSignalInput!
+) {
+  deleteTradingSignal(condition: $condition, input: $input) {
+    confidence
+    createdAt
+    cryptoSymbol
+    expiresAt
+    id
+    isActive
+    owner
+    performanceRating
+    reasoning
+    signalType
+    stopLoss
+    targetPrice
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeleteTransaction(
+  $condition: ModelTransactionConditionInput
+  $input: DeleteTransactionInput!
+) {
+  deleteTransaction(condition: $condition, input: $input) {
+    amount
+    createdAt
+    cryptoSymbol
+    fees
+    id
+    notes
+    owner
+    portfolioId
+    price
+    totalValue
+    transactionDate
+    type
+    updatedAt
+    __typename
+  }
+}
+
+mutation DeleteUserProfile(
+  $condition: ModelUserProfileConditionInput
+  $input: DeleteUserProfileInput!
+) {
+  deleteUserProfile(condition: $condition, input: $input) {
+    bio
+    createdAt
+    displayName
+    email
+    followersCount
+    followingCount
+    id
+    isPublic
+    owner
+    profilePicture
+    totalPortfolioValue
+    updatedAt
+    userId
+    username
+    __typename
+  }
+}
+
+mutation DeleteUserSettings(
+  $condition: ModelUserSettingsConditionInput
+  $input: DeleteUserSettingsInput!
+) {
+  deleteUserSettings(condition: $condition, input: $input) {
+    biometricEnabled
+    createdAt
+    currency
+    dataRetention
+    emailNotifications
+    id
+    language
+    marketAlerts
+    notificationsEnabled
+    owner
+    portfolioPrivacy
+    pushNotifications
+    theme
+    twoFactorEnabled
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation DeleteWatchlist(
+  $condition: ModelWatchlistConditionInput
+  $input: DeleteWatchlistInput!
+) {
+  deleteWatchlist(condition: $condition, input: $input) {
+    createdAt
+    cryptoSymbols
+    id
+    isPublic
+    name
+    owner
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdateArticle(
+  $condition: ModelArticleConditionInput
+  $input: UpdateArticleInput!
+) {
+  updateArticle(condition: $condition, input: $input) {
+    authorId
+    authorName
+    commentsCount
+    content
+    contentKey
+    coverImageUrl
+    createdAt
+    id
+    images
+    isPublic
+    likesCount
+    owner
+    publishedAt
+    status
+    summary
+    tags
+    title
+    updatedAt
+    viewsCount
+    __typename
+  }
+}
+
+mutation UpdateComment(
+  $condition: ModelCommentConditionInput
+  $input: UpdateCommentInput!
+) {
+  updateComment(condition: $condition, input: $input) {
+    content
+    createdAt
+    id
+    likesCount
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdateCryptocurrency(
+  $condition: ModelCryptocurrencyConditionInput
+  $input: UpdateCryptocurrencyInput!
+) {
+  updateCryptocurrency(condition: $condition, input: $input) {
+    createdAt
+    currentPrice
+    description
+    id
+    lastUpdated
+    logoUrl
+    marketCap
+    name
+    owner
+    priceChange24h
+    priceChangePercentage24h
+    symbol
+    updatedAt
+    volume24h
+    website
+    __typename
+  }
+}
+
+mutation UpdateFAQ(
+  $condition: ModelFAQConditionInput
+  $input: UpdateFAQInput!
+) {
+  updateFAQ(condition: $condition, input: $input) {
+    answer
+    category
+    createdAt
+    id
+    isPublished
+    order
+    question
+    tags
+    updatedAt
+    __typename
+  }
+}
+
+mutation UpdateFollow(
+  $condition: ModelFollowConditionInput
+  $input: UpdateFollowInput!
+) {
+  updateFollow(condition: $condition, input: $input) {
+    createdAt
+    followerId
+    followingId
+    id
+    owner
+    updatedAt
+    __typename
+  }
+}
+
+mutation UpdateLike(
+  $condition: ModelLikeConditionInput
+  $input: UpdateLikeInput!
+) {
+  updateLike(condition: $condition, input: $input) {
+    commentId
+    createdAt
+    id
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdateNewsArticle(
+  $condition: ModelNewsArticleConditionInput
+  $input: UpdateNewsArticleInput!
+) {
+  updateNewsArticle(condition: $condition, input: $input) {
+    author
+    content
+    createdAt
+    id
+    imageUrl
+    mentionedCryptos
+    publishedAt
+    sentiment
+    sourceUrl
+    summary
+    tags
+    title
+    updatedAt
+    __typename
+  }
+}
+
+mutation UpdatePaymentMethod(
+  $condition: ModelPaymentMethodConditionInput
+  $input: UpdatePaymentMethodInput!
+) {
+  updatePaymentMethod(condition: $condition, input: $input) {
+    accountType
+    bankName
+    createdAt
+    expiryMonth
+    expiryYear
+    id
+    isActive
+    isDefault
+    last4
+    name
+    owner
+    type
+    updatedAt
+    userId
+    walletAddress
+    __typename
+  }
+}
+
+mutation UpdatePortfolio(
+  $condition: ModelPortfolioConditionInput
+  $input: UpdatePortfolioInput!
+) {
+  updatePortfolio(condition: $condition, input: $input) {
+    createdAt
+    description
+    id
+    isPublic
+    name
+    owner
+    totalValue
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdatePortfolioHolding(
+  $condition: ModelPortfolioHoldingConditionInput
+  $input: UpdatePortfolioHoldingInput!
+) {
+  updatePortfolioHolding(condition: $condition, input: $input) {
+    amount
+    averageBuyPrice
+    createdAt
+    cryptoSymbol
+    currentValue
+    id
+    lastUpdated
+    owner
+    portfolioId
+    profitLoss
+    profitLossPercentage
+    updatedAt
+    __typename
+  }
+}
+
+mutation UpdatePost(
+  $condition: ModelPostConditionInput
+  $input: UpdatePostInput!
+) {
+  updatePost(condition: $condition, input: $input) {
+    commentsCount
+    content
+    createdAt
+    id
+    imageUrl
+    isPublic
+    likesCount
+    mentionedCryptos
+    owner
+    sharesCount
+    tags
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdatePriceAlert(
+  $condition: ModelPriceAlertConditionInput
+  $input: UpdatePriceAlertInput!
+) {
+  updatePriceAlert(condition: $condition, input: $input) {
+    alertType
+    createdAt
+    cryptoSymbol
+    id
+    isActive
+    owner
+    targetPrice
+    triggeredAt
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdateSupportTicket(
+  $condition: ModelSupportTicketConditionInput
+  $input: UpdateSupportTicketInput!
+) {
+  updateSupportTicket(condition: $condition, input: $input) {
+    adminNotes
+    attachments
+    category
+    createdAt
+    description
+    id
+    owner
+    priority
+    resolvedAt
+    status
+    subject
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdateTradingSignal(
+  $condition: ModelTradingSignalConditionInput
+  $input: UpdateTradingSignalInput!
+) {
+  updateTradingSignal(condition: $condition, input: $input) {
+    confidence
+    createdAt
+    cryptoSymbol
+    expiresAt
+    id
+    isActive
+    owner
+    performanceRating
+    reasoning
+    signalType
+    stopLoss
+    targetPrice
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdateTransaction(
+  $condition: ModelTransactionConditionInput
+  $input: UpdateTransactionInput!
+) {
+  updateTransaction(condition: $condition, input: $input) {
+    amount
+    createdAt
+    cryptoSymbol
+    fees
+    id
+    notes
+    owner
+    portfolioId
+    price
+    totalValue
+    transactionDate
+    type
+    updatedAt
+    __typename
+  }
+}
+
+mutation UpdateUserProfile(
+  $condition: ModelUserProfileConditionInput
+  $input: UpdateUserProfileInput!
+) {
+  updateUserProfile(condition: $condition, input: $input) {
+    bio
+    createdAt
+    displayName
+    email
+    followersCount
+    followingCount
+    id
+    isPublic
+    owner
+    profilePicture
+    totalPortfolioValue
+    updatedAt
+    userId
+    username
+    __typename
+  }
+}
+
+mutation UpdateUserSettings(
+  $condition: ModelUserSettingsConditionInput
+  $input: UpdateUserSettingsInput!
+) {
+  updateUserSettings(condition: $condition, input: $input) {
+    biometricEnabled
+    createdAt
+    currency
+    dataRetention
+    emailNotifications
+    id
+    language
+    marketAlerts
+    notificationsEnabled
+    owner
+    portfolioPrivacy
+    pushNotifications
+    theme
+    twoFactorEnabled
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+mutation UpdateWatchlist(
+  $condition: ModelWatchlistConditionInput
+  $input: UpdateWatchlistInput!
+) {
+  updateWatchlist(condition: $condition, input: $input) {
+    createdAt
+    cryptoSymbols
+    id
+    isPublic
+    name
+    owner
+    updatedAt
+    userId
+    __typename
+  }
+}

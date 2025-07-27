@@ -1,0 +1,785 @@
+# this is an auto generated file. This will be overwritten
+
+query GetArticle($id: ID!) {
+  getArticle(id: $id) {
+    authorId
+    authorName
+    commentsCount
+    content
+    contentKey
+    coverImageUrl
+    createdAt
+    id
+    images
+    isPublic
+    likesCount
+    owner
+    publishedAt
+    status
+    summary
+    tags
+    title
+    updatedAt
+    viewsCount
+    __typename
+  }
+}
+
+query GetComment($id: ID!) {
+  getComment(id: $id) {
+    content
+    createdAt
+    id
+    likesCount
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query GetCryptocurrency($id: ID!) {
+  getCryptocurrency(id: $id) {
+    createdAt
+    currentPrice
+    description
+    id
+    lastUpdated
+    logoUrl
+    marketCap
+    name
+    owner
+    priceChange24h
+    priceChangePercentage24h
+    symbol
+    updatedAt
+    volume24h
+    website
+    __typename
+  }
+}
+
+query GetFAQ($id: ID!) {
+  getFAQ(id: $id) {
+    answer
+    category
+    createdAt
+    id
+    isPublished
+    order
+    question
+    tags
+    updatedAt
+    __typename
+  }
+}
+
+query GetFollow($id: ID!) {
+  getFollow(id: $id) {
+    createdAt
+    followerId
+    followingId
+    id
+    owner
+    updatedAt
+    __typename
+  }
+}
+
+query GetLike($id: ID!) {
+  getLike(id: $id) {
+    commentId
+    createdAt
+    id
+    owner
+    postId
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query GetNewsArticle($id: ID!) {
+  getNewsArticle(id: $id) {
+    author
+    content
+    createdAt
+    id
+    imageUrl
+    mentionedCryptos
+    publishedAt
+    sentiment
+    sourceUrl
+    summary
+    tags
+    title
+    updatedAt
+    __typename
+  }
+}
+
+query GetPaymentMethod($id: ID!) {
+  getPaymentMethod(id: $id) {
+    accountType
+    bankName
+    createdAt
+    expiryMonth
+    expiryYear
+    id
+    isActive
+    isDefault
+    last4
+    name
+    owner
+    type
+    updatedAt
+    userId
+    walletAddress
+    __typename
+  }
+}
+
+query GetPortfolio($id: ID!) {
+  getPortfolio(id: $id) {
+    createdAt
+    description
+    id
+    isPublic
+    name
+    owner
+    totalValue
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query GetPortfolioHolding($id: ID!) {
+  getPortfolioHolding(id: $id) {
+    amount
+    averageBuyPrice
+    createdAt
+    cryptoSymbol
+    currentValue
+    id
+    lastUpdated
+    owner
+    portfolioId
+    profitLoss
+    profitLossPercentage
+    updatedAt
+    __typename
+  }
+}
+
+query GetPost($id: ID!) {
+  getPost(id: $id) {
+    commentsCount
+    content
+    createdAt
+    id
+    imageUrl
+    isPublic
+    likesCount
+    mentionedCryptos
+    owner
+    sharesCount
+    tags
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query GetPriceAlert($id: ID!) {
+  getPriceAlert(id: $id) {
+    alertType
+    createdAt
+    cryptoSymbol
+    id
+    isActive
+    owner
+    targetPrice
+    triggeredAt
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query GetSupportTicket($id: ID!) {
+  getSupportTicket(id: $id) {
+    adminNotes
+    attachments
+    category
+    createdAt
+    description
+    id
+    owner
+    priority
+    resolvedAt
+    status
+    subject
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query GetTradingSignal($id: ID!) {
+  getTradingSignal(id: $id) {
+    confidence
+    createdAt
+    cryptoSymbol
+    expiresAt
+    id
+    isActive
+    owner
+    performanceRating
+    reasoning
+    signalType
+    stopLoss
+    targetPrice
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query GetTransaction($id: ID!) {
+  getTransaction(id: $id) {
+    amount
+    createdAt
+    cryptoSymbol
+    fees
+    id
+    notes
+    owner
+    portfolioId
+    price
+    totalValue
+    transactionDate
+    type
+    updatedAt
+    __typename
+  }
+}
+
+query GetUserProfile($id: ID!) {
+  getUserProfile(id: $id) {
+    bio
+    createdAt
+    displayName
+    email
+    followersCount
+    followingCount
+    id
+    isPublic
+    owner
+    profilePicture
+    totalPortfolioValue
+    updatedAt
+    userId
+    username
+    __typename
+  }
+}
+
+query GetUserSettings($id: ID!) {
+  getUserSettings(id: $id) {
+    biometricEnabled
+    createdAt
+    currency
+    dataRetention
+    emailNotifications
+    id
+    language
+    marketAlerts
+    notificationsEnabled
+    owner
+    portfolioPrivacy
+    pushNotifications
+    theme
+    twoFactorEnabled
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query GetWatchlist($id: ID!) {
+  getWatchlist(id: $id) {
+    createdAt
+    cryptoSymbols
+    id
+    isPublic
+    name
+    owner
+    updatedAt
+    userId
+    __typename
+  }
+}
+
+query ListArticles(
+  $filter: ModelArticleFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listArticles(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      authorId
+      authorName
+      commentsCount
+      content
+      contentKey
+      coverImageUrl
+      createdAt
+      id
+      images
+      isPublic
+      likesCount
+      owner
+      publishedAt
+      status
+      summary
+      tags
+      title
+      updatedAt
+      viewsCount
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListComments(
+  $filter: ModelCommentFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      content
+      createdAt
+      id
+      likesCount
+      owner
+      postId
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListCryptocurrencies(
+  $filter: ModelCryptocurrencyFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listCryptocurrencies(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      createdAt
+      currentPrice
+      description
+      id
+      lastUpdated
+      logoUrl
+      marketCap
+      name
+      owner
+      priceChange24h
+      priceChangePercentage24h
+      symbol
+      updatedAt
+      volume24h
+      website
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListFAQS($filter: ModelFAQFilterInput, $limit: Int, $nextToken: String) {
+  listFAQS(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      answer
+      category
+      createdAt
+      id
+      isPublished
+      order
+      question
+      tags
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListFollows(
+  $filter: ModelFollowFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listFollows(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      createdAt
+      followerId
+      followingId
+      id
+      owner
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListLikes(
+  $filter: ModelLikeFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listLikes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      commentId
+      createdAt
+      id
+      owner
+      postId
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListNewsArticles(
+  $filter: ModelNewsArticleFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listNewsArticles(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      author
+      content
+      createdAt
+      id
+      imageUrl
+      mentionedCryptos
+      publishedAt
+      sentiment
+      sourceUrl
+      summary
+      tags
+      title
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListPaymentMethods(
+  $filter: ModelPaymentMethodFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listPaymentMethods(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      accountType
+      bankName
+      createdAt
+      expiryMonth
+      expiryYear
+      id
+      isActive
+      isDefault
+      last4
+      name
+      owner
+      type
+      updatedAt
+      userId
+      walletAddress
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListPortfolioHoldings(
+  $filter: ModelPortfolioHoldingFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listPortfolioHoldings(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      amount
+      averageBuyPrice
+      createdAt
+      cryptoSymbol
+      currentValue
+      id
+      lastUpdated
+      owner
+      portfolioId
+      profitLoss
+      profitLossPercentage
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListPortfolios(
+  $filter: ModelPortfolioFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listPortfolios(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      createdAt
+      description
+      id
+      isPublic
+      name
+      owner
+      totalValue
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListPosts(
+  $filter: ModelPostFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listPosts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      commentsCount
+      content
+      createdAt
+      id
+      imageUrl
+      isPublic
+      likesCount
+      mentionedCryptos
+      owner
+      sharesCount
+      tags
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListPriceAlerts(
+  $filter: ModelPriceAlertFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listPriceAlerts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      alertType
+      createdAt
+      cryptoSymbol
+      id
+      isActive
+      owner
+      targetPrice
+      triggeredAt
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListSupportTickets(
+  $filter: ModelSupportTicketFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listSupportTickets(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      adminNotes
+      attachments
+      category
+      createdAt
+      description
+      id
+      owner
+      priority
+      resolvedAt
+      status
+      subject
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListTradingSignals(
+  $filter: ModelTradingSignalFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listTradingSignals(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      confidence
+      createdAt
+      cryptoSymbol
+      expiresAt
+      id
+      isActive
+      owner
+      performanceRating
+      reasoning
+      signalType
+      stopLoss
+      targetPrice
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListTransactions(
+  $filter: ModelTransactionFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listTransactions(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      amount
+      createdAt
+      cryptoSymbol
+      fees
+      id
+      notes
+      owner
+      portfolioId
+      price
+      totalValue
+      transactionDate
+      type
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListUserProfiles(
+  $filter: ModelUserProfileFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listUserProfiles(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      bio
+      createdAt
+      displayName
+      email
+      followersCount
+      followingCount
+      id
+      isPublic
+      owner
+      profilePicture
+      totalPortfolioValue
+      updatedAt
+      userId
+      username
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListUserSettings(
+  $filter: ModelUserSettingsFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listUserSettings(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      biometricEnabled
+      createdAt
+      currency
+      dataRetention
+      emailNotifications
+      id
+      language
+      marketAlerts
+      notificationsEnabled
+      owner
+      portfolioPrivacy
+      pushNotifications
+      theme
+      twoFactorEnabled
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ListWatchlists(
+  $filter: ModelWatchlistFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listWatchlists(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      createdAt
+      cryptoSymbols
+      id
+      isPublic
+      name
+      owner
+      updatedAt
+      userId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}

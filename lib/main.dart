@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/kointos_amplify_config.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/presentation/screens/auth_screen.dart';
-import 'package:kointos/presentation/screens/main_tab_screen.dart';
+import 'package:kointos/presentation/screens/adaptive_main_screen.dart';
 import 'package:kointos/presentation/widgets/first_time_tutorial.dart';
 
 void main() async {
@@ -43,11 +45,35 @@ class _AppEntryPointState extends State<AppEntryPoint> {
   final _authService = getService<AuthService>();
   bool _isLoading = true;
   bool _isAuthenticated = false;
+  StreamSubscription<AuthHubEvent>? _authSubscription;
 
   @override
   void initState() {
     super.initState();
+    _initAuthListener();
     _checkAuthStatus();
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _initAuthListener() {
+    // Listen to Amplify auth events
+    _authSubscription =
+        Amplify.Hub.listen(HubChannel.Auth, (AuthHubEvent event) {
+      switch (event.type) {
+        case AuthHubEventType.signedIn:
+        case AuthHubEventType.signedOut:
+        case AuthHubEventType.sessionExpired:
+          _checkAuthStatus();
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   Future<void> _checkAuthStatus() async {
@@ -69,6 +95,10 @@ class _AppEntryPointState extends State<AppEntryPoint> {
     }
   }
 
+  void _onAuthStateChanged() {
+    _checkAuthStatus();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -85,7 +115,9 @@ class _AppEntryPointState extends State<AppEntryPoint> {
     return MaterialApp(
       theme: AppTheme.darkTheme,
       home: FirstTimeTutorial(
-        child: _isAuthenticated ? const MainTabScreen() : const AuthScreen(),
+        child: _isAuthenticated
+            ? const AdaptiveMainScreen()
+            : AuthScreen(onAuthStateChanged: _onAuthStateChanged),
       ),
     );
   }

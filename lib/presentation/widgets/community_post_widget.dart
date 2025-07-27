@@ -73,17 +73,20 @@ class CommunityPostWidget extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.2),
+                    color: AppTheme.pureWhite.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Center(
                     child: Text(
-                      (post.authorAvatar ?? (post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : '?')),
+                      (post.authorAvatar ??
+                          (post.authorName.isNotEmpty
+                              ? post.authorName[0].toUpperCase()
+                              : '?')),
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(width: 12),
                 // Author info and timestamp
                 Expanded(
@@ -107,13 +110,13 @@ class CommunityPostWidget extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.2),
+                              color: AppTheme.pureWhite.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               post.topicName,
                               style: const TextStyle(
-                                color: AppTheme.primaryColor,
+                                color: AppTheme.pureWhite,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -144,7 +147,7 @@ class CommunityPostWidget extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Post content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -178,38 +181,40 @@ class CommunityPostWidget extends StatelessWidget {
                   Wrap(
                     spacing: 8,
                     runSpacing: 4,
-                    children: post.tags.map((tag) => Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        '#$tag',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                      ),
-                    )).toList(),
+                    children: post.tags
+                        .map((tag) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                '#$tag',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ))
+                        .toList(),
                   ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
           // Interaction bar
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(12),
                 bottomRight: Radius.circular(12),
@@ -240,7 +245,7 @@ class CommunityPostWidget extends StatelessWidget {
                   icon: Icons.comment_outlined,
                   count: post.commentCount,
                   isActive: false,
-                  activeColor: AppTheme.primaryColor,
+                  activeColor: AppTheme.pureWhite,
                   onTap: onComment,
                   showCount: true,
                 ),
@@ -282,11 +287,14 @@ class CommunityPostWidget extends StatelessWidget {
           ),
         ],
       ),
-    ).animate().slideY(
-      begin: 0.3,
-      duration: 400.ms,
-      curve: Curves.easeOutCubic,
-    ).fadeIn(duration: 400.ms);
+    )
+        .animate()
+        .slideY(
+          begin: 0.3,
+          duration: 400.ms,
+          curve: Curves.easeOutCubic,
+        )
+        .fadeIn(duration: 400.ms);
   }
 
   Widget _buildInteractionButton({
@@ -302,7 +310,9 @@ class CommunityPostWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? activeColor.withOpacity(0.2) : Colors.transparent,
+          color: isActive
+              ? activeColor.withValues(alpha: 0.2)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -374,11 +384,11 @@ class CommunityPostWidget extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              
+
               // Options
               _buildBottomSheetOption(
                 context,

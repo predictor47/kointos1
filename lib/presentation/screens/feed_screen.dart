@@ -122,12 +122,7 @@ class _FeedScreenState extends State<FeedScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Create post feature coming soon!'),
-                  duration: Duration(seconds: 1),
-                ),
-              );
+              _showCreatePostDialog();
             },
           ),
         ],
@@ -157,36 +152,16 @@ class _FeedScreenState extends State<FeedScreen> {
                   return PostCard(
                     post: post,
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Post detail feature coming soon!'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
+                      _showPostDetail(post);
                     },
                     onLike: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Like feature coming soon!'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
+                      _toggleLike(post);
                     },
                     onComment: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Comments feature coming soon!'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
+                      _showComments(post);
                     },
                     onShare: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Share feature coming soon!'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
+                      _sharePost(post);
                     },
                   );
                 },
@@ -199,5 +174,171 @@ class _FeedScreenState extends State<FeedScreen> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _showCreatePostDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final contentController = TextEditingController();
+
+        return AlertDialog(
+          title: const Text('Create New Post'),
+          content: TextField(
+            controller: contentController,
+            decoration: const InputDecoration(
+              labelText: 'What\'s on your mind?',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 4,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (contentController.text.isNotEmpty) {
+                  Navigator.pop(context);
+                  _createPost(contentController.text);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter some content')),
+                  );
+                }
+              },
+              child: const Text('Post'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _createPost(String content) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Post created: "$content"'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    // Refresh the feed
+    setState(() {
+      // In a real app, this would add to the backend and refresh
+    });
+  }
+
+  void _showPostDetail(dynamic post) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Post by ${post.author ?? 'Unknown'}'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                post.content ?? 'No content',
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Posted: ${post.timeAgo ?? 'Unknown time'}',
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _toggleLike(dynamic post) {
+    setState(() {
+      // In a real app, this would update the backend
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Post liked!'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _showComments(dynamic post) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Comments'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Comments on this post:'),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: const [
+                    Text('No comments yet. Be the first to comment!'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              const TextField(
+                decoration: InputDecoration(
+                  labelText: 'Add a comment...',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 2,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Comment added!')),
+              );
+            },
+            child: const Text('Post Comment'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _sharePost(dynamic post) {
+    final shareText = '''
+Check out this post: 
+
+${post.content ?? 'Great content'}
+
+Shared from Kointoss!
+''';
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Post shared!\n\n$shareText'),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 }

@@ -22,7 +22,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
   final ScrollController _scrollController = ScrollController();
   late AnimationController _pulseController;
   late AnimationController _expandController;
-  
+
   final IntelligentChatbotService _chatbotService = IntelligentChatbotService();
   bool _isTyping = false;
 
@@ -33,14 +33,15 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
-    
+
     _expandController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
+
     // Add welcome message
-    _addBotMessage("👋 Hi! I'm KryptoBot, your crypto companion. Ask me about prices, analysis, or crypto education!");
+    _addBotMessage(
+        "👋 Hi! I'm KryptoBot, your crypto companion. Ask me about prices, analysis, or crypto education!");
   }
 
   @override
@@ -57,7 +58,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
       _isExpanded = !_isExpanded;
       _isMinimized = false;
     });
-    
+
     if (_isExpanded) {
       _expandController.forward();
     } else {
@@ -114,7 +115,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
 
     _addUserMessage(text);
     _messageController.clear();
-    
+
     setState(() {
       _isTyping = true;
     });
@@ -123,20 +124,20 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
       // Get current data for context
       final cryptoRepo = getService<CryptocurrencyRepository>();
       final articleRepo = getService<ArticleRepository>();
-      
+
       final cryptocurrencies = await cryptoRepo.getTopCryptocurrencies();
       final articles = await articleRepo.getArticles();
-      
+
       // Process message with chatbot
       final response = await _chatbotService.processMessage(
         text,
         currentPrices: cryptocurrencies,
         userArticles: articles,
       );
-      
+
       // Simulate thinking delay
       await Future.delayed(const Duration(milliseconds: 800));
-      
+
       _addBotMessage(response.text, response: response);
     } catch (e) {
       _addBotMessage("Sorry, I encountered an error. Please try again.");
@@ -163,7 +164,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.pureWhite.withOpacity(0.3),
+                  color: AppTheme.pureWhite.withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -174,8 +175,8 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
               color: Colors.white,
               size: 28,
             ),
-          ).animate(onPlay: (controller) => controller.repeat())
-              .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.3)),
+          ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+              duration: 2000.ms, color: Colors.white.withValues(alpha: 0.3)),
         ),
       );
     }
@@ -197,7 +198,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, -5),
                 ),
@@ -221,7 +222,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Icon(
@@ -264,7 +265,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                     ],
                   ),
                 ),
-                
+
                 // Messages
                 Expanded(
                   child: ListView.builder(
@@ -275,13 +276,13 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                       if (_isTyping && index == _messages.length) {
                         return _buildTypingIndicator();
                       }
-                      
+
                       final message = _messages[index];
                       return _buildMessageBubble(message);
                     },
                   ),
                 ),
-                
+
                 // Input
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -297,7 +298,8 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                       Expanded(
                         child: TextField(
                           controller: _messageController,
-                          style: const TextStyle(color: AppTheme.textPrimaryColor),
+                          style:
+                              const TextStyle(color: AppTheme.textPrimaryColor),
                           decoration: InputDecoration(
                             hintText: 'Ask me about crypto...',
                             hintStyle: const TextStyle(
@@ -338,7 +340,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
             ),
           ),
         ),
-        
+
         // Floating button when collapsed
         if (!_isExpanded)
           Positioned(
@@ -354,7 +356,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.pureWhite.withOpacity(0.3),
+                      color: AppTheme.pureWhite.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -365,9 +367,13 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                   color: Colors.white,
                   size: 28,
                 ),
-              ).animate(onPlay: (controller) => controller.repeat())
-                  .animate().scale(duration: const Duration(milliseconds: 200))
-                  .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.3)),
+              )
+                  .animate(onPlay: (controller) => controller.repeat())
+                  .animate()
+                  .scale(duration: const Duration(milliseconds: 200))
+                  .shimmer(
+                      duration: 2000.ms,
+                      color: Colors.white.withValues(alpha: 0.3)),
             ),
           ),
       ],
@@ -398,11 +404,10 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
             ),
             const SizedBox(width: 8),
           ],
-          
           Flexible(
             child: Column(
-              crossAxisAlignment: message.isUser 
-                  ? CrossAxisAlignment.end 
+              crossAxisAlignment: message.isUser
+                  ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
                 Container(
@@ -423,7 +428,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                     ),
                   ),
                 ),
-                
+
                 // Show suggestions for bot messages
                 if (!message.isUser && message.response?.suggestions != null)
                   Padding(
@@ -431,7 +436,8 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                     child: Wrap(
                       spacing: 6,
                       runSpacing: 6,
-                      children: message.response!.suggestions!.map((suggestion) {
+                      children: (message.response?.suggestions ?? [])
+                          .map((suggestion) {
                         return GestureDetector(
                           onTap: () {
                             _messageController.text = suggestion;
@@ -443,10 +449,11 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.pureWhite.withOpacity(0.1),
+                              color: AppTheme.pureWhite.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: AppTheme.pureWhite.withOpacity(0.3),
+                                color:
+                                    AppTheme.pureWhite.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -464,7 +471,6 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
               ],
             ),
           ),
-          
           if (message.isUser) ...[
             const SizedBox(width: 8),
             Container(

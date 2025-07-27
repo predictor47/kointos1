@@ -66,7 +66,7 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardBlack,
         elevation: 8,
         shadowColor: Colors.black54,
@@ -259,7 +259,7 @@ class AppTheme {
       ),
 
       // Tab Bar Theme
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: const TabBarThemeData(
         labelColor: pureWhite,
         unselectedLabelColor: greyText,
         indicatorColor: pureWhite,
@@ -271,7 +271,7 @@ class AppTheme {
   // Custom Shadows
   static List<BoxShadow> get cardShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 8,
           offset: const Offset(0, 4),
         ),
@@ -279,7 +279,7 @@ class AppTheme {
 
   static List<BoxShadow> get buttonShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.15),
+          color: Colors.black.withValues(alpha: 0.15),
           blurRadius: 4,
           offset: const Offset(0, 2),
         ),
@@ -350,6 +350,51 @@ class AppTheme {
 
   // Method for alpha colors
   static Color primaryWithAlpha(double opacity) {
-    return pureWhite.withOpacity(opacity);
+    return pureWhite.withValues(alpha: opacity);
+  }
+
+  // Responsive Design Constants
+  static const double mobileBreakpoint = 600;
+  static const double tabletBreakpoint = 1024;
+  static const double desktopBreakpoint = 1440;
+
+  // Responsive Spacing
+  static EdgeInsets responsiveScreenPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < mobileBreakpoint) {
+      return const EdgeInsets.all(16.0);
+    } else if (width < tabletBreakpoint) {
+      return const EdgeInsets.all(24.0);
+    } else {
+      return const EdgeInsets.all(32.0);
+    }
+  }
+
+  // Responsive Text Styles
+  static TextStyle responsiveHeadline(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    double fontSize = width < mobileBreakpoint
+        ? 24
+        : width < tabletBreakpoint
+            ? 28
+            : 32;
+    return TextStyle(
+      fontSize: fontSize,
+      fontWeight: FontWeight.bold,
+      color: pureWhite,
+    );
+  }
+
+  static TextStyle responsiveBody(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    double fontSize = width < mobileBreakpoint
+        ? 14
+        : width < tabletBreakpoint
+            ? 16
+            : 18;
+    return TextStyle(
+      fontSize: fontSize,
+      color: accentWhite,
+    );
   }
 }

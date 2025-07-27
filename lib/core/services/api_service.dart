@@ -37,6 +37,7 @@ class ApiService {
             publishedAt
             createdAt
             updatedAt
+            owner
           }
         }
       ''';
@@ -52,6 +53,10 @@ class ApiService {
         LoggerService.info('Article retrieved successfully');
         final data = jsonDecode(response.data!);
         return data['getArticle'];
+      } else if (response.errors.isNotEmpty) {
+        LoggerService.error('GraphQL errors: ${response.errors}');
+        throw Exception(
+            'Failed to get article: ${response.errors.first.message}');
       }
       return null;
     } catch (e) {
@@ -68,12 +73,9 @@ class ApiService {
   }) async {
     try {
       const query = '''
-        query ListArticles(\$authorId: ID, \$status: String, \$limit: Int, \$nextToken: String) {
+        query ListArticles(\$filter: ModelArticleFilterInput, \$limit: Int, \$nextToken: String) {
           listArticles(
-            filter: {
-              authorId: { eq: \$authorId }
-              status: { eq: \$status }
-            }
+            filter: \$filter
             limit: \$limit
             nextToken: \$nextToken
           ) {
@@ -94,17 +96,29 @@ class ApiService {
               publishedAt
               createdAt
               updatedAt
+              owner
             }
             nextToken
           }
         }
       ''';
 
+      // Build filter object properly
+      Map<String, dynamic>? filter;
+      if (authorId != null || status != null) {
+        filter = {};
+        if (authorId != null) {
+          filter['authorId'] = {'eq': authorId};
+        }
+        if (status != null) {
+          filter['status'] = {'eq': status};
+        }
+      }
+
       final request = GraphQLRequest<String>(
         document: query,
         variables: {
-          if (authorId != null) 'authorId': authorId,
-          if (status != null) 'status': status,
+          if (filter != null) 'filter': filter,
           'limit': limit,
           if (nextToken != null) 'nextToken': nextToken,
         },
@@ -115,7 +129,11 @@ class ApiService {
       if (response.data != null) {
         LoggerService.info('Articles retrieved successfully');
         final data = jsonDecode(response.data!);
-        return List<Map<String, dynamic>>.from(data['listArticles']['items']);
+        final items = data['listArticles']['items'] as List?;
+        return items?.cast<Map<String, dynamic>>() ?? [];
+      } else if (response.errors.isNotEmpty) {
+        LoggerService.error('GraphQL errors: ${response.errors}');
+        return [];
       }
       return [];
     } catch (e) {
@@ -849,6 +867,218 @@ class ApiService {
         throw Exception('Failed to delete data: ${response.statusCode}');
       }
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Social Post Operations
+  Future<Map<String, dynamic>?> createPost({
+    required String content,
+    String? imageUrl,
+    List<String>? tags,
+    List<String>? mentionedCryptos,
+    bool isPublic = true,
+  }) async {
+    try {
+      const mutation = '''
+        mutation CreatePost(\$input: CreatePostInput!) {
+          createPost(input: \$input) {
+            id
+            userId
+            content
+            imageUrl
+            likesCount
+            commentsCount
+            sharesCount
+            tags
+            mentionedCryptos
+            isPublic
+            createdAt
+            updatedAt
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: mutation,
+        variables: {
+          'input': {
+            'content': content,
+            'imageUrl': imageUrl,
+            'tags': tags,
+            'mentionedCryptos': mentionedCryptos,
+            'isPublic': isPublic,
+          }
+        },
+      );
+
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data != null) {
+        final jsonData = json.decode(response.data!);
+        return jsonData['createPost'];
+      }
+      return null;
+    } catch (e) {
+      LoggerService.error('Failed to create post: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getSocialPosts(
+      {int limit = 20, String? nextToken}) async {
+    try {
+      const query = '''
+        query ListPosts(\$limit: Int, \$nextToken: String) {
+          listPosts(limit: \$limit, nextToken: \$nextToken) {
+            items {
+              id
+              userId
+              content
+              imageUrl
+              likesCount
+              commentsCount
+              sharesCount
+              tags
+              mentionedCryptos
+              isPublic
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: query,
+        variables: {
+          'limit': limit,
+          'nextToken': nextToken,
+        },
+      );
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.data != null) {
+        final jsonData = json.decode(response.data!);
+        return List<Map<String, dynamic>>.from(jsonData['listPosts']['items']);
+      }
+      return [];
+    } catch (e) {
+      LoggerService.error('Failed to get social posts: $e');
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> likePost(String postId) async {
+    try {
+      const mutation = '''
+        mutation CreateLike(\$input: CreateLikeInput!) {
+          createLike(input: \$input) {
+            id
+            userId
+            postId
+            createdAt
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: mutation,
+        variables: {
+          'input': {
+            'postId': postId,
+          }
+        },
+      );
+
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data != null) {
+        final jsonData = json.decode(response.data!);
+        return jsonData['createLike'];
+      }
+      return null;
+    } catch (e) {
+      LoggerService.error('Failed to like post: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> createComment({
+    required String postId,
+    required String content,
+  }) async {
+    try {
+      const mutation = '''
+        mutation CreateComment(\$input: CreateCommentInput!) {
+          createComment(input: \$input) {
+            id
+            postId
+            userId
+            content
+            likesCount
+            createdAt
+            updatedAt
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: mutation,
+        variables: {
+          'input': {
+            'postId': postId,
+            'content': content,
+          }
+        },
+      );
+
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data != null) {
+        final jsonData = json.decode(response.data!);
+        return jsonData['createComment'];
+      }
+      return null;
+    } catch (e) {
+      LoggerService.error('Failed to create comment: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> followUser(String followingId) async {
+    try {
+      const mutation = '''
+        mutation CreateFollow(\$input: CreateFollowInput!) {
+          createFollow(input: \$input) {
+            id
+            followerId
+            followingId
+            createdAt
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: mutation,
+        variables: {
+          'input': {
+            'followingId': followingId,
+          }
+        },
+      );
+
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data != null) {
+        final jsonData = json.decode(response.data!);
+        return jsonData['createFollow'];
+      }
+      return null;
+    } catch (e) {
+      LoggerService.error('Failed to follow user: $e');
       rethrow;
     }
   }

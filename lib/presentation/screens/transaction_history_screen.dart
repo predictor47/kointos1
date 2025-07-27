@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/api_service.dart';
+import 'package:kointos/core/enums/transaction_type_enum.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -16,7 +17,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   List<Map<String, dynamic>> _transactions = [];
   bool _isLoading = true;
-  String? _filter;
+  TransactionTypeEnum? _filter;
 
   @override
   void initState() {
@@ -50,7 +51,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   List<Map<String, dynamic>> get _filteredTransactions {
     if (_filter == null) return _transactions;
-    return _transactions.where((tx) => tx['type'] == _filter).toList();
+    return _transactions.where((tx) => tx['type'] == _filter!.value).toList();
   }
 
   @override
@@ -65,18 +66,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             icon: const Icon(Icons.filter_list),
             onSelected: (value) {
               setState(() {
-                _filter = value == 'ALL' ? null : value;
+                _filter = value == 'ALL' ? null : TransactionTypeEnum.fromString(value);
               });
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
                   value: 'ALL', child: Text('All Transactions')),
-              const PopupMenuItem(value: 'BUY', child: Text('Buy Orders')),
-              const PopupMenuItem(value: 'SELL', child: Text('Sell Orders')),
-              const PopupMenuItem(
-                  value: 'TRANSFER_IN', child: Text('Transfers In')),
-              const PopupMenuItem(
-                  value: 'TRANSFER_OUT', child: Text('Transfers Out')),
+              ...TransactionTypeEnum.values.map((type) => PopupMenuItem(
+                  value: type.value, child: Text(type.displayName))),
             ],
           ),
         ],
@@ -174,7 +171,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: typeColor.withOpacity(0.1),
+          backgroundColor: typeColor.withValues(alpha: 0.1),
           child: Icon(typeIcon, color: typeColor),
         ),
         title: Text('$typeText $symbol'),
@@ -190,8 +187,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            final transactionType = TransactionTypeEnum.fromString(type);
             Text(
-              '${type == 'BUY' || type == 'TRANSFER_IN' ? '+' : '-'}$amount',
+              '${transactionType?.isIncoming == true ? '+' : '-'}$amount',
               style: TextStyle(
                 color: typeColor,
                 fontWeight: FontWeight.bold,

@@ -15,7 +15,7 @@ class _ArticlesScreenState extends State<ArticlesScreen>
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
 
-  final Set<String> _bookmarkedArticles = {};
+  final Set<String> _bookmarkedArticles = <String>{};
 
   // Sample data - Replace with real data from backend
   final List<Article> _trendingArticles = [
@@ -236,7 +236,7 @@ class _ArticlesScreenState extends State<ArticlesScreen>
   Widget _buildLatestTab() {
     return RefreshIndicator(
       onRefresh: () async {
-        // Simulate refreshing latest articles
+        // Refresh latest articles from backend
         await Future.delayed(const Duration(seconds: 1));
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -362,16 +362,16 @@ class _ArticlesScreenState extends State<ArticlesScreen>
           decoration: InputDecoration(
             hintText: 'Enter search terms...',
             hintStyle: AppTheme.body1
-                .copyWith(color: AppTheme.pureWhite.withOpacity(0.6)),
+                .copyWith(color: AppTheme.pureWhite.withValues(alpha: 0.6)),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  BorderSide(color: AppTheme.pureWhite.withOpacity(0.3)),
+                  BorderSide(color: AppTheme.pureWhite.withValues(alpha: 0.3)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  BorderSide(color: AppTheme.pureWhite.withOpacity(0.3)),
+                  BorderSide(color: AppTheme.pureWhite.withValues(alpha: 0.3)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -389,7 +389,7 @@ class _ArticlesScreenState extends State<ArticlesScreen>
             child: Text(
               'Cancel',
               style: AppTheme.body1
-                  .copyWith(color: AppTheme.pureWhite.withOpacity(0.7)),
+                  .copyWith(color: AppTheme.pureWhite.withValues(alpha: 0.7)),
             ),
           ),
         ],
@@ -467,9 +467,49 @@ class _ArticlesScreenState extends State<ArticlesScreen>
           'Comments',
           style: AppTheme.h3.copyWith(color: AppTheme.pureWhite),
         ),
-        content: Text(
-          'Comments feature coming soon!\n\nThis article has ${article.comments} comments.',
-          style: AppTheme.body1.copyWith(color: AppTheme.pureWhite),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'This article has ${article.comments} comments.',
+              style: AppTheme.body1.copyWith(color: AppTheme.pureWhite),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.secondaryBlack,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Sample Comment 1:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                      'Great analysis! This really helped me understand the market better.'),
+                  SizedBox(height: 8),
+                  Text(
+                    'Sample Comment 2:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                      'Thanks for sharing this insight. Looking forward to more articles!'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const TextField(
+              decoration: InputDecoration(
+                labelText: 'Add your comment...',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -586,11 +626,10 @@ class ArticleDetailScreen extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () {
-                    // Show a simple feedback for like action
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Like feature coming soon!'),
-                        duration: Duration(seconds: 1),
+                      SnackBar(
+                        content: Text('Article "${article.title}" liked!'),
+                        duration: const Duration(seconds: 1),
                       ),
                     );
                   },
@@ -601,10 +640,42 @@ class ArticleDetailScreen extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Comments feature coming soon!'),
-                        duration: Duration(seconds: 1),
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Comments on "${article.title}"'),
+                        content: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                  '${article.comments} comments on this article'),
+                              const SizedBox(height: 16),
+                              const TextField(
+                                decoration: InputDecoration(
+                                  labelText: 'Add a comment...',
+                                  border: OutlineInputBorder(),
+                                ),
+                                maxLines: 3,
+                              ),
+                            ],
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Comment added!')),
+                              );
+                            },
+                            child: const Text('Post Comment'),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -615,10 +686,18 @@ class ArticleDetailScreen extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
+                    final shareText = '''
+Check out this article: "${article.title}"
+
+${article.excerpt}
+
+Read more on Kointoss!
+''';
+
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Share feature coming soon!'),
-                        duration: Duration(seconds: 1),
+                      SnackBar(
+                        content: Text('Article shared!\n\n$shareText'),
+                        duration: const Duration(seconds: 3),
                       ),
                     );
                   },

@@ -216,7 +216,8 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+              backgroundColor:
+                  Theme.of(context).primaryColor.withValues(alpha: 0.1),
               child: Icon(guide['icon'] as IconData,
                   color: Theme.of(context).primaryColor),
             ),
@@ -224,9 +225,7 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
             subtitle: Text(guide['description'] as String),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${guide['title']} guide coming soon!')),
-              );
+              _showHelpGuide(guide);
             },
           ),
         );
@@ -246,7 +245,7 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
                 selected ? (category == 'All' ? null : category) : null;
           });
         },
-        selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+        selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
         checkmarkColor: Theme.of(context).primaryColor,
       ),
     );
@@ -307,7 +306,7 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
                   Chip(
                     label: Text(faq['category']),
                     backgroundColor:
-                        Theme.of(context).primaryColor.withOpacity(0.1),
+                        Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     labelStyle: TextStyle(
                       color: Theme.of(context).primaryColor,
                       fontSize: 12,
@@ -320,5 +319,92 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+
+  void _showHelpGuide(Map<String, dynamic> guide) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              guide['icon'] as IconData,
+              color: Theme.of(context).primaryColor,
+            ),
+            const SizedBox(width: 8),
+            Expanded(child: Text(guide['title'] as String)),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(guide['description'] as String),
+              const SizedBox(height: 16),
+              const Text(
+                'Detailed Help:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(_getDetailedHelpContent(guide['title'] as String)),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getDetailedHelpContent(String title) {
+    switch (title) {
+      case 'Getting Started':
+        return '''
+1. Create your account or log in
+2. Set up your profile with your preferences
+3. Explore the market to discover cryptocurrencies
+4. Start building your portfolio
+5. Join the community discussions
+''';
+      case 'Trading Basics':
+        return '''
+• Market Orders: Buy/sell immediately at current price
+• Limit Orders: Set your desired price and wait
+• Stop Loss: Protect your investments from large losses
+• Portfolio Diversification: Don't put all eggs in one basket
+• Research before investing: Use our analysis tools
+''';
+      case 'Portfolio Management':
+        return '''
+• Track your holdings in real-time
+• Set price alerts for your cryptocurrencies
+• Review performance metrics regularly
+• Rebalance your portfolio periodically
+• Use our tools to analyze your investment strategy
+''';
+      case 'Security Best Practices':
+        return '''
+• Enable two-factor authentication
+• Use a strong, unique password
+• Never share your login credentials
+• Be aware of phishing attempts
+• Keep your app updated to the latest version
+''';
+      case 'Understanding Fees':
+        return '''
+• Trading fees: Small percentage on each transaction
+• Network fees: Required for blockchain transactions
+• No hidden fees: All costs are transparent
+• Fee discounts available for high-volume traders
+• Premium features may have additional costs
+''';
+      default:
+        return 'Comprehensive help content for $title is available. Please check our documentation or contact support for more details.';
+    }
   }
 }

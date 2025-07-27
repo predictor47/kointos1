@@ -82,7 +82,7 @@ class ArticleDetailScreen extends StatelessWidget {
         Row(
           children: [
             CircleAvatar(
-              backgroundColor: AppTheme.pureWhite.withOpacity(0.25),
+              backgroundColor: AppTheme.pureWhite.withValues(alpha: 0.25),
               child: Text(
                 article.authorName.substring(0, 1).toUpperCase(),
                 style: const TextStyle(
@@ -123,7 +123,7 @@ class ArticleDetailScreen extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppTheme.pureWhite.withOpacity(0.25),
+                  color: AppTheme.pureWhite.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(

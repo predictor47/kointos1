@@ -7,7 +7,7 @@ class TermsOfServiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.primaryBlack,
       appBar: AppBar(
         backgroundColor: AppTheme.surfaceColor,
         title: const Text(
@@ -23,7 +23,6 @@ class TermsOfServiceScreen extends StatelessWidget {
           children: [
             _buildHeader(),
             const SizedBox(height: 24),
-            
             _buildSection(
               'Acceptance of Terms',
               [
@@ -33,7 +32,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'Your use of Kointos constitutes acceptance of these terms and any updates.',
               ],
             ),
-            
             _buildSection(
               'Description of Service',
               [
@@ -46,7 +44,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'We reserve the right to modify or discontinue services at any time.',
               ],
             ),
-            
             _buildSection(
               'User Accounts and Registration',
               [
@@ -58,7 +55,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'We reserve the right to suspend or terminate accounts that violate our terms.',
               ],
             ),
-            
             _buildSection(
               'User Conduct and Prohibited Activities',
               [
@@ -73,7 +69,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 '• Share inappropriate, offensive, or harmful content',
               ],
             ),
-            
             _buildSection(
               'Financial Disclaimer',
               [
@@ -85,7 +80,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'We are not responsible for any financial losses resulting from your use of our platform.',
               ],
             ),
-            
             _buildSection(
               'Data Accuracy and Reliability',
               [
@@ -97,7 +91,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'You should verify information from multiple sources before making decisions.',
               ],
             ),
-            
             _buildSection(
               'Intellectual Property Rights',
               [
@@ -108,7 +101,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'You represent that you have the right to post any content you share.',
               ],
             ),
-            
             _buildSection(
               'Privacy and Data Protection',
               [
@@ -119,7 +111,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'You have certain rights regarding your personal data.',
               ],
             ),
-            
             _buildSection(
               'Limitation of Liability',
               [
@@ -131,7 +122,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 '• You use our services at your own risk',
               ],
             ),
-            
             _buildSection(
               'Indemnification',
               [
@@ -143,7 +133,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'This indemnification includes reasonable attorney fees and costs.',
               ],
             ),
-            
             _buildSection(
               'Termination',
               [
@@ -154,7 +143,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'Provisions regarding liability and disputes survive termination.',
               ],
             ),
-            
             _buildSection(
               'Changes to Terms',
               [
@@ -164,7 +152,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'If you disagree with changes, you should discontinue using our services.',
               ],
             ),
-            
             _buildSection(
               'Governing Law and Disputes',
               [
@@ -174,7 +161,6 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'If arbitration is unavailable, disputes will be resolved in [Your Jurisdiction] courts.',
               ],
             ),
-            
             _buildSection(
               'Contact Information',
               [
@@ -184,9 +170,7 @@ class TermsOfServiceScreen extends StatelessWidget {
                 'Phone: [Your Contact Number]',
               ],
             ),
-            
             const SizedBox(height: 32),
-            
             _buildFooter(),
           ],
         ),
@@ -249,46 +233,50 @@ class TermsOfServiceScreen extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              color: AppTheme.primaryColor,
+              color: AppTheme.pureWhite,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
           ...items.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!item.startsWith('•') && !item.startsWith('IMPORTANT:') && !item.startsWith('TO THE MAXIMUM')) ...[
-                  Container(
-                    margin: const EdgeInsets.only(top: 8, right: 12),
-                    width: 4,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(2),
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!item.startsWith('•') &&
+                        !item.startsWith('IMPORTANT:') &&
+                        !item.startsWith('TO THE MAXIMUM')) ...[
+                      Container(
+                        margin: const EdgeInsets.only(top: 8, right: 12),
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppTheme.pureWhite,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ],
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: TextStyle(
+                          color: item.startsWith('IMPORTANT:') ||
+                                  item.startsWith('TO THE MAXIMUM')
+                              ? Colors.orange[300]
+                              : Colors.white70,
+                          fontSize: 14,
+                          height: 1.5,
+                          fontWeight: item.startsWith('IMPORTANT:') ||
+                                  item.startsWith('TO THE MAXIMUM')
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-                Expanded(
-                  child: Text(
-                    item,
-                    style: TextStyle(
-                      color: item.startsWith('IMPORTANT:') || item.startsWith('TO THE MAXIMUM')
-                          ? Colors.orange[300]
-                          : Colors.white70,
-                      fontSize: 14,
-                      height: 1.5,
-                      fontWeight: item.startsWith('IMPORTANT:') || item.startsWith('TO THE MAXIMUM')
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          )),
+              )),
         ],
       ),
     );
@@ -305,7 +293,7 @@ class TermsOfServiceScreen extends StatelessWidget {
         children: [
           const Icon(
             Icons.gavel,
-            color: AppTheme.primaryColor,
+            color: AppTheme.pureWhite,
             size: 48,
           ),
           const SizedBox(height: 16),
@@ -331,10 +319,10 @@ class TermsOfServiceScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: Colors.orange.withOpacity(0.3),
+                color: Colors.orange.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),

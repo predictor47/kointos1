@@ -77,9 +77,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
           IconButton(
             icon: Icon(
               _isFavorite ? Icons.star : Icons.star_border,
-              color: _isFavorite
-                  ? AppTheme.cryptoGold
-                  : AppTheme.greyText,
+              color: _isFavorite ? AppTheme.cryptoGold : AppTheme.greyText,
             ),
             onPressed: () {
               setState(() {
@@ -169,7 +167,7 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
             painter: PriceChartPainter(
               prices: _priceHistory!,
               color: AppTheme.pureWhite,
-              fillColor: AppTheme.pureWhite.withOpacity(0.25),
+              fillColor: AppTheme.pureWhite.withValues(alpha: 0.25),
             ),
             size: const Size(double.infinity, 200),
           ),
@@ -196,15 +194,15 @@ class _CryptoDetailScreenState extends State<CryptoDetailScreen> {
     return TextButton(
       onPressed: () => _onTimeRangeChanged(days),
       style: TextButton.styleFrom(
-        backgroundColor:
-            isSelected ? AppTheme.pureWhite.withOpacity(0.25) : Colors.transparent,
+        backgroundColor: isSelected
+            ? AppTheme.pureWhite.withValues(alpha: 0.25)
+            : Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color:
-              isSelected ? AppTheme.pureWhite : AppTheme.greyText,
+          color: isSelected ? AppTheme.pureWhite : AppTheme.greyText,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
