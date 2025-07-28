@@ -1,26 +1,25 @@
 version: 1
-backend:
-  phases:
-    build:
-      commands:
-        - npx amplify pull --yes --appId YOUR_APP_ID --envName YOUR_ENV_NAME
 frontend:
   phases:
     preBuild:
       commands:
-        - git clone https://github.com/flutter/flutter.git
+        - echo "Installing Flutter SDK..."
+        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
         - export PATH="$PATH:`pwd`/flutter/bin"
         - flutter precache
+        - flutter --version
         - flutter pub get
     build:
       commands:
-        - flutter build web --release
+        - export PATH="$PATH:`pwd`/flutter/bin"
+        - flutter build web --release --verbose
   artifacts:
     baseDirectory: build/web
     files:
       - '**/*'
   cache:
     paths:
+      - flutter/**/*
       - .dart_tool/**/*
       - .flutter-plugins
       - .flutter-plugins-dependencies
