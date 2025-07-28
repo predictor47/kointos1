@@ -7,7 +7,7 @@ frontend:
         - export PATH="$PATH:`pwd`/flutter/bin"
         - flutter precache
         - flutter pub get
-    build:
+      build:
       commands:
         - flutter build web --release
   artifacts:
