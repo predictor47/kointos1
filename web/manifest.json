@@ -1,13 +1,17 @@
 {
-    "name": "kointos",
-    "short_name": "kointos",
+    "name": "Kointoss - Gamified Crypto Social Platform",
+    "short_name": "Kointoss",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1A1A2E",
+    "theme_color": "#00D4FF",
+    "description": "Trade, learn, and connect with the crypto community. Real-time market data, social features, and gamification.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "categories": ["finance", "social", "education"],
+    "lang": "en-US",
+    "dir": "ltr",
+    "scope": "/",
     "icons": [
         {
             "src": "icons/Icon-192.png",
@@ -30,6 +34,43 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "screenshots/home.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "label": "Home Screen"
+        },
+        {
+            "src": "screenshots/market.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "label": "Market Overview"
+        },
+        {
+            "src": "screenshots/social.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "label": "Social Feed"
+        }
+    ],
+    "related_applications": [],
+    "shortcuts": [
+        {
+            "name": "Market",
+            "short_name": "Market",
+            "description": "View cryptocurrency market data",
+            "url": "/#/market",
+            "icons": [{ "src": "icons/market.png", "sizes": "96x96" }]
+        },
+        {
+            "name": "Portfolio",
+            "short_name": "Portfolio",
+            "description": "View your crypto portfolio",
+            "url": "/#/portfolio",
+            "icons": [{ "src": "icons/portfolio.png", "sizes": "96x96" }]
         }
     ]
 }
