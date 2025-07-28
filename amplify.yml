@@ -1,9 +1,11 @@
 version: 1
 frontend:
   phases:
-    preBuild:
+   preBuild:
       commands:
-        - flutter --version
+        - git clone https://github.com/flutter/flutter.git
+        - export PATH="$PATH:`pwd`/flutter/bin"
+        - flutter precache
         - flutter pub get
     build:
       commands:
