@@ -13,6 +13,9 @@ import 'package:kointos/core/services/local_storage_service.dart';
 import 'package:kointos/core/services/notification_service.dart';
 import 'package:kointos/core/services/storage_interface.dart';
 import 'package:kointos/core/services/support_ticket_service.dart';
+import 'package:kointos/core/services/push_notification_service.dart';
+import 'package:kointos/core/services/pinpoint_analytics_service.dart';
+import 'package:kointos/core/services/settings_service.dart';
 import 'package:kointos/data/datasources/coingecko_service.dart';
 import 'package:kointos/data/repositories/article_repository.dart';
 import 'package:kointos/data/repositories/cryptocurrency_repository.dart';
@@ -75,6 +78,21 @@ Future<void> setupServiceLocator() async {
 
   serviceLocator.registerLazySingleton<NotificationService>(
     () => NotificationService(serviceLocator<CryptocurrencyRepository>()),
+  );
+
+  // Settings Service
+  serviceLocator.registerLazySingleton<SettingsService>(
+    () => SettingsService(),
+  );
+
+  // Push Notification Service
+  serviceLocator.registerLazySingleton<PushNotificationService>(
+    () => PushNotificationService(),
+  );
+
+  // Analytics Service
+  serviceLocator.registerLazySingleton<PinpointAnalyticsService>(
+    () => PinpointAnalyticsService(),
   );
 
   // Data Sources
