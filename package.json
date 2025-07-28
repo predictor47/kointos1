@@ -1,0 +1,14 @@
+{
+  "name": "kointos-app",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "npx ampx pipeline-deploy --branch main",
+    "backend:deploy": "npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID",
+    "backend:sandbox": "npx ampx sandbox"
+  },
+  "dependencies": {
+    "@aws-amplify/backend": "^1.16.1",
+    "@aws-amplify/backend-cli": "^1.8.0"
+  }
+}

@@ -6,7 +6,7 @@ backend:
         - npm ci
     build:
       commands:
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+        - npm run backend:deploy
 frontend:
   phases:
     preBuild:
@@ -41,5 +41,5 @@ frontend:
       - .flutter-plugins-dependencies
       - .packages
       - pubspec.lock
-      - amplify/node_modules/**/*
-      - amplify/.amplify/**/*
+      - node_modules/**/*
+      - .amplify/**/*
