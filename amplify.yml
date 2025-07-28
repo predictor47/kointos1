@@ -1,4 +1,10 @@
 version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - npm ci
+        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
     preBuild:
@@ -8,11 +14,15 @@ frontend:
         - export PATH="$PATH:`pwd`/flutter/bin"
         - flutter precache
         - flutter --version
+        - echo "Installing dependencies..."
         - flutter pub get
     build:
       commands:
+        - echo "Building Flutter web app..."
         - export PATH="$PATH:`pwd`/flutter/bin"
-        - flutter build web --release --verbose
+        - flutter build web --release --web-renderer html --no-tree-shake-icons
+        - echo "Build completed. Checking output..."
+        - ls -la build/web/
   artifacts:
     baseDirectory: build/web
     files:
@@ -25,3 +35,4 @@ frontend:
       - .flutter-plugins-dependencies
       - .packages
       - pubspec.lock
+      - node_modules/**/*
