@@ -12,6 +12,11 @@ export const auth = defineAuth({
     email: {
       required: true,
     },
+    preferredUsername: {
+      required: false,
+      mutable: true,
+    },
   },
   accountRecovery: 'EMAIL_ONLY',
+  groups: ['Admins', 'Moderators'],
 });

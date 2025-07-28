@@ -3,6 +3,7 @@ import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/data/datasources/coingecko_service.dart';
 import 'package:kointos/presentation/widgets/platform_widgets.dart';
+import 'package:kointos/presentation/screens/enhanced_crypto_detail_screen.dart';
 
 class RealMarketScreen extends StatefulWidget {
   const RealMarketScreen({super.key});
@@ -377,75 +378,21 @@ class _RealMarketScreenState extends State<RealMarketScreen>
 
   void _showCryptoDetail(
       String name, String symbol, double price, double change24h) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('$name ($symbol)'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Current Price: \$${price.toStringAsFixed(2)}',
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    change24h >= 0 ? Icons.trending_up : Icons.trending_down,
-                    color: change24h >= 0 ? Colors.green : Colors.red,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${change24h >= 0 ? '+' : ''}${change24h.toStringAsFixed(2)}%',
-                    style: TextStyle(
-                      color: change24h >= 0 ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Actions:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showAddToPortfolioDialog(name, symbol, price);
-                    },
-                    icon: const Icon(Icons.account_balance_wallet),
-                    label: const Text('Add to Portfolio'),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$symbol added to watchlist')),
-                      );
-                    },
-                    icon: const Icon(Icons.star),
-                    label: const Text('Watch'),
-                  ),
-                ],
-              ),
-            ],
-          ),
+    // Navigate to the enhanced crypto detail screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EnhancedCryptoDetailScreen(
+          coinId: symbol.toLowerCase(), // In production, use actual coin ID
+          symbol: symbol,
+          name: name,
+          currentPrice: price,
+          change24h: change24h,
+          imageUrl: _cryptos.firstWhere(
+            (crypto) => crypto['symbol'] == symbol.toLowerCase(),
+            orElse: () => {'image': null},
+          )['image'] as String?,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
   }

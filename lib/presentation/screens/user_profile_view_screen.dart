@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/services/api_service.dart';
+import 'package:kointos/presentation/screens/chat_screen.dart';
 
 class UserProfileViewScreen extends StatefulWidget {
   final String userId;
@@ -266,25 +267,57 @@ class _UserProfileViewScreenState extends State<UserProfileViewScreen> {
   Widget _buildFollowButton() {
     return Container(
       margin: const EdgeInsets.all(16),
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _toggleFollow,
-        style: ElevatedButton.styleFrom(
-          backgroundColor:
-              _isFollowing ? AppTheme.greyText : AppTheme.cryptoGold,
-          foregroundColor: AppTheme.primaryBlack,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      child: Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: _toggleFollow,
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    _isFollowing ? AppTheme.greyText : AppTheme.cryptoGold,
+                foregroundColor: AppTheme.primaryBlack,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                _isFollowing ? 'Unfollow' : 'Follow',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
-        ),
-        child: Text(
-          _isFollowing ? 'Unfollow' : 'Follow',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          const SizedBox(width: 12),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(
+                    userId: widget.userId,
+                    username: widget.username ??
+                        _userProfile?['displayName'] ??
+                        'User',
+                    avatarUrl: _userProfile?['profilePicture'],
+                  ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.cardBlack,
+              foregroundColor: AppTheme.cryptoGold,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: AppTheme.cryptoGold),
+              ),
+            ),
+            child: const Icon(Icons.chat_bubble_outline),
           ),
-        ),
+        ],
       ),
     ).animate().slideY(begin: 0.3, delay: 700.ms);
   }

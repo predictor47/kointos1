@@ -8,6 +8,7 @@ import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/presentation/screens/auth_screen.dart';
 import 'package:kointos/presentation/screens/adaptive_main_screen.dart';
 import 'package:kointos/presentation/widgets/first_time_tutorial.dart';
+import 'package:kointos/presentation/screens/admin_dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +31,9 @@ class KointosApp extends StatelessWidget {
       title: 'Kointos',
       theme: AppTheme.darkTheme,
       home: const AppEntryPoint(),
+      routes: {
+        '/admin': (context) => const AdminDashboardScreen(),
+      },
     );
   }
 }
@@ -119,6 +123,9 @@ class _AppEntryPointState extends State<AppEntryPoint> {
             ? const AdaptiveMainScreen()
             : AuthScreen(onAuthStateChanged: _onAuthStateChanged),
       ),
+      routes: {
+        '/admin': (context) => const AdminDashboardScreen(),
+      },
     );
   }
 }
