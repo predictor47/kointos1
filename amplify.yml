@@ -1,4 +1,9 @@
 version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - npx amplify pull --yes --appId YOUR_APP_ID --envName YOUR_ENV_NAME
 frontend:
   phases:
     preBuild:
