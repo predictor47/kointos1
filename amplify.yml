@@ -1,9 +1,13 @@
 version: 1
 backend:
   phases:
+    preBuild:
+      commands:
+        - cd amplify
+        - npm ci
     build:
       commands:
-        - npm ci 
+        - cd amplify
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
@@ -12,10 +16,11 @@ frontend:
         - echo "Installing Flutter SDK..."
         - git clone https://github.com/flutter/flutter.git -b stable --depth 1
         - export PATH="$PATH:`pwd`/flutter/bin"
-        - flutter precache
         - flutter --version
-        - echo "Installing dependencies..."
+        - echo "Installing Flutter dependencies..."
         - flutter pub get
+        - echo "Verifying amplify_outputs.json exists..."
+        - ls -la amplify_outputs.json
     build:
       commands:
         - echo "Building Flutter web app..."
@@ -23,17 +28,20 @@ frontend:
         - flutter build web --release --web-renderer html --no-tree-shake-icons
         - echo "Build completed. Checking output..."
         - ls -la build/web/
+        - echo "Checking for required files..."
+        - ls -la build/web/index.html
   artifacts:
     baseDirectory: build/web
     files:
       - '**/*'
   cache:
     paths:
-      - flutter/**/*
+      - flutter/.git/**/*
+      - flutter/bin/cache/**/*
       - .dart_tool/**/*
       - .flutter-plugins
       - .flutter-plugins-dependencies
       - .packages
       - pubspec.lock
-      - node_modules/**/*
-      - .npm/**/*
+      - amplify/node_modules/**/*
+      - amplify/.amplify/**/*
