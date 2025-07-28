@@ -28,7 +28,7 @@ class KointosApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kointos',
+      title: 'Kointoss',
       theme: AppTheme.darkTheme,
       home: const AppEntryPoint(),
       routes: {
