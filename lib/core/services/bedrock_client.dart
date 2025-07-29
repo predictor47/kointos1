@@ -132,6 +132,17 @@ class BedrockClient {
     }
   }
 
+  /// Test method to verify AWS credentials (for debugging)
+  Future<bool> testCredentials() async {
+    try {
+      final credentials = await _getAWSCredentials();
+      return credentials != null && credentials['accessKeyId']!.isNotEmpty;
+    } catch (e) {
+      LoggerService.error('Credential test failed: $e');
+      return false;
+    }
+  }
+
   /// Create AWS Signature Version 4 signed request headers
   Future<Map<String, String>> _createSignedRequest({
     required String method,

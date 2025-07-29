@@ -9,16 +9,16 @@ backend:
         - npm run backend:deploy
 frontend:
   phases:
-    preBuild:
-      commands:
-        - echo "Installing Flutter SDK..."
-        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
-        - export PATH="$PATH:`pwd`/flutter/bin"
-        - flutter --version
-        - echo "Installing Flutter dependencies..."
-        - flutter pub get
-        - echo "Verifying amplify_outputs.json exists..."
-        - ls -la amplify_outputs.json
+    # preBuild:
+    #   commands:
+    #     - echo "Installing Flutter SDK..."
+    #     - git clone https://github.com/flutter/flutter.git -b stable --depth 1
+    #     - export PATH="$PATH:`pwd`/flutter/bin"
+    #     - flutter --version
+    #     - echo "Installing Flutter dependencies..."
+    #     - flutter pub get
+    #     - echo "Verifying amplify_outputs.json exists..."
+    #     - ls -la amplify_outputs.json
     build:
       commands:
         - echo "Building Flutter web app..."
