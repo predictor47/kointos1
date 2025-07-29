@@ -3,6 +3,7 @@ import 'package:kointos/core/constants/app_constants.dart';
 import 'package:kointos/core/services/amplify_storage_service.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/auth_service.dart';
+import 'package:kointos/core/services/bedrock_client.dart';
 import 'package:kointos/core/services/crypto_news_service.dart';
 import 'package:kointos/core/services/crypto_sentiment_service.dart';
 import 'package:kointos/core/services/faq_service.dart';
@@ -55,6 +56,10 @@ Future<void> setupServiceLocator() async {
   );
 
   // AI Services
+  serviceLocator.registerLazySingleton<BedrockClient>(
+    () => BedrockClient(),
+  );
+
   serviceLocator.registerLazySingleton<LLMService>(
     () => LLMService(),
   );

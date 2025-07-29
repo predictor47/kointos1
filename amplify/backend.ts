@@ -78,9 +78,28 @@ const snsPolicy = new Policy(stack, 'SNSPolicy', {
   ],
 });
 
+// Add IAM policy for Bedrock access (AI Chatbot)
+const bedrockPolicy = new Policy(stack, 'BedrockPolicy', {
+  statements: [
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: [
+        'bedrock:InvokeModel',
+        'bedrock:InvokeModelWithResponseStream',
+      ],
+      resources: [
+        `arn:aws:bedrock:${stack.region}::foundation-model/anthropic.claude-3-haiku-20240307-v1:0`,
+        `arn:aws:bedrock:${stack.region}::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0`,
+        `arn:aws:bedrock:${stack.region}::foundation-model/anthropic.claude-instant-v1`,
+      ],
+    }),
+  ],
+});
+
 // Attach policies to authenticated role
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(pinpointPolicy);
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(snsPolicy);
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(bedrockPolicy);
 
 // Export Pinpoint app ID and SNS topic ARN for use in the app
 backend.addOutput({

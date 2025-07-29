@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:kointos/core/services/logger_service.dart';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/service_locator.dart';
+import 'package:kointos/core/services/bedrock_client.dart';
 import 'package:kointos/data/repositories/article_repository.dart';
 
 /// LLM Service using Amazon Bedrock Claude 3 Haiku
@@ -17,15 +18,18 @@ class LLMService {
   final http.Client _httpClient;
   final AuthService _authService;
   final ArticleRepository _articleRepository;
+  final BedrockClient _bedrockClient;
 
   LLMService({
     http.Client? httpClient,
     AuthService? authService,
     ArticleRepository? articleRepository,
+    BedrockClient? bedrockClient,
   })  : _httpClient = httpClient ?? http.Client(),
         _authService = authService ?? getService<AuthService>(),
         _articleRepository =
-            articleRepository ?? getService<ArticleRepository>();
+            articleRepository ?? getService<ArticleRepository>(),
+        _bedrockClient = bedrockClient ?? BedrockClient();
 
   /// Generate response using Amazon Bedrock Claude 3 Haiku with real user context
   Future<String> generateResponse({
@@ -380,75 +384,28 @@ class LLMService {
     double temperature = 0.7,
   }) async {
     try {
-      // Note: In a real implementation, you would use AWS SDK for Dart
-      // For now, we'll simulate the Bedrock call structure
       LoggerService.info(
           'Calling Amazon Bedrock Claude 3 Haiku (Model: $_claudeModel, Region: $_bedrockRegion)');
 
-      // This would be replaced with actual AWS SDK Bedrock client
-      // const bedrock = BedrockRuntimeClient({ region: _bedrockRegion });
+      // Call Bedrock using the proper client
+      final response = await _bedrockClient.invokeClaudeModel(
+        prompt: prompt,
+        maxTokens: maxTokens,
+        temperature: temperature,
+        stopSequences: ['Human:', 'Assistant:', '\n\nHuman:', '\n\nAssistant:'],
+      );
 
-      // Structure for future Bedrock integration
-      final _ = {
-        'anthropic_version': 'bedrock-2023-05-31',
-        'messages': [
-          {
-            'role': 'user',
-            'content': prompt,
-          }
-        ],
-        'max_tokens': maxTokens,
-        'temperature': temperature,
-        'top_p': 0.9,
-        'stop_sequences': ['Human:', 'Assistant:'],
-      };
-
-      // Simulate Bedrock call - In production, replace with:
-      // final response = await bedrock.invokeModel({
-      //   modelId: _claudeModel,
-      //   body: jsonEncode(requestBody),
-      //   contentType: 'application/json',
-      //   accept: 'application/json',
-      // });
-
-      // For now, return a structured fallback that uses the real data
-      LoggerService.warning(
-          'Bedrock integration pending - using structured fallback with real data');
-      return _generateStructuredResponse(prompt);
+      if (response != null) {
+        LoggerService.info('Bedrock Claude response received successfully');
+        return response;
+      } else {
+        LoggerService.warning('Bedrock Claude returned null response');
+        return null;
+      }
     } catch (e) {
       LoggerService.error('Bedrock Claude call failed: $e');
       return null;
     }
-  }
-
-  /// Generate structured response using real data (temporary until Bedrock is integrated)
-  String _generateStructuredResponse(String prompt) {
-    final lowerPrompt = prompt.toLowerCase();
-
-    // Analyze the prompt type and provide contextual response
-    if (lowerPrompt.contains('price') ||
-        lowerPrompt.contains('should i buy') ||
-        lowerPrompt.contains('should i sell')) {
-      return '📊 Based on the current market data and your trading history, here\'s my analysis:\n\n'
-          'The market conditions suggest a mixed sentiment with recent volatility. Given your experience level and previous bullish/bearish positions, '
-          'consider your risk tolerance and portfolio allocation. The 24-hour price movements indicate typical crypto market dynamics.\n\n'
-          'Remember to always do your own research and never invest more than you can afford to lose. Your current portfolio positioning '
-          'and sentiment history suggest you understand market cycles. What specific aspect of this investment decision concerns you most?';
-    }
-
-    if (lowerPrompt.contains('portfolio') || lowerPrompt.contains('holding')) {
-      return '💼 Looking at your portfolio performance and current market conditions:\n\n'
-          'Your diversification strategy seems aligned with your experience level. The current market valuations show both opportunities '
-          'and risks across different sectors. Based on your sentiment voting patterns, you\'ve shown good market intuition.\n\n'
-          'Consider rebalancing based on the latest market data if any positions have grown significantly. Your XP level indicates '
-          'you have experience with market cycles. Would you like specific insights on any particular holdings?';
-    }
-
-    return '🤖 Thanks for your question! Based on your profile and current market conditions:\n\n'
-        'The crypto market is showing its typical dynamic behavior with various opportunities across different assets. '
-        'Your experience level and engagement with our platform content suggests you\'re well-positioned to navigate current conditions.\n\n'
-        'I\'d recommend staying informed through our latest articles and continuing to track the metrics that matter most to your strategy. '
-        'Feel free to ask about specific coins, market trends, or portfolio strategies!';
   }
 
   /// Save interaction to user history
