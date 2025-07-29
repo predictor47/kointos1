@@ -11,8 +11,14 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "Installing Flutter SDK..."
-        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
+        - echo "Setting up Flutter SDK..."
+        - |
+          if [ ! -d "flutter" ]; then
+            echo "Cloning Flutter SDK..."
+            git clone https://github.com/flutter/flutter.git -b stable --depth 1
+          else
+            echo "Flutter SDK already exists, skipping clone..."
+          fi
         - export PATH="$PATH:`pwd`/flutter/bin"
         - flutter --version
         - echo "Installing Flutter dependencies..."
@@ -24,6 +30,7 @@ frontend:
         - echo "Building Flutter web app..."
         - export PATH="$PATH:`pwd`/flutter/bin"
         - export FLUTTER_WEB_RENDERER=html
+        - flutter doctor --android-licenses || true
         - flutter build web --release --no-tree-shake-icons --dart-define=FLUTTER_WEB_RENDERER=html
         - echo "Build completed. Checking output..."
         - ls -la build/web/
