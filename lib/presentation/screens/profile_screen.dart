@@ -8,6 +8,7 @@ import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/gamification_service.dart';
 import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'settings_screen.dart';
+import 'dev_tools_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -216,6 +217,20 @@ class _ProfileScreenState extends State<ProfileScreen>
                     Icons.refresh,
                     color: AppTheme.cryptoGold,
                   ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const DevToolsScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.developer_mode,
+                    color: AppTheme.pureWhite,
+                  ),
+                  tooltip: 'Developer Tools',
                 ),
                 IconButton(
                   onPressed: () {

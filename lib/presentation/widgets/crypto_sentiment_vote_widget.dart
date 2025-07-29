@@ -67,8 +67,9 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
     });
 
     try {
-      final sentiment =
-          await _sentimentService.getCryptoSentiment(widget.cryptoSymbol);
+      final sentiment = await _sentimentService.getCryptoSentiment(
+        widget.cryptoSymbol,
+      );
       setState(() {
         _currentSentiment = sentiment;
         _isLoading = false;
@@ -147,23 +148,22 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12), // Reduced from 16
       decoration: BoxDecoration(
         color: AppTheme.cardBlack,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppTheme.pureWhite.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: AppTheme.pureWhite.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, // Use minimum space
         children: [
           _buildHeader(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12), // Reduced from 16
           if (!_hasVoted) _buildVotingButtons(),
           if (_hasVoted) _buildVoteConfirmation(),
           if (widget.showResults && _currentSentiment != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 12), // Reduced from 16
             _buildSentimentResults(),
           ],
         ],
@@ -207,10 +207,7 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
               ),
               Text(
                 widget.cryptoSymbol.toUpperCase(),
-                style: const TextStyle(
-                  color: AppTheme.greyText,
-                  fontSize: 14,
-                ),
+                style: const TextStyle(color: AppTheme.greyText, fontSize: 14),
               ),
             ],
           ),
@@ -235,10 +232,10 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
           'What\'s your sentiment on ${widget.cryptoSymbol}?',
           style: const TextStyle(
             color: AppTheme.greyText,
-            fontSize: 14,
+            fontSize: 13, // Reduced from 14
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8), // Reduced from 12
         Row(
           children: [
             Expanded(
@@ -250,7 +247,7 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
                 emoji: '🚀',
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8), // Reduced from 12
             Expanded(
               child: _buildSentimentButton(
                 sentiment: SentimentType.bearish,
@@ -260,7 +257,7 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
                 emoji: '📉',
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8), // Reduced from 12
             Expanded(
               child: _buildSentimentButton(
                 sentiment: SentimentType.neutral,
@@ -287,55 +284,57 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
     final isLoading = _isLoading && isSelected;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : () => _submitVote(sentiment),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected
-              ? color.withValues(alpha: 0.2)
-              : AppTheme.secondaryBlack,
-          foregroundColor: color,
-          side: BorderSide(
-            color: isSelected ? color : color.withValues(alpha: 0.3),
-            width: isSelected ? 2 : 1,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isLoading)
-              SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                ),
-              )
-            else ...[
-              Text(
-                emoji,
-                style: const TextStyle(fontSize: 20),
+          duration: const Duration(milliseconds: 200),
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : () => _submitVote(sentiment),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isSelected
+                  ? color.withValues(alpha: 0.2)
+                  : AppTheme.secondaryBlack,
+              foregroundColor: color,
+              side: BorderSide(
+                color: isSelected ? color : color.withValues(alpha: 0.3),
+                width: isSelected ? 2 : 1,
               ),
-              const SizedBox(height: 4),
-              Icon(icon, size: 16),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10), // Reduced from 12
               ),
-            ],
-          ],
-        ),
-      ),
-    )
+              padding: const EdgeInsets.symmetric(
+                vertical: 8,
+              ), // Reduced from 12
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isLoading)
+                  SizedBox(
+                    width: 16, // Reduced from 20
+                    height: 16, // Reduced from 20
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(color),
+                    ),
+                  )
+                else ...[
+                  Text(
+                    emoji,
+                    style: const TextStyle(fontSize: 16), // Reduced from 20
+                  ),
+                  const SizedBox(height: 2), // Reduced from 4
+                  Icon(icon, size: 14), // Reduced from 16
+                  const SizedBox(height: 1), // Reduced from 2
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 11, // Reduced from 12
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        )
         .animate(target: isSelected ? 1 : 0)
         .scale(duration: 200.ms)
         .shimmer(duration: isSelected ? 1000.ms : 0.ms);
@@ -346,8 +345,8 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
     final color = sentiment == SentimentType.bullish
         ? Colors.green
         : sentiment == SentimentType.bearish
-            ? Colors.red
-            : Colors.grey;
+        ? Colors.red
+        : Colors.grey;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -394,55 +393,65 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
             ),
             Text(
               '${sentiment.totalVotes} votes',
-              style: const TextStyle(
-                color: AppTheme.greyText,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: AppTheme.greyText, fontSize: 12),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
 
         // Sentiment score display
         Row(
           children: [
             Text(
               sentiment.sentimentEmoji,
-              style: const TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 16),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Text(
               sentiment.sentimentText,
               style: const TextStyle(
                 color: AppTheme.pureWhite,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 14,
               ),
             ),
             const Spacer(),
             Text(
               '${(sentiment.sentimentScore * 100).toStringAsFixed(0)}%',
               style: TextStyle(
-                color:
-                    sentiment.sentimentScore >= 0 ? Colors.green : Colors.red,
+                color: sentiment.sentimentScore >= 0
+                    ? Colors.green
+                    : Colors.red,
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 13,
               ),
             ),
           ],
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
 
         // Vote distribution bars
-        _buildVoteBar('Bullish', sentiment.bullishVotes, sentiment.totalVotes,
-            Colors.green),
-        const SizedBox(height: 4),
-        _buildVoteBar('Bearish', sentiment.bearishVotes, sentiment.totalVotes,
-            Colors.red),
-        const SizedBox(height: 4),
-        _buildVoteBar('Neutral', sentiment.neutralVotes, sentiment.totalVotes,
-            Colors.grey),
+        _buildVoteBar(
+          'Bullish',
+          sentiment.bullishVotes,
+          sentiment.totalVotes,
+          Colors.green,
+        ),
+        const SizedBox(height: 3),
+        _buildVoteBar(
+          'Bearish',
+          sentiment.bearishVotes,
+          sentiment.totalVotes,
+          Colors.red,
+        ),
+        const SizedBox(height: 3),
+        _buildVoteBar(
+          'Neutral',
+          sentiment.neutralVotes,
+          sentiment.totalVotes,
+          Colors.grey,
+        ),
       ],
     );
   }
@@ -453,21 +462,18 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
     return Row(
       children: [
         SizedBox(
-          width: 60,
+          width: 55,
           child: Text(
             label,
-            style: const TextStyle(
-              color: AppTheme.greyText,
-              fontSize: 12,
-            ),
+            style: const TextStyle(color: AppTheme.greyText, fontSize: 11),
           ),
         ),
         Expanded(
           child: Container(
-            height: 8,
+            height: 6,
             decoration: BoxDecoration(
               color: AppTheme.secondaryBlack,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(3),
             ),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
@@ -475,20 +481,20 @@ class _CryptoSentimentVoteWidgetState extends State<CryptoSentimentVoteWidget>
               child: Container(
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         SizedBox(
-          width: 30,
+          width: 28,
           child: Text(
             '${(percentage * 100).toInt()}%',
             style: TextStyle(
               color: color,
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: FontWeight.w500,
             ),
           ),

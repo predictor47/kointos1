@@ -6,6 +6,7 @@ import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/bedrock_client.dart';
 import 'package:kointos/core/services/crypto_news_service.dart';
 import 'package:kointos/core/services/crypto_sentiment_service.dart';
+import 'package:kointos/core/services/dummy_data_service.dart';
 import 'package:kointos/core/services/faq_service.dart';
 import 'package:kointos/core/services/gamification_service.dart';
 import 'package:kointos/core/services/kointos_ai_chatbot_service.dart';
@@ -57,22 +58,16 @@ Future<void> setupServiceLocator() async {
   );
 
   // AI Services
-  serviceLocator.registerLazySingleton<BedrockClient>(
-    () => BedrockClient(),
-  );
+  serviceLocator.registerLazySingleton<BedrockClient>(() => BedrockClient());
 
-  serviceLocator.registerLazySingleton<LLMService>(
-    () => LLMService(),
-  );
+  serviceLocator.registerLazySingleton<LLMService>(() => LLMService());
 
   serviceLocator.registerLazySingleton<KointosAIChatbotService>(
     () => KointosAIChatbotService(),
   );
 
   // Support Services
-  serviceLocator.registerLazySingleton<FAQService>(
-    () => FAQService(),
-  );
+  serviceLocator.registerLazySingleton<FAQService>(() => FAQService());
 
   serviceLocator.registerLazySingleton<SupportTicketService>(
     () => SupportTicketService(),
@@ -131,6 +126,12 @@ Future<void> setupServiceLocator() async {
 
   serviceLocator.registerLazySingleton<UserProfileInitializationService>(
     () => UserProfileInitializationService(),
+  );
+
+  serviceLocator.registerLazySingleton<DummyDataService>(
+    () => DummyDataService(
+      apiService: serviceLocator<ApiService>(),
+    ),
   );
 
   serviceLocator.registerLazySingleton<PostRepository>(

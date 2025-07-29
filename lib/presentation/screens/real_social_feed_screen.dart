@@ -206,8 +206,10 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.cardBlack,
-        title: const Text('Add Comment',
-            style: TextStyle(color: AppTheme.pureWhite)),
+        title: const Text(
+          'Add Comment',
+          style: TextStyle(color: AppTheme.pureWhite),
+        ),
         content: TextField(
           controller: controller,
           style: const TextStyle(color: AppTheme.pureWhite),
@@ -274,10 +276,7 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
       appBar: PlatformAppBar(
         title: 'Social Feed',
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadPosts,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadPosts),
         ],
       ),
       body: _isLoading && _posts.isEmpty
@@ -293,31 +292,24 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
         controller: _scrollController,
         slivers: [
           // Create Post Section
-          SliverToBoxAdapter(
-            child: _buildCreatePostCard(),
-          ),
+          SliverToBoxAdapter(child: _buildCreatePostCard()),
 
           // Trending Crypto Sentiment Section
-          SliverToBoxAdapter(
-            child: _buildTrendingSentimentSection(),
-          ),
+          SliverToBoxAdapter(child: _buildTrendingSentimentSection()),
 
           // Social Posts List
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                if (index < _posts.length) {
-                  return _buildPostCard(_posts[index], index);
-                } else if (_nextToken != null) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                return null;
-              },
-              childCount: _posts.length + (_nextToken != null ? 1 : 0),
-            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              if (index < _posts.length) {
+                return _buildPostCard(_posts[index], index);
+              } else if (_nextToken != null) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              return null;
+            }, childCount: _posts.length + (_nextToken != null ? 1 : 0)),
           ),
 
           // Bottom spacing
@@ -349,10 +341,7 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
               const SizedBox(width: 12),
               const Text(
                 'Share your crypto thoughts...',
-                style: TextStyle(
-                  color: AppTheme.greyText,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: AppTheme.greyText, fontSize: 16),
               ),
             ],
           ),
@@ -376,10 +365,7 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
             children: [
               const Text(
                 'Tip: Mention cryptos with \$ and use #hashtags',
-                style: TextStyle(
-                  color: AppTheme.greyText,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: AppTheme.greyText, fontSize: 12),
               ),
               PlatformButton.primary(
                 onPressed: _isCreatingPost ? null : _createPost,
@@ -414,7 +400,7 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
           ),
         ),
         SizedBox(
-          height: 200,
+          height: 260, // Increased height to prevent overflow
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -435,6 +421,7 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
             },
           ),
         ),
+        const SizedBox(height: 24), // Add spacing before posts section
       ],
     );
   }
@@ -521,38 +508,46 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
               spacing: 8,
               runSpacing: 8,
               children: [
-                ...tags.map((tag) => Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
+                ...tags.map(
+                  (tag) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '#$tag',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
                       ),
-                      child: Text(
-                        '#$tag',
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    ),
+                  ),
+                ),
+                ...mentionedCryptos.map(
+                  (crypto) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cryptoGold.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '\$$crypto',
+                      style: const TextStyle(
+                        color: AppTheme.cryptoGold,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
                       ),
-                    )),
-                ...mentionedCryptos.map((crypto) => Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppTheme.cryptoGold.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '\$$crypto',
-                        style: const TextStyle(
-                          color: AppTheme.cryptoGold,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    )),
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
@@ -622,7 +617,8 @@ class _RealSocialFeedScreenState extends State<RealSocialFeedScreen>
 
   void _sharePost(Map<String, dynamic> post, int index) {
     // Implement real share functionality
-    final shareText = '''
+    final shareText =
+        '''
 ${post['author']} shared:
 ${post['content']}
 
@@ -641,8 +637,9 @@ Join the conversation on Kointoss! 🚀
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content:
-            Text('Post shared! ${post['shares']} total shares\n\n$shareText'),
+        content: Text(
+          'Post shared! ${post['shares']} total shares\n\n$shareText',
+        ),
         duration: const Duration(seconds: 2),
       ),
     );

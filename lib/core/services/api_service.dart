@@ -8,10 +8,7 @@ class ApiService {
   final String baseUrl;
   final AuthService authService;
 
-  ApiService({
-    required this.baseUrl,
-    required this.authService,
-  });
+  ApiService({required this.baseUrl, required this.authService});
 
   // Article operations using Amplify GraphQL
   Future<Map<String, dynamic>?> getArticle(String articleId) async {
@@ -56,7 +53,8 @@ class ApiService {
       } else if (response.errors.isNotEmpty) {
         LoggerService.error('GraphQL errors: ${response.errors}');
         throw Exception(
-            'Failed to get article: ${response.errors.first.message}');
+          'Failed to get article: ${response.errors.first.message}',
+        );
       }
       return null;
     } catch (e) {
@@ -201,7 +199,7 @@ class ApiService {
             'viewsCount': 0,
             'createdAt': DateTime.now().toIso8601String(),
             'updatedAt': DateTime.now().toIso8601String(),
-          }
+          },
         },
       );
 
@@ -299,7 +297,7 @@ class ApiService {
       final request = GraphQLRequest<String>(
         document: mutation,
         variables: {
-          'input': {'id': articleId}
+          'input': {'id': articleId},
         },
       );
 
@@ -432,7 +430,7 @@ class ApiService {
             'globalRank': 999999,
             'createdAt': now,
             'updatedAt': now,
-          }
+          },
         },
       );
 
@@ -445,7 +443,8 @@ class ApiService {
       } else if (response.errors.isNotEmpty) {
         LoggerService.error('GraphQL errors: ${response.errors}');
         throw Exception(
-            'Failed to create user profile: ${response.errors.first.message}');
+          'Failed to create user profile: ${response.errors.first.message}',
+        );
       }
       return null;
     } catch (e) {
@@ -491,9 +490,7 @@ class ApiService {
         }
       ''';
 
-      final input = <String, dynamic>{
-        'id': userId,
-      };
+      final input = <String, dynamic>{'id': userId};
 
       if (displayName != null) input['displayName'] = displayName;
       if (bio != null) input['bio'] = bio;
@@ -513,7 +510,8 @@ class ApiService {
       } else if (response.errors.isNotEmpty) {
         LoggerService.error('GraphQL errors: ${response.errors}');
         throw Exception(
-            'Failed to update user profile: ${response.errors.first.message}');
+          'Failed to update user profile: ${response.errors.first.message}',
+        );
       }
       return null;
     } catch (e) {
@@ -559,7 +557,8 @@ class ApiService {
         LoggerService.info('Payment methods retrieved successfully');
         final data = jsonDecode(response.data!);
         return List<Map<String, dynamic>>.from(
-            data['listPaymentMethods']['items']);
+          data['listPaymentMethods']['items'],
+        );
       }
       return [];
     } catch (e) {
@@ -619,7 +618,7 @@ class ApiService {
             'isActive': true,
             'createdAt': DateTime.now().toIso8601String(),
             'updatedAt': DateTime.now().toIso8601String(),
-          }
+          },
         },
       );
 
@@ -679,7 +678,7 @@ class ApiService {
             if (attachments != null) 'attachments': attachments,
             'createdAt': DateTime.now().toIso8601String(),
             'updatedAt': DateTime.now().toIso8601String(),
-          }
+          },
         },
       );
 
@@ -725,9 +724,7 @@ class ApiService {
 
       final request = GraphQLRequest<String>(
         document: query,
-        variables: {
-          if (category != null) 'category': category,
-        },
+        variables: {if (category != null) 'category': category},
       );
 
       final response = await Amplify.API.query(request: request).response;
@@ -944,7 +941,8 @@ class ApiService {
         LoggerService.info('Transaction history retrieved successfully');
         final data = jsonDecode(response.data!);
         return List<Map<String, dynamic>>.from(
-            data['listTransactions']['items']);
+          data['listTransactions']['items'],
+        );
       }
       return [];
     } catch (e) {
@@ -964,10 +962,7 @@ class ApiService {
         ),
       );
 
-      final response = await http.get(
-        uri,
-        headers: await _getHeaders(),
-      );
+      final response = await http.get(uri, headers: await _getHeaders());
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -1084,7 +1079,7 @@ class ApiService {
             if (tags != null) 'tags': tags,
             if (mentionedCryptos != null) 'mentionedCryptos': mentionedCryptos,
             'isPublic': isPublic,
-          }
+          },
         },
       );
 
@@ -1101,8 +1096,10 @@ class ApiService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getSocialPosts(
-      {int limit = 20, String? nextToken}) async {
+  Future<List<Map<String, dynamic>>> getSocialPosts({
+    int limit = 20,
+    String? nextToken,
+  }) async {
     try {
       const query = '''
         query ListPosts(\$limit: Int, \$nextToken: String) {
@@ -1128,10 +1125,7 @@ class ApiService {
 
       final request = GraphQLRequest<String>(
         document: query,
-        variables: {
-          'limit': limit,
-          'nextToken': nextToken,
-        },
+        variables: {'limit': limit, 'nextToken': nextToken},
       );
 
       final response = await Amplify.API.query(request: request).response;
@@ -1149,6 +1143,12 @@ class ApiService {
 
   Future<Map<String, dynamic>?> likePost(String postId) async {
     try {
+      // Get current user ID
+      final userId = await authService.getCurrentUserId();
+      if (userId == null) {
+        throw Exception('User not authenticated');
+      }
+
       const mutation = '''
         mutation CreateLike(\$input: CreateLikeInput!) {
           createLike(input: \$input) {
@@ -1163,9 +1163,7 @@ class ApiService {
       final request = GraphQLRequest<String>(
         document: mutation,
         variables: {
-          'input': {
-            'postId': postId,
-          }
+          'input': {'postId': postId, 'userId': userId},
         },
       );
 
@@ -1187,6 +1185,12 @@ class ApiService {
     required String content,
   }) async {
     try {
+      // Get current user ID
+      final userId = await authService.getCurrentUserId();
+      if (userId == null) {
+        throw Exception('User not authenticated');
+      }
+
       const mutation = '''
         mutation CreateComment(\$input: CreateCommentInput!) {
           createComment(input: \$input) {
@@ -1204,10 +1208,7 @@ class ApiService {
       final request = GraphQLRequest<String>(
         document: mutation,
         variables: {
-          'input': {
-            'postId': postId,
-            'content': content,
-          }
+          'input': {'postId': postId, 'content': content, 'userId': userId},
         },
       );
 
@@ -1240,9 +1241,7 @@ class ApiService {
       final request = GraphQLRequest<String>(
         document: mutation,
         variables: {
-          'input': {
-            'followingId': followingId,
-          }
+          'input': {'followingId': followingId},
         },
       );
 
@@ -1260,9 +1259,7 @@ class ApiService {
   }
 
   Future<Map<String, String>> _getHeaders() async {
-    final headers = {
-      'Content-Type': 'application/json',
-    };
+    final headers = {'Content-Type': 'application/json'};
 
     try {
       final token = await authService.getUserToken();
