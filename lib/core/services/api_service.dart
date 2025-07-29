@@ -322,6 +322,7 @@ class ApiService {
       const query = '''
         query GetUserProfile(\$id: ID!) {
           getUserProfile(id: \$id) {
+            id
             userId
             email
             username
@@ -332,8 +333,18 @@ class ApiService {
             followersCount
             followingCount
             isPublic
+            totalPoints
+            level
+            streak
+            badges
+            lastActivity
+            actionsToday
+            weeklyPoints
+            monthlyPoints
+            globalRank
             createdAt
             updatedAt
+            owner
           }
         }
       ''';
@@ -353,6 +364,160 @@ class ApiService {
       return null;
     } catch (e) {
       LoggerService.error('Failed to get user profile: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> createUserProfile({
+    required String userId,
+    required String email,
+    required String username,
+    String? displayName,
+    String? bio,
+  }) async {
+    try {
+      const mutation = '''
+        mutation CreateUserProfile(\$input: CreateUserProfileInput!) {
+          createUserProfile(input: \$input) {
+            id
+            userId
+            email
+            username
+            displayName
+            bio
+            profilePicture
+            totalPortfolioValue
+            followersCount
+            followingCount
+            isPublic
+            totalPoints
+            level
+            streak
+            badges
+            lastActivity
+            actionsToday
+            weeklyPoints
+            monthlyPoints
+            globalRank
+            createdAt
+            updatedAt
+            owner
+          }
+        }
+      ''';
+
+      final now = DateTime.now().toIso8601String();
+
+      final request = GraphQLRequest<String>(
+        document: mutation,
+        variables: {
+          'input': {
+            'userId': userId,
+            'email': email,
+            'username': username,
+            'displayName': displayName ?? username,
+            'bio': bio ?? 'Welcome to Kointos!',
+            'isPublic': true,
+            'totalPortfolioValue': 0.0,
+            'followersCount': 0,
+            'followingCount': 0,
+            'totalPoints': 0,
+            'level': 1,
+            'streak': 0,
+            'badges': [],
+            'lastActivity': now,
+            'actionsToday': 0,
+            'weeklyPoints': 0,
+            'monthlyPoints': 0,
+            'globalRank': 999999,
+            'createdAt': now,
+            'updatedAt': now,
+          }
+        },
+      );
+
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data != null) {
+        LoggerService.info('User profile created successfully');
+        final data = jsonDecode(response.data!);
+        return data['createUserProfile'];
+      } else if (response.errors.isNotEmpty) {
+        LoggerService.error('GraphQL errors: ${response.errors}');
+        throw Exception(
+            'Failed to create user profile: ${response.errors.first.message}');
+      }
+      return null;
+    } catch (e) {
+      LoggerService.error('Failed to create user profile: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> updateUserProfile({
+    required String userId,
+    String? displayName,
+    String? bio,
+    String? profilePicture,
+  }) async {
+    try {
+      const mutation = '''
+        mutation UpdateUserProfile(\$input: UpdateUserProfileInput!) {
+          updateUserProfile(input: \$input) {
+            id
+            userId
+            email
+            username
+            displayName
+            bio
+            profilePicture
+            totalPortfolioValue
+            followersCount
+            followingCount
+            isPublic
+            totalPoints
+            level
+            streak
+            badges
+            lastActivity
+            actionsToday
+            weeklyPoints
+            monthlyPoints
+            globalRank
+            createdAt
+            updatedAt
+            owner
+          }
+        }
+      ''';
+
+      final input = <String, dynamic>{
+        'id': userId,
+      };
+
+      if (displayName != null) input['displayName'] = displayName;
+      if (bio != null) input['bio'] = bio;
+      if (profilePicture != null) input['profilePicture'] = profilePicture;
+
+      final request = GraphQLRequest<String>(
+        document: mutation,
+        variables: {'input': input},
+      );
+
+      final response = await Amplify.API.mutate(request: request).response;
+
+      if (response.data != null) {
+        LoggerService.info('User profile updated successfully');
+        final data = jsonDecode(response.data!);
+        return data['updateUserProfile'];
+      } else if (response.errors.isNotEmpty) {
+        LoggerService.error('GraphQL errors: ${response.errors}');
+        throw Exception(
+            'Failed to update user profile: ${response.errors.first.message}');
+      }
+      return null;
+    } catch (e) {
+      LoggerService.error('Failed to update user profile: $e');
       rethrow;
     }
   }

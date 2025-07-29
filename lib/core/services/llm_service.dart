@@ -5,6 +5,7 @@ import 'package:kointos/core/services/logger_service.dart';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/services/bedrock_client.dart';
+import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'package:kointos/data/repositories/article_repository.dart';
 
 /// LLM Service using Amazon Bedrock Claude 3 Haiku
@@ -19,17 +20,21 @@ class LLMService {
   final AuthService _authService;
   final ArticleRepository _articleRepository;
   final BedrockClient _bedrockClient;
+  final UserProfileInitializationService _profileService;
 
   LLMService({
     http.Client? httpClient,
     AuthService? authService,
     ArticleRepository? articleRepository,
     BedrockClient? bedrockClient,
+    UserProfileInitializationService? profileService,
   })  : _httpClient = httpClient ?? http.Client(),
         _authService = authService ?? getService<AuthService>(),
         _articleRepository =
             articleRepository ?? getService<ArticleRepository>(),
-        _bedrockClient = bedrockClient ?? BedrockClient();
+        _bedrockClient = bedrockClient ?? BedrockClient(),
+        _profileService =
+            profileService ?? getService<UserProfileInitializationService>();
 
   /// Generate response using Amazon Bedrock Claude 3 Haiku with real user context
   Future<String> generateResponse({
@@ -85,76 +90,69 @@ class LLMService {
   /// Fetch real user data from Amplify DataStore
   Future<Map<String, dynamic>> _fetchUserData() async {
     try {
-      // Use auth service to get current user
-      final token = await _authService.getUserToken();
-      if (token == null) {
-        throw Exception('User not authenticated');
+      // Use the profile initialization service to get user profile
+      final profileData = await _profileService.getCurrentUserProfile();
+
+      if (profileData != null) {
+        LoggerService.info(
+            'User data fetched successfully from profile service');
+
+        return {
+          'userId': profileData['userId'],
+          'displayName':
+              profileData['displayName'] ?? profileData['username'] ?? 'User',
+          'username': profileData['username'] ?? 'User',
+          'email': profileData['email'],
+          'totalPoints': profileData['totalPoints'] ?? 0,
+          'level': profileData['level'] ?? 1,
+          'streak': profileData['streak'] ?? 0,
+          'portfolioValue': profileData['totalPortfolioValue'] ?? 0.0,
+          'followersCount': profileData['followersCount'] ?? 0,
+          'followingCount': profileData['followingCount'] ?? 0,
+          'weeklyPoints': profileData['weeklyPoints'] ?? 0,
+          'monthlyPoints': profileData['monthlyPoints'] ?? 0,
+        };
       }
 
-      final user = await Amplify.Auth.getCurrentUser();
-      final userId = user.userId;
-
-      // Query user profile from DataStore
-      const query = '''
-        query GetUserProfile(\$id: ID!) {
-          getUserProfile(id: \$id) {
-            userId
-            displayName
-            totalPortfolioValue
-            xp
-            level
-            bullishVotes
-            bearishVotes
-            createdAt
-          }
-        }
-      ''';
-
-      final request = GraphQLRequest<String>(
-        document: query,
-        variables: {'id': userId},
-      );
-
-      final response = await Amplify.API.query(request: request).response;
-
-      if (response.data != null) {
-        final data = jsonDecode(response.data!);
-        final profile = data['getUserProfile'];
-
-        if (profile != null) {
-          LoggerService.info('User data fetched successfully for: $userId');
-          return {
-            'userId': userId,
-            'displayName': profile['displayName'] ?? 'User',
-            'xp': profile['xp'] ?? 0,
-            'level': _calculateLevel(profile['xp'] ?? 0),
-            'bullishVotes': profile['bullishVotes'] ?? 0,
-            'bearishVotes': profile['bearishVotes'] ?? 0,
-            'portfolioValue': profile['totalPortfolioValue'] ?? 0.0,
-          };
-        }
+      // Fallback for users without profiles
+      final userId = await _authService.getCurrentUserId();
+      if (userId != null) {
+        LoggerService.info('Using fallback user data for: $userId');
+        return {
+          'userId': userId,
+          'displayName': 'User',
+          'username': 'User',
+          'email': '',
+          'totalPoints': 0,
+          'level': 1,
+          'streak': 0,
+          'portfolioValue': 0.0,
+          'followersCount': 0,
+          'followingCount': 0,
+          'weeklyPoints': 0,
+          'monthlyPoints': 0,
+        };
       }
 
-      // Fallback for new users
-      return {
-        'userId': userId,
-        'displayName': 'User',
-        'xp': 0,
-        'level': 'Bronze',
-        'bullishVotes': 0,
-        'bearishVotes': 0,
-        'portfolioValue': 0.0,
-      };
+      throw Exception('No authenticated user found');
     } catch (e) {
-      LoggerService.error('Error fetching user data: $e');
+      LoggerService.error('Failed to fetch user data: $e');
+
+      // Return minimal user data as fallback
+      final userId = await _authService.getCurrentUserId();
       return {
-        'userId': 'unknown',
+        'userId': userId ?? 'anonymous',
         'displayName': 'User',
-        'xp': 0,
-        'level': 'Bronze',
-        'bullishVotes': 0,
-        'bearishVotes': 0,
+        'username': 'User',
+        'email': '',
+        'totalPoints': 0,
+        'level': 1,
+        'streak': 0,
         'portfolioValue': 0.0,
+        'followersCount': 0,
+        'followingCount': 0,
+        'weeklyPoints': 0,
+        'monthlyPoints': 0,
       };
     }
   }

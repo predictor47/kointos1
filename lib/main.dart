@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/kointos_amplify_config.dart';
 import 'package:kointos/core/services/service_locator.dart';
+import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/presentation/screens/auth_screen.dart';
 import 'package:kointos/presentation/screens/adaptive_main_screen.dart';
@@ -84,6 +85,17 @@ class _AppEntryPointState extends State<AppEntryPoint> {
     try {
       final isAuthenticated = await _authService.isAuthenticated();
       if (mounted) {
+        if (isAuthenticated) {
+          // Ensure user profile exists when authenticated
+          try {
+            final profileService =
+                getService<UserProfileInitializationService>();
+            await profileService.ensureUserProfile();
+          } catch (e) {
+            print('Warning: Failed to initialize user profile: $e');
+          }
+        }
+
         setState(() {
           _isAuthenticated = isAuthenticated;
           _isLoading = false;

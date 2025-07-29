@@ -6,6 +6,7 @@ import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/gamification_service.dart';
+import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   final _authService = getService<AuthService>();
   final _apiService = getService<ApiService>();
   final _gamificationService = getService<GamificationService>();
+  final _profileInitService = getService<UserProfileInitializationService>();
 
   UserProfile? _userProfile;
   UserGameStats? _gameStats;
@@ -40,46 +42,78 @@ class _ProfileScreenState extends State<ProfileScreen>
     });
 
     try {
-      // Load user profile
+      // Load user profile using the initialization service
       final currentUser = await _authService.getCurrentUserId();
       if (currentUser != null) {
-        // Get user email and other details from Amplify Auth
-        final amplifyUser = await Amplify.Auth.getCurrentUser();
-        final userAttributes = await Amplify.Auth.fetchUserAttributes();
-
-        String email = '';
-        String displayName = '';
-        for (final attr in userAttributes) {
-          if (attr.userAttributeKey == AuthUserAttributeKey.email) {
-            email = attr.value;
-          } else if (attr.userAttributeKey == AuthUserAttributeKey.name) {
-            displayName = attr.value;
-          }
-        }
-
         try {
-          // Try to get profile from API
-          final userProfile = await _apiService.getUserProfile(currentUser);
+          // Use the profile initialization service to get or create profile
+          final userProfileData =
+              await _profileInitService.getCurrentUserProfile();
 
-          // Load gamification stats
-          final gameStats = await _gamificationService.getUserStats();
+          if (userProfileData != null) {
+            // Load gamification stats
+            final gameStats = await _gamificationService.getUserStats();
 
-          // Load real user articles
-          final articles = await _apiService.getUserArticles(currentUser);
+            // Load user articles
+            final articles = await _apiService.getUserArticles(currentUser);
 
-          setState(() {
-            _userProfile = UserProfile.fromApi(userProfile, {
-              'userId': currentUser,
-              'username': amplifyUser.username,
-              'email': email,
-              'displayName': displayName,
+            setState(() {
+              _userProfile = UserProfile.fromApi(userProfileData, {
+                'userId': currentUser,
+                'username': userProfileData['username'] ?? 'User',
+                'email': userProfileData['email'] ?? '',
+                'displayName': userProfileData['displayName'] ??
+                    userProfileData['username'] ??
+                    'User',
+              });
+              _gameStats = gameStats;
+              _userArticles = articles;
+              _isLoading = false;
             });
-            _gameStats = gameStats;
-            _userArticles = articles;
-            _isLoading = false;
-          });
-        } catch (apiError) {
-          // If API fails, create profile from Amplify auth data
+          } else {
+            // Fallback to auth data if profile creation failed
+            final amplifyUser = await Amplify.Auth.getCurrentUser();
+            final userAttributes = await Amplify.Auth.fetchUserAttributes();
+
+            String email = '';
+            String displayName = '';
+            for (final attr in userAttributes) {
+              if (attr.userAttributeKey == AuthUserAttributeKey.email) {
+                email = attr.value;
+              } else if (attr.userAttributeKey == AuthUserAttributeKey.name) {
+                displayName = attr.value;
+              }
+            }
+
+            setState(() {
+              _userProfile = UserProfile.fromApi(null, {
+                'userId': currentUser,
+                'username': amplifyUser.username,
+                'email': email,
+                'displayName':
+                    displayName.isNotEmpty ? displayName : amplifyUser.username,
+              });
+              _gameStats = null;
+              _userArticles = [];
+              _isLoading = false;
+            });
+          }
+        } catch (e) {
+          print('Error loading user profile: $e');
+          // Fallback to auth data
+          final amplifyUser = await Amplify.Auth.getCurrentUser();
+          final userAttributes = await Amplify.Auth.fetchUserAttributes();
+
+          String email = '';
+          String displayName = '';
+          for (final attr in userAttributes) {
+            if (attr.userAttributeKey == AuthUserAttributeKey.email) {
+              email = attr.value;
+            } else if (attr.userAttributeKey == AuthUserAttributeKey.name) {
+              displayName = attr.value;
+            }
+          }
+
           setState(() {
             _userProfile = UserProfile.fromApi(null, {
               'userId': currentUser,
@@ -101,6 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
       }
     } catch (e) {
+      print('Critical error loading user data: $e');
       // Critical error - show error state
       setState(() {
         _userProfile = null;

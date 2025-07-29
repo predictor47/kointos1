@@ -17,6 +17,7 @@ import 'package:kointos/core/services/support_ticket_service.dart';
 import 'package:kointos/core/services/push_notification_service.dart';
 import 'package:kointos/core/services/pinpoint_analytics_service.dart';
 import 'package:kointos/core/services/settings_service.dart';
+import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'package:kointos/data/datasources/coingecko_service.dart';
 import 'package:kointos/data/repositories/article_repository.dart';
 import 'package:kointos/data/repositories/cryptocurrency_repository.dart';
@@ -126,6 +127,10 @@ Future<void> setupServiceLocator() async {
       apiService: serviceLocator<ApiService>(),
       storageService: serviceLocator<StorageInterface>(),
     ),
+  );
+
+  serviceLocator.registerLazySingleton<UserProfileInitializationService>(
+    () => UserProfileInitializationService(),
   );
 
   serviceLocator.registerLazySingleton<PostRepository>(

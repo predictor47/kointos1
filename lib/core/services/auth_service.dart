@@ -1,5 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:kointos/core/services/user_profile_initialization_service.dart';
+import 'package:kointos/core/services/service_locator.dart';
 
 class AuthService {
   Future<bool> isAuthenticated() async {
@@ -72,6 +74,15 @@ class AuthService {
         username: email,
         confirmationCode: confirmationCode,
       );
+
+      // Initialize user profile after successful confirmation
+      try {
+        final profileService = getService<UserProfileInitializationService>();
+        await profileService.createProfileForNewUser(email: email);
+      } catch (e) {
+        // Log the error but don't fail the auth process
+        print('Warning: Failed to create user profile: $e');
+      }
     } catch (e) {
       rethrow;
     }
@@ -96,6 +107,15 @@ class AuthService {
         username: email,
         password: password,
       );
+
+      // Ensure user profile exists after successful sign in
+      try {
+        final profileService = getService<UserProfileInitializationService>();
+        await profileService.ensureUserProfile();
+      } catch (e) {
+        // Log the error but don't fail the auth process
+        print('Warning: Failed to initialize user profile: $e');
+      }
     } catch (e) {
       rethrow;
     }
