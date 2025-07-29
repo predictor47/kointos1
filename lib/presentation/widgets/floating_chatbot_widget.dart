@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:kointos/core/services/intelligent_chatbot_service.dart';
+import 'package:kointos/core/services/kointos_ai_chatbot_service.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
-import 'package:kointos/data/repositories/cryptocurrency_repository.dart';
-import 'package:kointos/data/repositories/article_repository.dart';
 import 'package:kointos/core/services/service_locator.dart';
 
 class FloatingChatbotWidget extends StatefulWidget {
@@ -23,7 +21,8 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
   late AnimationController _pulseController;
   late AnimationController _expandController;
 
-  final IntelligentChatbotService _chatbotService = IntelligentChatbotService();
+  final KointosAIChatbotService _chatbotService =
+      getService<KointosAIChatbotService>();
   bool _isTyping = false;
 
   @override
@@ -74,7 +73,7 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
     _expandController.reverse();
   }
 
-  void _addBotMessage(String text, {ChatbotResponse? response}) {
+  void _addBotMessage(String text, {KointosBotResponse? response}) {
     setState(() {
       _messages.add(ChatMessage(
         text: text,
@@ -121,19 +120,8 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
     });
 
     try {
-      // Get current data for context
-      final cryptoRepo = getService<CryptocurrencyRepository>();
-      final articleRepo = getService<ArticleRepository>();
-
-      final cryptocurrencies = await cryptoRepo.getTopCryptocurrencies();
-      final articles = await articleRepo.getArticles();
-
       // Process message with chatbot
-      final response = await _chatbotService.processMessage(
-        text,
-        currentPrices: cryptocurrencies,
-        userArticles: articles,
-      );
+      final response = await _chatbotService.processMessage(text);
 
       // Simulate thinking delay
       await Future.delayed(const Duration(milliseconds: 800));
@@ -430,13 +418,12 @@ class _FloatingChatbotWidgetState extends State<FloatingChatbotWidget>
                 ),
 
                 // Show suggestions for bot messages
-                if (!message.isUser && message.response?.suggestions != null)
+                if (!message.isUser && message.response?.suggestedActions != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.only(top: 8.0),
                     child: Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: (message.response?.suggestions ?? [])
+                      spacing: 8,
+                      children: (message.response?.suggestedActions ?? [])
                           .map((suggestion) {
                         return GestureDetector(
                           onTap: () {
@@ -551,7 +538,7 @@ class ChatMessage {
   final String text;
   final bool isUser;
   final DateTime timestamp;
-  final ChatbotResponse? response;
+  final KointosBotResponse? response;
 
   ChatMessage({
     required this.text,

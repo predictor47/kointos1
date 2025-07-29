@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kointos/core/services/dummy_data_service.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
+import 'package:kointos/core/utils/bedrock_permission_checker.dart';
+import 'package:kointos/core/services/bedrock_client.dart';
+import 'package:kointos/core/services/llm_service.dart';
 
 /// Developer tools screen for initializing dummy data and testing features
 class DevToolsScreen extends StatefulWidget {
@@ -14,6 +17,8 @@ class DevToolsScreen extends StatefulWidget {
 class _DevToolsScreenState extends State<DevToolsScreen> {
   final DummyDataService _dummyDataService = getService<DummyDataService>();
   bool _isInitializing = false;
+  bool _isTestingBedrock = false;
+  String _bedrockTestResult = '';
 
   Future<void> _initializeDummyData() async {
     setState(() {
@@ -151,6 +156,65 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
     }
   }
 
+  Future<void> _testBedrockConnection() async {
+    setState(() {
+      _isTestingBedrock = true;
+      _bedrockTestResult = 'Testing Bedrock connection...';
+    });
+
+    try {
+      // Test 1: Check credentials
+      final bedrockClient = getService<BedrockClient>();
+      final hasCredentials = await bedrockClient.testCredentials();
+
+      if (!hasCredentials) {
+        setState(() {
+          _bedrockTestResult =
+              '❌ Failed to get AWS credentials. Make sure you are logged in.';
+        });
+        return;
+      }
+
+      setState(() {
+        _bedrockTestResult =
+            '✅ AWS credentials obtained\n🔄 Testing Bedrock API...';
+      });
+
+      // Test 2: Try actual LLM call
+      final llmService = getService<LLMService>();
+      final response = await llmService.generateResponse(
+        prompt: 'Hello, this is a test. Please respond briefly.',
+        context: {},
+        maxTokens: 50,
+      );
+
+      if (response.contains('🔴 Bot offline') ||
+          response.contains('Bot temporarily offline')) {
+        setState(() {
+          _bedrockTestResult = '❌ Bedrock API call failed:\n$response\n\n'
+              'Troubleshooting:\n'
+              '1. Check if Claude 3 Haiku is enabled in AWS Bedrock console\n'
+              '2. Verify your AWS region is us-east-1\n'
+              '3. Ensure Amplify backend is deployed with proper permissions';
+        });
+      } else {
+        setState(() {
+          _bedrockTestResult = '✅ Bedrock connection successful!\n\n'
+              'Response: "${response.length > 100 ? response.substring(0, 100) + '...' : response}"\n\n'
+              '🎉 Your AI chatbot is working!';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _bedrockTestResult = '❌ Error testing Bedrock:\n$e';
+      });
+    } finally {
+      setState(() {
+        _isTestingBedrock = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -222,6 +286,89 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
               ),
             ),
             const SizedBox(height: 16),
+
+            // Bedrock Testing Card
+            Card(
+              color: AppTheme.secondaryBlack,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '🤖 AI Chatbot Testing',
+                      style: TextStyle(
+                        color: AppTheme.pureWhite,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Test your AWS Bedrock connection and AI chatbot functionality.',
+                      style: TextStyle(color: AppTheme.greyText, fontSize: 14),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildActionButton(
+                      title: 'Test Bedrock Connection',
+                      subtitle: 'Verify AWS credentials and Claude API access',
+                      icon: Icons.smart_toy,
+                      onPressed:
+                          _isTestingBedrock ? null : _testBedrockConnection,
+                      isPrimary: true,
+                    ),
+                    if (_bedrockTestResult.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: _bedrockTestResult.contains('✅')
+                              ? Colors.green.withOpacity(0.1)
+                              : Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _bedrockTestResult.contains('✅')
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                        ),
+                        child: Text(
+                          _bedrockTestResult,
+                          style: TextStyle(
+                            color: AppTheme.pureWhite,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const BedrockPermissionChecker(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.security,
+                          color: AppTheme.cryptoGold),
+                      label: const Text(
+                        'Advanced Bedrock Diagnostics',
+                        style: TextStyle(color: AppTheme.cryptoGold),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppTheme.cryptoGold),
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
             Card(
               color: AppTheme.secondaryBlack,
               child: Padding(
@@ -249,7 +396,7 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
                 ),
               ),
             ),
-            if (_isInitializing) ...[
+            if (_isInitializing || _isTestingBedrock) ...[
               const SizedBox(height: 16),
               const Center(
                 child: CircularProgressIndicator(
@@ -259,10 +406,13 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Center(
+              Center(
                 child: Text(
-                  'Initializing dummy data...',
-                  style: TextStyle(color: AppTheme.greyText, fontSize: 14),
+                  _isTestingBedrock
+                      ? 'Testing Bedrock connection...'
+                      : 'Initializing dummy data...',
+                  style:
+                      const TextStyle(color: AppTheme.greyText, fontSize: 14),
                 ),
               ),
             ],

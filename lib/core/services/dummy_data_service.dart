@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:kointos/core/services/api_service.dart';
-import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/logger_service.dart';
 
 /// Service to populate the app with realistic dummy data for demonstration

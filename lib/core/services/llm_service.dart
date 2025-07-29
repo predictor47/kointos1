@@ -46,6 +46,13 @@ class LLMService {
     try {
       LoggerService.info('Processing Claude request for user message: $prompt');
 
+      // Test Bedrock connectivity first
+      final hasCredentials = await _bedrockClient.testCredentials();
+      if (!hasCredentials) {
+        LoggerService.error('Failed to obtain AWS credentials for Bedrock');
+        return '🔴 Bot offline: Authentication issue. Please ensure you are logged in and try again.';
+      }
+
       // 1. Fetch real user data from Amplify DataStore
       final userData = await _fetchUserData();
 
@@ -64,13 +71,14 @@ class LLMService {
       );
 
       // 5. Call Amazon Bedrock Claude 3 Haiku
+      LoggerService.info('Attempting to call Bedrock API...');
       final claudeResponse = await _callClaudeBedrock(
         prompt: claudePrompt,
         maxTokens: maxTokens,
         temperature: temperature,
       );
 
-      if (claudeResponse != null) {
+      if (claudeResponse != null && claudeResponse.isNotEmpty) {
         // 6. Optional: Save interaction to user history
         await _saveInteractionHistory(
             prompt, claudeResponse, userData['userId']);
@@ -79,11 +87,24 @@ class LLMService {
         return claudeResponse;
       }
 
+      LoggerService.warning(
+          'Bedrock returned null/empty response, using fallback');
       // Fallback if Claude fails
-      return _generateSafeFallback(prompt, userData, marketData);
-    } catch (e) {
-      LoggerService.error('LLM Service error: $e');
-      return 'Bot is temporarily offline. Please try again in a moment.';
+      return _generateEnhancedFallback(prompt, userData, marketData);
+    } catch (e, stackTrace) {
+      LoggerService.error('LLM Service error: $e\nStackTrace: $stackTrace');
+
+      // Provide more specific error messages
+      if (e.toString().contains('ENOTFOUND') ||
+          e.toString().contains('getaddrinfo')) {
+        return '🔴 Bot offline: Network connectivity issue. Please check your internet connection and try again.';
+      } else if (e.toString().contains('AccessDenied')) {
+        return '🔴 Bot offline: Permission denied. Please contact support - Bedrock access may not be properly configured.';
+      } else if (e.toString().contains('timeout')) {
+        return '🔴 Bot offline: Request timed out. The AI service is taking too long to respond. Please try again.';
+      }
+
+      return '🔴 Bot temporarily offline. Error: ${e.toString().split('\n').first}. Please try again later.';
     }
   }
 
@@ -443,25 +464,45 @@ class LLMService {
     }
   }
 
-  /// Generate safe fallback response with real user data
-  String _generateSafeFallback(String prompt, Map<String, dynamic> userData,
+  /// Generate enhanced fallback response with real user data
+  String _generateEnhancedFallback(String prompt, Map<String, dynamic> userData,
       List<Map<String, dynamic>> marketData) {
-    final userName = userData['displayName'] as String;
-    final level = userData['level'] as String;
+    final userName = userData['displayName'] as String? ?? 'User';
+    final level = userData['level'] as int? ?? 1;
+    final levelName = _calculateLevel(userData['totalPoints'] as int? ?? 0);
 
-    if (marketData.isNotEmpty) {
+    // Check if this is a specific type of query
+    final lowerPrompt = prompt.toLowerCase();
+
+    if (lowerPrompt.contains('price') && marketData.isNotEmpty) {
       final coin = marketData.first;
       final price = (coin['price'] as double).toStringAsFixed(2);
       final change = (coin['change24h'] as double).toStringAsFixed(2);
+      final changeSymbol = coin['change24h'] >= 0 ? '📈' : '📉';
 
-      return 'Hi $userName! 👋 As a $level level trader, you can see ${coin['name']} is at \$$price with a $change% 24h change. '
-          'While I\'m temporarily unable to provide detailed analysis, the current market data suggests continued volatility. '
-          'Check out our latest articles for more insights, and feel free to try again shortly!';
+      return 'Hi $userName! While I\'m having trouble connecting to my AI service, I can still provide current data:\n\n'
+          '${coin['name']} (${coin['symbol']}): \$$price $changeSymbol $change%\n'
+          'Market Cap: ${_formatMarketCap(coin['marketCap'] as double)}\n\n'
+          '⚠️ Note: AI-powered analysis is temporarily unavailable. Basic market data is still accessible.';
     }
 
-    return 'Hi $userName! � Thanks for reaching out. While I\'m temporarily offline for maintenance, '
-        'your $level status shows you\'re an experienced user of our platform. '
-        'Please check our latest market articles and try again in a few moments!';
+    if (lowerPrompt.contains('portfolio') || lowerPrompt.contains('balance')) {
+      return 'Hi $userName! 📊 Your portfolio features are accessible, but AI-powered insights are temporarily offline.\n\n'
+          'Your Level: $levelName (Level $level)\n'
+          'Total Points: ${userData['totalPoints'] ?? 0} XP\n\n'
+          '⚠️ For detailed portfolio analysis, please try again when the AI service is restored.';
+    }
+
+    // Generic fallback with helpful information
+    return 'Hi $userName! 🤖 I\'m experiencing connectivity issues with the AI service.\n\n'
+        'What\'s working:\n'
+        '✅ Market data and prices\n'
+        '✅ Your profile (Level $level - $levelName)\n'
+        '✅ Basic app features\n\n'
+        'What\'s offline:\n'
+        '❌ AI-powered analysis\n'
+        '❌ Intelligent responses\n\n'
+        'Please try again in a few moments, or check the Dev Tools for diagnostics.';
   }
 
   void dispose() {
