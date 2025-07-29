@@ -2,12 +2,16 @@ import 'dart:convert';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/logger_service.dart';
+import 'package:kointos/core/services/user_profile_initialization_service.dart';
+import 'package:kointos/core/services/service_locator.dart';
 
 /// Real gamification service that calculates points, levels, and achievements
 class GamificationService {
   final ApiService _apiService;
+  final UserProfileInitializationService _profileService;
 
-  GamificationService(this._apiService);
+  GamificationService(this._apiService)
+      : _profileService = getService<UserProfileInitializationService>();
 
   // Point values for different actions
   static const Map<GameAction, int> _pointValues = {
@@ -154,9 +158,11 @@ class GamificationService {
   Future<UserGameStats> _updateUserStats(
       String userId, int pointsToAdd, GameAction action) async {
     try {
-      // Get current user profile to update
-      final currentProfile = await _apiService.getUserProfile(userId);
+      // Get or create user profile using initialization service
+      final currentProfile = await _profileService.getCurrentUserProfile();
       if (currentProfile == null) {
+        LoggerService.error(
+            'Failed to get or create user profile for gamification');
         throw Exception('User profile not found');
       }
 
@@ -310,9 +316,11 @@ class GamificationService {
   /// Award a badge to user
   Future<void> _awardBadge(String userId, String badgeId) async {
     try {
-      // Get current user profile
-      final currentProfile = await _apiService.getUserProfile(userId);
+      // Get or create user profile using initialization service
+      final currentProfile = await _profileService.getCurrentUserProfile();
       if (currentProfile == null) {
+        LoggerService.error(
+            'Failed to get or create user profile for badge award');
         throw Exception('User profile not found');
       }
 

@@ -5,6 +5,8 @@ import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/core/utils/bedrock_permission_checker.dart';
 import 'package:kointos/core/services/bedrock_client.dart';
 import 'package:kointos/core/services/llm_service.dart';
+import 'package:kointos/presentation/screens/system_diagnostics_screen.dart';
+import 'package:kointos/presentation/screens/quick_fix_screen.dart';
 
 /// Developer tools screen for initializing dummy data and testing features
 class DevToolsScreen extends StatefulWidget {
@@ -200,7 +202,7 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
       } else {
         setState(() {
           _bedrockTestResult = '✅ Bedrock connection successful!\n\n'
-              'Response: "${response.length > 100 ? response.substring(0, 100) + '...' : response}"\n\n'
+              'Response: "${response.length > 100 ? '${response.substring(0, 100)}...' : response}"\n\n'
               '🎉 Your AI chatbot is working!';
         });
       }
@@ -334,7 +336,7 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
                         ),
                         child: Text(
                           _bedrockTestResult,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppTheme.pureWhite,
                             fontSize: 14,
                           ),
@@ -363,20 +365,62 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
                         padding: const EdgeInsets.all(12),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const SystemDiagnosticsScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.health_and_safety,
+                          color: Colors.blue),
+                      label: const Text(
+                        'Full System Diagnostics',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.blue),
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QuickFixScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.build, color: Colors.orange),
+                      label: const Text(
+                        'Quick Fix & Test',
+                        style: TextStyle(color: Colors.orange),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.orange),
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 16),
 
-            Card(
+            const Card(
               color: AppTheme.secondaryBlack,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '⚠️ Important Notes',
                       style: TextStyle(
                         color: AppTheme.cryptoGold,
@@ -384,8 +428,8 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    SizedBox(height: 8),
+                    Text(
                       '• Only use in development/testing environments\n'
                       '• Dummy data will be stored in your Amplify backend\n'
                       '• You can delete dummy data from the AWS console\n'

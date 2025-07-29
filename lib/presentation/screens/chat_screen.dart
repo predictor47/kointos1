@@ -271,7 +271,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: AppTheme.cryptoGradient,
               shape: BoxShape.circle,
             ),
@@ -299,7 +299,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
+                const Text(
                   'Active now',
                   style: TextStyle(
                     color: AppTheme.cryptoGold,
@@ -345,7 +345,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             Container(
               width: 32,
               height: 32,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: AppTheme.cryptoGradient,
                 shape: BoxShape.circle,
               ),
@@ -442,7 +442,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           Container(
             width: 32,
             height: 32,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: AppTheme.cryptoGradient,
               shape: BoxShape.circle,
             ),
@@ -560,7 +560,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               child: Container(
                 width: 48,
                 height: 48,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: AppTheme.cryptoGradient,
                   shape: BoxShape.circle,
                 ),

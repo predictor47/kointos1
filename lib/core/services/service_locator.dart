@@ -17,6 +17,7 @@ import 'package:kointos/core/services/storage_interface.dart';
 import 'package:kointos/core/services/support_ticket_service.dart';
 import 'package:kointos/core/services/push_notification_service.dart';
 import 'package:kointos/core/services/pinpoint_analytics_service.dart';
+import 'package:kointos/core/services/portfolio_service.dart';
 import 'package:kointos/core/services/settings_service.dart';
 import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'package:kointos/data/datasources/coingecko_service.dart';
@@ -94,6 +95,11 @@ Future<void> setupServiceLocator() async {
   // Analytics Service
   serviceLocator.registerLazySingleton<PinpointAnalyticsService>(
     () => PinpointAnalyticsService(),
+  );
+
+  // Portfolio Service
+  serviceLocator.registerLazySingleton<PortfolioService>(
+    () => PortfolioService(),
   );
 
   // Data Sources

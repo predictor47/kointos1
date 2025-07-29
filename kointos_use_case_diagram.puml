@@ -1,0 +1,249 @@
+@startuml KointossUseCaseDiagram
+!theme plain
+scale 0.8
+skinparam backgroundColor white
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor lightblue
+  BorderColor darkblue
+  FontSize 10
+}
+skinparam actor {
+  BackgroundColor lightgray
+  BorderColor black
+  FontSize 11
+}
+skinparam package {
+  BackgroundColor lightyellow
+  BorderColor brown
+  FontSize 10
+  FontStyle bold
+}
+
+title Kointoss - Use Case Diagram
+note top : Crypto Social Platform with AI Assistant
+
+top to bottom direction
+
+actor "Guest\nUser" as Guest
+actor "Registered\nUser" as User
+actor "System\nAdmin" as Admin
+actor "External\nAPIs" as APIs
+actor "AI\nChatbot" as Bot
+
+rectangle "Kointoss Platform" {
+
+  package "Core Features" {
+    package "Auth" {
+      usecase "Sign Up" as UC_SignUp
+      usecase "Sign In" as UC_SignIn
+      usecase "Sign Out" as UC_SignOut
+    }
+
+    package "Social" {
+      usecase "Create Post" as UC_CreatePost
+      usecase "View Feed" as UC_ViewFeed
+      usecase "Like/Comment" as UC_LikePost
+      usecase "Follow Users" as UC_Follow
+    }
+
+    package "Market" {
+      usecase "View Market\nData" as UC_MarketOverview
+      usecase "Crypto Details" as UC_CryptoDetails
+      usecase "Search Crypto" as UC_SearchCrypto
+    }
+
+    package "Portfolio" {
+      usecase "View Portfolio" as UC_ViewPortfolio
+      usecase "Track Holdings" as UC_TrackHoldings
+      usecase "Performance\nAnalysis" as UC_ViewPnL
+    }
+  }
+
+  package "Content & AI" {
+    package "Articles" {
+      usecase "Create Article" as UC_CreateArticle
+      usecase "View Articles" as UC_ViewArticles
+      usecase "Publish Article" as UC_PublishArticle
+    }
+
+    package "AI Assistant" {
+      usecase "Chat with AI" as UC_ChatBot
+      usecase "Market Insights" as UC_MarketInsights
+      usecase "Crypto Info" as UC_CryptoInfo
+    }
+  }
+
+  package "User Management" {
+    package "Profile" {
+      usecase "Create Profile" as UC_CreateProfile
+      usecase "Edit Profile" as UC_EditProfile
+      usecase "View Profile" as UC_ViewProfile
+    }
+
+    package "Settings" {
+      usecase "Theme/Language" as UC_ChangeTheme
+      usecase "Notifications" as UC_ConfigNotif
+      usecase "Privacy" as UC_PrivacySettings
+    }
+
+    package "Gamification" {
+      usecase "Earn Points" as UC_EarnPoints
+      usecase "View Leaderboard" as UC_ViewLeaderboard
+      usecase "Unlock Badges" as UC_UnlockBadges
+    }
+  }
+
+  package "Admin & Support" {
+    usecase "Manage Users" as UC_ManageUsers
+    usecase "Moderate Content" as UC_ModerateContent
+    usecase "Support Tickets" as UC_CreateTicket
+    usecase "View FAQ" as UC_ViewFAQ
+  }
+}
+
+Guest --> UC_ViewFeed
+Guest --> UC_ViewArticles
+Guest --> UC_MarketOverview
+Guest --> UC_CryptoDetails
+Guest --> UC_SearchCrypto
+Guest --> UC_ViewFAQ
+Guest --> UC_SignUp
+Guest --> UC_SignIn
+
+User --> UC_SignUp
+User --> UC_SignIn
+User --> UC_EmailVerif
+User --> UC_PasswordReset
+User --> UC_SignOut
+User --> UC_2FA
+User --> UC_Biometric
+
+User --> UC_CreateProfile
+User --> UC_ViewProfile
+User --> UC_EditProfile
+User --> UC_UploadPicture
+User --> UC_Privacy
+User --> UC_DeleteAccount
+User --> UC_ViewActivity
+User --> UC_ViewStats
+
+User --> UC_CreatePost
+User --> UC_ViewFeed
+User --> UC_LikePost
+User --> UC_Comment
+User --> UC_SharePost
+User --> UC_Follow
+User --> UC_Unfollow
+User --> UC_SearchUsers
+User --> UC_ViewUserProfile
+User --> UC_MentionUsers
+User --> UC_TagCryptos
+User --> UC_TrendingTopics
+
+User --> UC_MarketOverview
+User --> UC_CryptoDetails
+User --> UC_SearchCrypto
+User --> UC_PriceCharts
+User --> UC_MarketStats
+User --> UC_FilterMarkets
+User --> UC_AddFavorites
+User --> UC_ViewAlerts
+User --> UC_SetAlerts
+
+User --> UC_ViewPortfolio
+User --> UC_TrackHoldings
+User --> UC_AddHoldings
+User --> UC_ViewHoldings
+User --> UC_ViewPnL
+User --> UC_PortfolioPerf
+User --> UC_ExportPortfolio
+User --> UC_PortfolioAnalytics
+
+User --> UC_CreateWatchlist
+User --> UC_AddToWatchlist
+User --> UC_RemoveFromWatchlist
+User --> UC_ViewWatchlist
+User --> UC_ShareWatchlist
+User --> UC_WatchlistPrivacy
+
+User --> UC_CreateArticle
+User --> UC_PublishArticle
+User --> UC_EditArticle
+User --> UC_DeleteArticle
+User --> UC_ViewArticles
+User --> UC_SearchArticles
+User --> UC_LikeArticle
+User --> UC_CommentArticle
+User --> UC_ShareArticle
+User --> UC_ArticleAnalytics
+
+User --> UC_ChatBot
+User --> UC_MarketInsights
+User --> UC_InvestmentEducation
+User --> UC_AIPortfolioAnalysis
+User --> UC_CryptoInfo
+User --> UC_NewsSummary
+User --> UC_MarketAnalysis
+
+User --> UC_EarnPoints
+User --> UC_LevelUp
+User --> UC_UnlockBadges
+User --> UC_ViewAchievements
+User --> UC_MaintainStreak
+User --> UC_ViewLeaderboard
+User --> UC_CompleteChallenges
+User --> UC_TrackProgress
+
+User --> UC_PushNotif
+User --> UC_EmailNotif
+User --> UC_PriceAlertNotif
+User --> UC_SocialNotif
+User --> UC_SystemNotif
+User --> UC_ConfigNotif
+
+User --> UC_ChangeTheme
+User --> UC_SetLanguage
+User --> UC_SetCurrency
+User --> UC_PrivacySettings
+User --> UC_NotificationSettings
+User --> UC_AccountSettings
+User --> UC_DataExport
+User --> UC_DataRetention
+
+User --> UC_CreateTicket
+User --> UC_ViewFAQ
+User --> UC_ContactSupport
+User --> UC_ViewHelp
+User --> UC_ReportBug
+User --> UC_FeatureRequest
+
+Admin --> UC_ManageUsers
+Admin --> UC_ModerateContent
+Admin --> UC_AdminAnalytics
+Admin --> UC_ManageTickets
+Admin --> UC_SystemConfig
+Admin --> UC_UserManagement
+Admin --> UC_ContentManagement
+
+Bot --> UC_GenerateAI
+Bot --> UC_MarketInsights
+Bot --> UC_InvestmentEducation
+Bot --> UC_CryptoInfo
+Bot --> UC_NewsSummary
+
+APIs --> UC_SyncMarketData
+APIs --> UC_UpdatePrices
+APIs --> UC_FetchNews
+APIs --> UC_SendNotif
+
+UC_SignUp ..> UC_EmailVerif : include
+UC_SignUp ..> UC_CreateProfile : include
+UC_CreatePost ..> UC_EarnPoints : include
+UC_Comment ..> UC_EarnPoints : include
+UC_LikePost ..> UC_EarnPoints : include
+UC_PublishArticle ..> UC_EarnPoints : include
+UC_EarnPoints ..> UC_LevelUp : include
+UC_EarnPoints ..> UC_UnlockBadges : include
+
+@enduml

@@ -7,7 +7,7 @@ import 'package:kointos/core/services/service_locator.dart';
 /// Bedrock Permission Verification Widget
 /// Use this to test if your Amplify app has proper Bedrock access
 class BedrockPermissionChecker extends StatefulWidget {
-  const BedrockPermissionChecker({Key? key}) : super(key: key);
+  const BedrockPermissionChecker({super.key});
 
   @override
   State<BedrockPermissionChecker> createState() =>
@@ -31,19 +31,19 @@ class _BedrockPermissionCheckerState extends State<BedrockPermissionChecker> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Card(
+            const Card(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '🔐 Bedrock Permission Checker',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    SizedBox(height: 8),
+                    Text(
                       'This will test if your Amplify app can access AWS Bedrock API',
                       style: TextStyle(color: Colors.grey),
                     ),
@@ -235,7 +235,7 @@ class _BedrockPermissionCheckerState extends State<BedrockPermissionChecker> {
         setState(() {
           _status = '🎉 SUCCESS! Full integration working!\n\n'
               'Claude 3 Haiku Response:\n'
-              '"${response.length > 200 ? response.substring(0, 200) + '...' : response}"\n\n'
+              '"${response.length > 200 ? '${response.substring(0, 200)}...' : response}"\n\n'
               '✅ Your chatbot is now powered by real AI!';
           _hasPermissions = true;
         });

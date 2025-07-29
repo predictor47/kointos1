@@ -34,7 +34,6 @@ class UserProfileInitializationService {
       LoggerService.info('No existing profile found, creating new profile...');
 
       // Get user attributes from Cognito
-      final user = await Amplify.Auth.getCurrentUser();
       final attributes = await Amplify.Auth.fetchUserAttributes();
 
       String? email;
@@ -124,8 +123,6 @@ class UserProfileInitializationService {
       final userId = await _authService.getCurrentUserId();
       if (userId == null) return;
 
-      final now = DateTime.now().toIso8601String();
-
       // This could be expanded to update activity tracking
       // For now, we'll just ensure the profile exists
       await ensureUserProfile();
@@ -137,9 +134,67 @@ class UserProfileInitializationService {
   /// Get or create user profile - main method to use throughout the app
   Future<Map<String, dynamic>?> getCurrentUserProfile() async {
     try {
+      LoggerService.info('Getting current user profile...');
+
+      // First check if user is authenticated
+      final userId = await _authService.getCurrentUserId();
+      if (userId == null) {
+        LoggerService.error('No authenticated user found');
+        return null;
+      }
+
+      // Try to get existing profile
+      try {
+        final existingProfile = await _apiService.getUserProfile(userId);
+        if (existingProfile != null) {
+          LoggerService.info('Found existing user profile');
+          return existingProfile;
+        }
+      } catch (e) {
+        LoggerService.warning(
+            'Error fetching existing profile, will create new: $e');
+      }
+
+      // Profile doesn't exist, try to create it
+      LoggerService.info('No profile found, creating new profile...');
       return await ensureUserProfile();
     } catch (e) {
       LoggerService.error('Failed to get current user profile: $e');
+
+      // If all else fails, return a minimal profile from auth data
+      try {
+        final userId = await _authService.getCurrentUserId();
+        if (userId != null) {
+          final user = await Amplify.Auth.getCurrentUser();
+          final attributes = await Amplify.Auth.fetchUserAttributes();
+
+          String email = 'user@example.com';
+          for (final attr in attributes) {
+            if (attr.userAttributeKey == CognitoUserAttributeKey.email) {
+              email = attr.value;
+              break;
+            }
+          }
+
+          return {
+            'id': userId,
+            'userId': userId,
+            'username': user.username,
+            'displayName': user.username,
+            'email': email,
+            'bio': 'Kointos User',
+            'totalPoints': 0,
+            'level': 1,
+            'globalRank': 999999,
+            'followersCount': 0,
+            'followingCount': 0,
+            'totalPortfolioValue': 0.0,
+          };
+        }
+      } catch (fallbackError) {
+        LoggerService.error('Fallback profile creation failed: $fallbackError');
+      }
+
       return null;
     }
   }

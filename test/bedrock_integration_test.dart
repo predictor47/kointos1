@@ -31,7 +31,7 @@ void main() {
       // This test should be run only when AWS credentials are available
       // and Bedrock is properly configured in the AWS account
 
-      final testPrompt = "Hello, can you help me understand Bitcoin?";
+      const testPrompt = "Hello, can you help me understand Bitcoin?";
 
       try {
         final llmService = getService<LLMService>();

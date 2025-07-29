@@ -46,8 +46,21 @@ class LLMService {
     try {
       LoggerService.info('Processing Claude request for user message: $prompt');
 
-      // Test Bedrock connectivity first
+      // Test connectivity and credentials first
+      final connectivityResult = await _testBedrockConnectivity();
+      if (!connectivityResult['success']) {
+        LoggerService.error(
+            'Bedrock connectivity test failed: ${connectivityResult['error']}');
+        return _getFallbackResponse(prompt, connectivityResult['error']);
+      }
+
+      // Test Bedrock credentials
       final hasCredentials = await _bedrockClient.testCredentials();
+      if (!hasCredentials) {
+        LoggerService.error('Bedrock credentials test failed');
+        return _getFallbackResponse(
+            prompt, 'Authentication credentials not available');
+      }
       if (!hasCredentials) {
         LoggerService.error('Failed to obtain AWS credentials for Bedrock');
         return '🔴 Bot offline: Authentication issue. Please ensure you are logged in and try again.';
@@ -499,10 +512,117 @@ class LLMService {
         '✅ Market data and prices\n'
         '✅ Your profile (Level $level - $levelName)\n'
         '✅ Basic app features\n\n'
-        'What\'s offline:\n'
-        '❌ AI-powered analysis\n'
-        '❌ Intelligent responses\n\n'
-        'Please try again in a few moments, or check the Dev Tools for diagnostics.';
+        '❌ AI-powered analysis temporarily unavailable\n\n'
+        'I\'ll be back online soon! 🚀';
+  }
+
+  /// Test Bedrock connectivity with detailed diagnostics
+  Future<Map<String, dynamic>> _testBedrockConnectivity() async {
+    try {
+      LoggerService.info('Testing Bedrock connectivity...');
+
+      // Test 1: Check if user is authenticated
+      final userId = await _authService.getCurrentUserId();
+      if (userId == null) {
+        return {
+          'success': false,
+          'error': 'User not authenticated',
+          'details': 'User must be logged in to access AI features'
+        };
+      }
+
+      // Test 2: Check AWS credentials
+      try {
+        final authSession = await Amplify.Auth.fetchAuthSession();
+        if (authSession.isSignedIn != true) {
+          return {
+            'success': false,
+            'error': 'Authentication session invalid',
+            'details': 'User session expired or invalid'
+          };
+        }
+      } catch (e) {
+        return {
+          'success': false,
+          'error': 'Authentication check failed',
+          'details': 'Error: $e'
+        };
+      }
+
+      // Test 3: Simple network connectivity test
+      try {
+        final response = await _httpClient
+            .get(Uri.parse(
+                'https://bedrock-runtime.$_bedrockRegion.amazonaws.com'))
+            .timeout(const Duration(seconds: 5));
+
+        // Any response (even error) means network connectivity exists
+        LoggerService.info(
+            'Network connectivity test completed (status: ${response.statusCode})');
+      } catch (e) {
+        return {
+          'success': false,
+          'error': 'Network connectivity failed',
+          'details': 'Cannot reach AWS Bedrock service. Network error: $e'
+        };
+      }
+
+      // Test 4: Credentials retrieval
+      final hasCredentials = await _bedrockClient.testCredentials();
+      if (!hasCredentials) {
+        return {
+          'success': false,
+          'error': 'AWS credentials unavailable',
+          'details': 'Unable to retrieve AWS credentials from Amplify Auth'
+        };
+      }
+
+      LoggerService.info('Bedrock connectivity test passed');
+      return {'success': true, 'message': 'All connectivity tests passed'};
+    } catch (e) {
+      LoggerService.error('Bedrock connectivity test error: $e');
+      return {
+        'success': false,
+        'error': 'Connectivity test failed',
+        'details': 'Unexpected error: $e'
+      };
+    }
+  }
+
+  /// Provide helpful fallback response when AI service is unavailable
+  String _getFallbackResponse(String prompt, String errorReason) {
+    LoggerService.info(
+        'Providing fallback response for AI connectivity issue: $errorReason');
+
+    // Different responses based on error type
+    if (errorReason.contains('Authentication') ||
+        errorReason.contains('credentials')) {
+      return '🔐 Hi! I\'m having trouble with authentication to access my AI features.\n\n'
+          'This might be a temporary issue with AWS credentials. Please try:\n'
+          '1. Refreshing the app\n'
+          '2. Logging out and back in\n'
+          '3. Checking your internet connection\n\n'
+          'All other app features should work normally! 🚀';
+    }
+
+    if (errorReason.contains('Network') ||
+        errorReason.contains('connectivity')) {
+      return '🌐 Hi! I\'m having network connectivity issues accessing my AI service.\n\n'
+          'This could be due to:\n'
+          '• Internet connection issues\n'
+          '• Temporary AWS service unavailability\n'
+          '• Network permissions (if on mobile)\n\n'
+          'All other features like market data and portfolio tracking should work! 📊';
+    }
+
+    // Generic connectivity message
+    return '🤖 Hi there! I\'m experiencing technical difficulties with my AI service.\n\n'
+        'While I work on reconnecting:\n'
+        '✅ Market prices and data are still available\n'
+        '✅ Your portfolio and profile work normally\n'
+        '✅ Social features are fully functional\n\n'
+        'I\'ll be back with AI-powered insights soon! 🚀\n\n'
+        'Error details: ${errorReason.length > 100 ? errorReason.substring(0, 100) + '...' : errorReason}';
   }
 
   void dispose() {

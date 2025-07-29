@@ -8,7 +8,6 @@ import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/gamification_service.dart';
 import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'settings_screen.dart';
-import 'dev_tools_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -154,9 +153,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: AppTheme.primaryBlack,
-        body: const Center(
+        body: Center(
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.cryptoGold),
           ),
@@ -216,33 +215,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                   icon: const Icon(
                     Icons.refresh,
                     color: AppTheme.cryptoGold,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const DevToolsScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.developer_mode,
-                    color: AppTheme.pureWhite,
-                  ),
-                  tooltip: 'Developer Tools',
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SettingsScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.settings_rounded,
-                    color: AppTheme.pureWhite,
                   ),
                 ),
               ],
@@ -421,6 +393,73 @@ class _ProfileScreenState extends State<ProfileScreen>
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        // Settings Section
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.cardBlack,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppTheme.pureWhite.withValues(alpha: 0.1),
+            ),
+          ),
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppTheme.cryptoGold.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.settings_rounded,
+                    color: AppTheme.cryptoGold,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Settings',
+                        style: AppTheme.body1.copyWith(
+                          color: AppTheme.pureWhite,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'Manage your account and preferences',
+                        style: AppTheme.body2.copyWith(
+                          color: AppTheme.greyText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  color: AppTheme.greyText,
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ).animate().fadeIn().slideX(begin: 0.3),
+
+        // Recent Activity
         _buildActivityItem(
           'Published new article',
           'Bitcoin Market Analysis for Q2 2025',
@@ -514,17 +553,17 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Widget _buildArticlesTab() {
     if (_userArticles.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.article_outlined,
               size: 64,
               color: AppTheme.greyText,
             ),
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: 16),
+            Text(
               'No Articles Yet',
               style: TextStyle(
                 color: AppTheme.greyText,
@@ -532,8 +571,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8),
+            Text(
               'Start writing to share your insights\nwith the community!',
               textAlign: TextAlign.center,
               style: TextStyle(

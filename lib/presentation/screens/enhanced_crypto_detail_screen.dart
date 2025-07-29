@@ -366,7 +366,7 @@ class _EnhancedCryptoDetailScreenState extends State<EnhancedCryptoDetailScreen>
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
+              const Text(
                 '24h',
                 style: TextStyle(
                   color: AppTheme.greyText,
@@ -533,7 +533,7 @@ class _EnhancedCryptoDetailScreenState extends State<EnhancedCryptoDetailScreen>
               );
             },
           ),
-          titlesData: FlTitlesData(show: false),
+          titlesData: const FlTitlesData(show: false),
           borderData: FlBorderData(show: false),
           lineBarsData: [
             LineChartBarData(
@@ -546,7 +546,7 @@ class _EnhancedCryptoDetailScreenState extends State<EnhancedCryptoDetailScreen>
               ),
               barWidth: 3,
               isStrokeCapRound: true,
-              dotData: FlDotData(show: false),
+              dotData: const FlDotData(show: false),
               belowBarData: BarAreaData(
                 show: true,
                 gradient: LinearGradient(

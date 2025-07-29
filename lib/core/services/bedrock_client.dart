@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:http/http.dart' as http;
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:kointos/core/services/logger_service.dart';
-import 'package:kointos/core/services/auth_service.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:crypto/crypto.dart';
 
@@ -16,13 +14,10 @@ class BedrockClient {
   static const String _algorithm = 'AWS4-HMAC-SHA256';
 
   final http.Client _httpClient;
-  final AuthService _authService;
 
   BedrockClient({
     http.Client? httpClient,
-    AuthService? authService,
-  })  : _httpClient = httpClient ?? http.Client(),
-        _authService = authService ?? getService<AuthService>();
+  }) : _httpClient = httpClient ?? http.Client();
 
   /// Invoke Claude 3 Haiku model via Bedrock
   Future<String?> invokeClaudeModel({
@@ -61,7 +56,7 @@ class BedrockClient {
 
       final bodyJson = jsonEncode(requestBody);
       final endpoint = 'https://bedrock-runtime.$_region.amazonaws.com';
-      final modelId = 'anthropic.claude-3-haiku-20240307-v1:0';
+      const modelId = 'anthropic.claude-3-haiku-20240307-v1:0';
       final path = '/model/$modelId/invoke';
       final url = '$endpoint$path';
 

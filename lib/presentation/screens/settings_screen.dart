@@ -5,6 +5,7 @@ import '../../core/services/service_locator.dart';
 import 'transaction_history_screen.dart';
 import 'help_screen.dart';
 import 'contact_support_screen.dart';
+import 'dev_tools_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -145,6 +146,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
+
+          // Developer Tools Section (for debugging and testing)
+          _buildSectionHeader('Developer Tools'),
+          _buildListTile(
+            icon: Icons.developer_mode,
+            title: 'Developer Tools',
+            subtitle: 'System diagnostics and testing tools',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const DevToolsScreen(),
+                ),
+              );
+            },
+          ),
+
           _buildListTile(
             icon: Icons.info,
             title: 'About',

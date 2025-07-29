@@ -8,6 +8,7 @@ import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/presentation/screens/auth_screen.dart';
 import 'package:kointos/presentation/screens/adaptive_main_screen.dart';
+// Hot reload trigger - added detailed user profile diagnostics
 import 'package:kointos/presentation/widgets/first_time_tutorial.dart';
 import 'package:kointos/presentation/screens/admin_dashboard_screen.dart';
 
@@ -29,7 +30,7 @@ class KointosApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kointoss',
+      title: 'Kointoss', // Hot reload trigger
       theme: AppTheme.darkTheme,
       home: const AppEntryPoint(),
       routes: {

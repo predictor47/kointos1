@@ -352,9 +352,7 @@ class _UserProfileViewScreenState extends State<UserProfileViewScreen> {
               ),
             )
           else
-            ..._userArticles
-                .map((article) => _buildArticleItem(article))
-                .toList(),
+            ..._userArticles.map((article) => _buildArticleItem(article)),
         ],
       ),
     ).animate().slideY(begin: 0.3, delay: 800.ms);
@@ -393,14 +391,16 @@ class _UserProfileViewScreenState extends State<UserProfileViewScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.favorite_outline, size: 16, color: AppTheme.greyText),
+              const Icon(Icons.favorite_outline,
+                  size: 16, color: AppTheme.greyText),
               const SizedBox(width: 4),
               Text(
                 '${article['likesCount'] ?? 0}',
                 style: AppTheme.caption.copyWith(color: AppTheme.greyText),
               ),
               const SizedBox(width: 16),
-              Icon(Icons.comment_outlined, size: 16, color: AppTheme.greyText),
+              const Icon(Icons.comment_outlined,
+                  size: 16, color: AppTheme.greyText),
               const SizedBox(width: 4),
               Text(
                 '${article['commentsCount'] ?? 0}',

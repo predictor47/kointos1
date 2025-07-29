@@ -723,7 +723,7 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.people_outline,
                                 size: 48,
                                 color: AppTheme.greyText,

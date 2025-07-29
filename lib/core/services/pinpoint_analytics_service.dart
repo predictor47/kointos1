@@ -48,7 +48,7 @@ class PinpointAnalyticsService {
       if (_userId == null) return;
 
       // Register user with Analytics
-      final userProfile = UserProfile();
+      const userProfile = UserProfile();
       userProfile.customProperties
         ?..addStringProperty('userId', _userId!)
         ..addStringProperty('registeredAt', DateTime.now().toIso8601String());
@@ -269,7 +269,7 @@ class PinpointAnalyticsService {
     if (!_initialized || _userId == null) return;
 
     try {
-      final userProfile = UserProfile();
+      const userProfile = UserProfile();
 
       // Add custom properties based on attribute types
       attributes.forEach((key, value) {

@@ -53,8 +53,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       final groups = attributes
           .firstWhere(
             (attr) => attr.userAttributeKey.key == 'custom:groups',
-            orElse: () => AuthUserAttribute(
-              userAttributeKey: const CognitoUserAttributeKey.custom('groups'),
+            orElse: () => const AuthUserAttribute(
+              userAttributeKey: CognitoUserAttributeKey.custom('groups'),
               value: '',
             ),
           )
@@ -413,7 +413,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   child: Icon(icon, color: color, size: 20),
                 ),
                 const Spacer(),
-                Icon(
+                const Icon(
                   Icons.trending_up,
                   color: Colors.green,
                   size: 16,
@@ -461,8 +461,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               height: 200,
               child: LineChart(
                 LineChartData(
-                  gridData: FlGridData(show: false),
-                  titlesData: FlTitlesData(show: false),
+                  gridData: const FlGridData(show: false),
+                  titlesData: const FlTitlesData(show: false),
                   borderData: FlBorderData(show: false),
                   lineBarsData: [
                     LineChartBarData(
@@ -478,7 +478,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       isCurved: true,
                       color: Theme.of(context).primaryColor,
                       barWidth: 3,
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
                         color: Theme.of(context).primaryColor.withOpacity(0.1),
