@@ -18,5 +18,6 @@ export const auth = defineAuth({
     },
   },
   accountRecovery: 'EMAIL_ONLY',
-  groups: ['Admins', 'Moderators'],
+  // Remove groups to avoid naming conflicts - add them later via console if needed
+  // groups: ['Admins', 'Moderators'],
 });
