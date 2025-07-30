@@ -29,7 +29,7 @@ class KointosAIChatbotService {
     CryptocurrencyRepository? cryptoRepository,
     ArticleRepository? articleRepository,
     AuthService? authService,
-  })  : _llmService = llmService ?? LLMService(),
+  })  : _llmService = llmService ?? getService<LLMService>(),
         _cryptoRepository =
             cryptoRepository ?? getService<CryptocurrencyRepository>(),
         _articleRepository =
@@ -44,10 +44,12 @@ class KointosAIChatbotService {
       // Gather context from various sources
       final context = await _gatherContext(userMessage);
 
-      // Generate response using LLM with context
+      // Create a comprehensive prompt with context
+      final contextualPrompt = _buildContextualPrompt(userMessage, context);
+
+      // Generate response using LLM with contextual prompt
       final response = await _llmService.generateResponse(
-        prompt: userMessage,
-        context: context,
+        contextualPrompt,
         maxTokens: 400,
         temperature: 0.7,
       );
@@ -393,6 +395,75 @@ class KointosAIChatbotService {
     }
 
     return 'general';
+  }
+
+  /// Build a contextual prompt combining user message with relevant context
+  String _buildContextualPrompt(
+      String userMessage, Map<String, dynamic> context) {
+    final prompt = StringBuffer();
+
+    prompt.writeln(
+        'You are Kointos AI, a helpful cryptocurrency assistant. Respond to the user\'s question using the provided context.');
+    prompt.writeln('');
+    prompt.writeln('User Question: $userMessage');
+    prompt.writeln('');
+
+    if (context.isNotEmpty) {
+      prompt.writeln('Context Information:');
+
+      // Add market data context
+      if (context.containsKey('market_data')) {
+        prompt.writeln('Current Market Data:');
+        final marketData = context['market_data'] as List;
+        for (final crypto in marketData.take(10)) {
+          prompt.writeln(
+              '- ${crypto['name']} (${crypto['symbol']}): \$${crypto['current_price']} (${crypto['price_change_percentage_24h']}%)');
+        }
+        prompt.writeln('');
+      }
+
+      // Add portfolio context
+      if (context.containsKey('portfolio')) {
+        prompt.writeln('User Portfolio:');
+        final portfolio = context['portfolio'] as Map<String, dynamic>;
+        prompt.writeln('Total Value: \$${portfolio['total_value']}');
+        if (portfolio.containsKey('holdings')) {
+          final holdings = portfolio['holdings'] as List;
+          for (final holding in holdings) {
+            prompt.writeln(
+                '- ${holding['symbol']}: ${holding['amount']} (\$${holding['value']})');
+          }
+        }
+        prompt.writeln('');
+      }
+
+      // Add recent news context
+      if (context.containsKey('recent_news')) {
+        prompt.writeln('Recent Crypto News:');
+        final news = context['recent_news'] as List;
+        for (final article in news.take(3)) {
+          prompt.writeln('- ${article['title']}');
+          if (article['summary'] != null) {
+            prompt.writeln('  ${article['summary']}');
+          }
+        }
+        prompt.writeln('');
+      }
+
+      // Add user sentiment context
+      if (context.containsKey('user_sentiment')) {
+        prompt.writeln('User Trading Sentiment History:');
+        final sentiment = context['user_sentiment'] as Map<String, dynamic>;
+        prompt.writeln('Bullish votes: ${sentiment['bullish_votes']}');
+        prompt.writeln('Bearish votes: ${sentiment['bearish_votes']}');
+        prompt.writeln('');
+      }
+    }
+
+    prompt.writeln(
+        'Please provide a helpful, accurate response based on this information. Keep it concise but informative.');
+
+    return prompt.toString();
   }
 
   /// Generate fallback response when main processing fails

@@ -323,6 +323,26 @@ const schema = a.schema({
       isCompleted: a.boolean().default(false),
     })
     .authorization(allow => [allow.owner()]),
+
+  // Bedrock AI Integration
+  invokeBedrock: a
+    .mutation()
+    .arguments({
+      prompt: a.string().required(),
+      maxTokens: a.integer(),
+      temperature: a.float(),
+    })
+    .returns(a.customType({
+      response: a.string().required(),
+      usage: a.customType({
+        inputTokens: a.integer(),
+        outputTokens: a.integer(),
+      }),
+    }))
+    .authorization(allow => [allow.authenticated()])
+    .handler(
+      a.handler.function('../functions/bedrock/bedrock-handler')
+    ),
 });
 
 export type Schema = ClientSchema<typeof schema>;

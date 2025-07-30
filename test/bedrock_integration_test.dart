@@ -36,8 +36,7 @@ void main() {
       try {
         final llmService = getService<LLMService>();
         final response = await llmService.generateResponse(
-          prompt: testPrompt,
-          context: {},
+          testPrompt,
           maxTokens: 100,
           temperature: 0.7,
         );

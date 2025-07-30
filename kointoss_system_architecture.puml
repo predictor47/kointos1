@@ -1,0 +1,231 @@
+@startuml KointossSystemArchitecture
+!theme plain
+scale 0.85
+skinparam backgroundColor white
+skinparam package {
+  BackgroundColor lightblue
+  BorderColor darkblue
+  FontSize 10
+  FontStyle bold
+}
+skinparam component {
+  BackgroundColor lightyellow
+  BorderColor orange
+  FontSize 9
+}
+skinparam database {
+  BackgroundColor lightgreen
+  BorderColor darkgreen
+  FontSize 9
+}
+skinparam cloud {
+  BackgroundColor lightcyan
+  BorderColor blue
+  FontSize 9
+}
+skinparam rectangle {
+  BackgroundColor lightpink
+  BorderColor red
+  FontSize 9
+}
+
+title Kointoss - System Architecture Diagram
+subtitle Flutter Crypto Social Platform with AWS Amplify Gen 2 Backend
+
+' Client Layer
+package "Client Layer" {
+  component [Flutter Web App\n(Material 3 UI)] as FlutterWeb
+  component [Flutter Android App\n(Material 3 UI)] as FlutterAndroid
+  component [VS Code Extension\n(Development)] as VSCode
+}
+
+' Presentation Layer
+package "Presentation Layer (Flutter)" {
+  component [MainTabScreen\n(Navigation)] as MainTab
+  component [AuthScreen\n(Login/Signup)] as AuthScreen
+  component [ProfileScreen\n(User Profile)] as ProfileScreen
+  component [SocialFeedScreen\n(Posts & Feed)] as SocialScreen
+  component [MarketScreen\n(Crypto Data)] as MarketScreen
+  component [PortfolioScreen\n(Holdings)] as PortfolioScreen
+  component [ArticlesScreen\n(Content)] as ArticlesScreen
+  component [SettingsScreen\n(Configuration)] as SettingsScreen
+  component [ChatBotScreen\n(AI Assistant)] as ChatScreen
+}
+
+' Service Layer
+package "Core Services Layer (Dart)" {
+  component [AuthService\n(Amplify Auth)] as AuthService
+  component [ApiService\n(GraphQL Client)] as ApiService
+  component [CoinGeckoService\n(Market Data)] as CoinGeckoService
+  component [LLMService\n(AWS Bedrock)] as LLMService
+  component [GamificationService\n(Points & Badges)] as GamificationService
+  component [SocialService\n(Posts & Interactions)] as SocialService
+  component [PortfolioService\n(Holdings Tracking)] as PortfolioService
+  component [NotificationService\n(Push & Email)] as NotificationService
+  component [StorageService\n(File Uploads)] as StorageService
+  component [PinpointAnalyticsService\n(User Analytics)] as AnalyticsService
+}
+
+' AWS Amplify Gen 2 Backend
+cloud "AWS Amplify Gen 2 Backend" {
+  package "Authentication" {
+    database [Amazon Cognito\n(User Pool)] as Cognito
+    database [JWT Tokens\n(Session Management)] as JWT
+  }
+  
+  package "API Layer" {
+    component [AWS AppSync\n(GraphQL API)] as AppSync
+    component [Lambda Resolvers\n(Business Logic)] as Lambda
+    component [API Gateway\n(REST Endpoints)] as APIGateway
+  }
+  
+  package "Data Layer" {
+    database [Amazon DynamoDB\n(NoSQL Database)] as DynamoDB
+    database [Amazon S3\n(File Storage)] as S3
+    database [ElastiCache\n(Redis Cache)] as Cache
+  }
+  
+  package "AI & Analytics" {
+    component [Amazon Bedrock\n(Claude 3 Haiku)] as Bedrock
+    component [Amazon Pinpoint\n(Analytics & Push)] as Pinpoint
+    component [CloudWatch\n(Monitoring & Logs)] as CloudWatch
+  }
+  
+  package "Infrastructure" {
+    component [AWS CDK\n(Infrastructure as Code)] as CDK
+    component [CloudFormation\n(Resource Management)] as CloudFormation
+    component [IAM Roles\n(Security & Permissions)] as IAM
+  }
+}
+
+' External Services
+cloud "External APIs" {
+  component [CoinGecko API\n(Crypto Market Data)] as CoinGeckoAPI
+  component [Email Service\n(SES/SendGrid)] as EmailAPI
+  component [Push Notification\n(FCM/APNS)] as PushAPI
+}
+
+' Development & DevOps
+package "Development & DevOps" {
+  component [GitHub Repository\n(Source Control)] as GitHub
+  component [GitHub Actions\n(CI/CD Pipeline)] as GitHubActions
+  component [Amplify Hosting\n(Web Deployment)] as AmplifyHosting
+  component [Google Play Store\n(Android Distribution)] as PlayStore
+}
+
+' Client to Presentation Connections
+FlutterWeb --> MainTab
+FlutterAndroid --> MainTab
+VSCode --> GitHub
+
+' Presentation Layer Connections
+MainTab --> AuthScreen
+MainTab --> ProfileScreen
+MainTab --> SocialScreen
+MainTab --> MarketScreen
+MainTab --> PortfolioScreen
+MainTab --> ArticlesScreen
+MainTab --> SettingsScreen
+MainTab --> ChatScreen
+
+' Presentation to Services
+AuthScreen --> AuthService
+ProfileScreen --> AuthService
+ProfileScreen --> GamificationService
+SocialScreen --> SocialService
+SocialScreen --> ApiService
+MarketScreen --> CoinGeckoService
+MarketScreen --> PortfolioService
+PortfolioScreen --> PortfolioService
+PortfolioScreen --> CoinGeckoService
+ArticlesScreen --> ApiService
+SettingsScreen --> AuthService
+SettingsScreen --> NotificationService
+ChatScreen --> LLMService
+
+' Service Layer Internal Connections
+AuthService --> ApiService
+GamificationService --> ApiService
+SocialService --> NotificationService
+PortfolioService --> CoinGeckoService
+LLMService --> CoinGeckoService
+StorageService --> ApiService
+AnalyticsService --> AuthService
+
+' Services to AWS Backend
+AuthService --> Cognito
+AuthService --> JWT
+ApiService --> AppSync
+CoinGeckoService --> Cache
+LLMService --> Bedrock
+NotificationService --> Pinpoint
+StorageService --> S3
+AnalyticsService --> Pinpoint
+
+' AWS Internal Connections
+AppSync --> Lambda
+Lambda --> DynamoDB
+Lambda --> S3
+Lambda --> Cache
+Cognito --> IAM
+Bedrock --> CloudWatch
+Pinpoint --> CloudWatch
+CDK --> CloudFormation
+CloudFormation --> DynamoDB
+CloudFormation --> S3
+CloudFormation --> Cognito
+CloudFormation --> AppSync
+
+' External API Connections
+CoinGeckoService --> CoinGeckoAPI
+NotificationService --> EmailAPI
+NotificationService --> PushAPI
+
+' DevOps Connections
+GitHub --> GitHubActions
+GitHubActions --> AmplifyHosting
+GitHubActions --> PlayStore
+AmplifyHosting --> FlutterWeb
+PlayStore --> FlutterAndroid
+
+' Data Flow Annotations
+note right of DynamoDB
+  **Data Models:**
+  • UserProfile
+  • Post & Comment
+  • Article & NewsArticle
+  • Portfolio & Transaction
+  • Achievement & Badge
+  • Follow & Like
+  • Watchlist & Alert
+  • UserSettings
+end note
+
+note right of S3
+  **File Storage:**
+  • Profile Pictures
+  • Post Images
+  • Article Media
+  • App Assets
+  • Backup Files
+end note
+
+note right of Bedrock
+  **AI Capabilities:**
+  • Personalized Chat
+  • Market Analysis
+  • Portfolio Insights
+  • Crypto Recommendations
+  • News Summarization
+end note
+
+note right of CoinGeckoAPI
+  **Market Data:**
+  • 1000+ Cryptocurrencies
+  • Real-time Prices
+  • Market Statistics
+  • Historical Data
+  • Trending Coins
+end note
+
+@enduml

@@ -1,0 +1,469 @@
+@startuml KointossClassDiagram
+
+title Kointoss - Class Diagram
+
+left to right direction
+
+' Core Model Classes
+class UserProfile {
+  +String id
+  +String userId
+  +String email
+  +String username
+  +String displayName
+  +String bio
+  +String profilePicture
+  +double totalPortfolioValue
+  +int followersCount
+  +int followingCount
+  +bool isPublic
+  +int totalPoints
+  +int level
+  +int streak
+  +List<String> badges
+  +DateTime lastActivity
+  +int actionsToday
+  +int weeklyPoints
+  +int monthlyPoints
+  +int globalRank
+  +DateTime createdAt
+  +DateTime updatedAt
+  +fromJson()
+  +toJson()
+  +fromApi()
+}
+
+class Post {
+  +String id
+  +String userId
+  +String content
+  +String imageUrl
+  +List<String> tags
+  +List<String> mentionedCryptos
+  +bool isPublic
+  +int likesCount
+  +int commentsCount
+  +DateTime createdAt
+  +DateTime updatedAt
+  +fromJson()
+  +toJson()
+}
+
+class Comment {
+  +String id
+  +String postId
+  +String userId
+  +String content
+  +int likesCount
+  +DateTime createdAt
+  +fromJson()
+  +toJson()
+}
+
+class Article {
+  +String id
+  +String authorId
+  +String title
+  +String content
+  +String excerpt
+  +String featuredImage
+  +List<String> tags
+  +ArticleStatus status
+  +int viewCount
+  +int likesCount
+  +DateTime publishedAt
+  +DateTime createdAt
+  +DateTime updatedAt
+  +fromJson()
+  +toJson()
+}
+
+class Portfolio {
+  +String id
+  +String userId
+  +String name
+  +double totalValue
+  +double totalCost
+  +double totalPnL
+  +double pnLPercentage
+  +List<PortfolioHolding> holdings
+  +DateTime lastUpdated
+  +DateTime createdAt
+  +calculateTotalValue()
+  +calculatePnL()
+  +addHolding()
+  +removeHolding()
+}
+
+class PortfolioHolding {
+  +String id
+  +String portfolioId
+  +String cryptoId
+  +String symbol
+  +double quantity
+  +double avgBuyPrice
+  +double currentPrice
+  +double totalValue
+  +double pnL
+  +double pnLPercentage
+  +DateTime addedAt
+  +updateCurrentPrice()
+  +calculatePnL()
+}
+
+class Cryptocurrency {
+  +String id
+  +String symbol
+  +String name
+  +String image
+  +double currentPrice
+  +double marketCap
+  +int marketCapRank
+  +double priceChange24h
+  +double priceChangePercentage24h
+  +double volume24h
+  +double high24h
+  +double low24h
+  +DateTime lastUpdated
+  +fromCoinGecko()
+  +toJson()
+}
+
+class Follow {
+  +String id
+  +String followerId
+  +String followingId
+  +DateTime createdAt
+  +fromJson()
+  +toJson()
+}
+
+class Like {
+  +String id
+  +String userId
+  +String postId
+  +String commentId
+  +DateTime createdAt
+  +fromJson()
+  +toJson()
+}
+
+class UserSettings {
+  +String id
+  +String userId
+  +UserSettingsTheme theme
+  +String language
+  +String currency
+  +bool notificationsEnabled
+  +bool emailNotifications
+  +bool pushNotifications
+  +bool marketAlerts
+  +bool portfolioPrivacy
+  +bool twoFactorEnabled
+  +bool biometricEnabled
+  +int dataRetention
+  +DateTime createdAt
+  +DateTime updatedAt
+  +fromJson()
+  +toJson()
+}
+
+class Watchlist {
+  +String id
+  +String userId
+  +String name
+  +List<String> cryptoSymbols
+  +bool isPublic
+  +DateTime createdAt
+  +DateTime updatedAt
+  +addCrypto()
+  +removeCrypto()
+  +fromJson()
+  +toJson()
+}
+
+' Service Classes
+class AuthService {
+  +isAuthenticated()
+  +getCurrentSession()
+  +getCurrentUserId()
+  +getUserToken()
+  +signUp()
+  +confirmSignUp()
+  +signIn()
+  +signOut()
+  +resetPassword()
+  +confirmResetPassword()
+}
+
+class ApiService {
+  +String baseUrl
+  +AuthService authService
+  +getUserProfile()
+  +createUserProfile()
+  +updateUserProfile()
+  +createPost()
+  +getPosts()
+  +createComment()
+  +createLike()
+  +createArticle()
+  +getArticles()
+  +followUser()
+  +searchUsers()
+  +getUserSettings()
+  +updateUserSettings()
+}
+
+class CoinGeckoService {
+  +String baseUrl
+  +HttpClient httpClient
+  +getCryptocurrencies()
+  +getCryptocurrencyById()
+  +searchCryptocurrencies()
+  +getMarketData()
+  +getTrendingCoins()
+  +getCoinHistory()
+  +refreshMarketData()
+}
+
+class LLMService {
+  +String bedrockRegion
+  +AuthService authService
+  +CoinGeckoService coinGeckoService
+  +ProfileService profileService
+  +HttpClient httpClient
+  +sendMessage()
+  +generateResponse()
+  +fetchUserData()
+  +fetchMarketData()
+  +saveInteractionHistory()
+  +testBedrockConnection()
+}
+
+class GamificationService {
+  +ApiService apiService
+  +updateUserStats()
+  +awardBadge()
+  +calculateLevel()
+  +getLeaderboard()
+  +getUserGameStats()
+  +checkAchievements()
+}
+
+class SocialService {
+  +createPost()
+  +getPosts()
+  +toggleLike()
+  +toggleFollow()
+  +addComment()
+  +searchUsers()
+  +getUserProfile()
+}
+
+class PortfolioService {
+  +CoinGeckoService coinGeckoService
+  +ApiService apiService
+  +getPortfolio()
+  +addHolding()
+  +removeHolding()
+  +updateHolding()
+  +calculatePortfolioValue()
+  +getPortfolioHistory()
+  +exportPortfolio()
+}
+
+class NotificationService {
+  +sendPushNotification()
+  +sendEmailNotification()
+  +scheduleNotification()
+  +getUserNotificationSettings()
+  +updateNotificationSettings()
+}
+
+class StorageService {
+  +uploadFile()
+  +downloadFile()
+  +deleteFile()
+  +getFileUrl()
+  +uploadProfilePicture()
+  +uploadPostImage()
+}
+
+' Screen Classes
+class MainTabScreen {
+  +int currentIndex
+  +PageController pageController
+  +List<Widget> screens
+  +onTabTapped()
+  +animateToPage()
+}
+
+class AuthScreen {
+  +AuthMode mode
+  +AuthService authService
+  +handleSignIn()
+  +handleSignUp()
+  +handleVerification()
+  +resendCode()
+}
+
+class ProfileScreen {
+  +UserProfile userProfile
+  +UserGameStats gameStats
+  +List<Article> userArticles
+  +AuthService authService
+  +ApiService apiService
+  +loadUserProfile()
+  +loadGameStats()
+  +loadUserArticles()
+}
+
+class SocialFeedScreen {
+  +List<Post> posts
+  +SocialService socialService
+  +loadPosts()
+  +createPost()
+  +likePost()
+  +commentOnPost()
+  +refreshFeed()
+}
+
+class MarketScreen {
+  +List<Cryptocurrency> cryptocurrencies
+  +CoinGeckoService coinGeckoService
+  +loadMarketData()
+  +searchCryptocurrencies()
+  +sortByMarketCap()
+  +filterByChange()
+  +addToWatchlist()
+}
+
+class PortfolioScreen {
+  +Portfolio portfolio
+  +PortfolioService portfolioService
+  +loadPortfolio()
+  +addHolding()
+  +removeHolding()
+  +calculatePnL()
+  +exportData()
+}
+
+class ArticlesScreen {
+  +List<Article> articles
+  +ApiService apiService
+  +loadArticles()
+  +createArticle()
+  +publishArticle()
+  +likeArticle()
+  +searchArticles()
+}
+
+class SettingsScreen {
+  +UserSettings userSettings
+  +AuthService authService
+  +loadSettings()
+  +updateSettings()
+  +changeTheme()
+  +updateNotificationPreferences()
+  +deleteAccount()
+}
+
+' Enums
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum UserSettingsTheme {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum AuthMode {
+  SIGN_IN
+  SIGN_UP
+  VERIFICATION
+}
+
+' Data Classes
+class UserGameStats {
+  +String userId
+  +int totalPoints
+  +int level
+  +int streak
+  +List<String> badges
+  +DateTime lastActivity
+  +int actionsToday
+  +int weeklyPoints
+  +int monthlyPoints
+  +int globalRank
+}
+
+class LeaderboardEntry {
+  +String userId
+  +String username
+  +String displayName
+  +String profilePicture
+  +int totalPoints
+  +int weeklyPoints
+  +int monthlyPoints
+  +int rank
+  +List<String> badges
+  +int level
+}
+
+' Relationships
+UserProfile ||--o{ Post : creates
+UserProfile ||--o{ Comment : creates
+UserProfile ||--o{ Article : authors
+UserProfile ||--o{ Portfolio : owns
+UserProfile ||--o{ Follow : follows
+UserProfile ||--o{ Like : likes
+UserProfile ||--|| UserSettings : has
+
+Post ||--o{ Comment : has
+Post ||--o{ Like : receives
+Article ||--o{ Like : receives
+
+Portfolio ||--o{ PortfolioHolding : contains
+PortfolioHolding }o--|| Cryptocurrency : references
+
+AuthService ..> UserProfile : manages
+ApiService ..> UserProfile : fetches
+ApiService ..> Post : manages
+ApiService ..> Article : manages
+ApiService ..> Comment : manages
+
+CoinGeckoService ..> Cryptocurrency : fetches
+LLMService ..> AuthService : uses
+LLMService ..> CoinGeckoService : uses
+
+GamificationService ..> UserGameStats : manages
+GamificationService ..> LeaderboardEntry : creates
+
+SocialService ..> Post : manages
+SocialService ..> Follow : manages
+SocialService ..> Like : manages
+
+PortfolioService ..> Portfolio : manages
+PortfolioService ..> CoinGeckoService : uses
+
+MainTabScreen ..> AuthScreen : navigates
+MainTabScreen ..> ProfileScreen : navigates
+MainTabScreen ..> SocialFeedScreen : navigates
+MainTabScreen ..> MarketScreen : navigates
+MainTabScreen ..> PortfolioScreen : navigates
+MainTabScreen ..> ArticlesScreen : navigates
+MainTabScreen ..> SettingsScreen : navigates
+
+ProfileScreen ..> AuthService : uses
+ProfileScreen ..> ApiService : uses
+SocialFeedScreen ..> SocialService : uses
+MarketScreen ..> CoinGeckoService : uses
+PortfolioScreen ..> PortfolioService : uses
+ArticlesScreen ..> ApiService : uses
+SettingsScreen ..> AuthService : uses
+
+@enduml

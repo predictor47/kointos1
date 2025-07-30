@@ -1,0 +1,122 @@
+@startuml KointossDFDLevel1
+!theme plain
+scale 0.85
+skinparam backgroundColor white
+skinparam rectangle {
+  BackgroundColor lightblue
+  BorderColor darkblue
+  FontSize 10
+}
+skinparam entity {
+  BackgroundColor lightgreen
+  BorderColor darkgreen
+  FontSize 9
+}
+skinparam storage {
+  BackgroundColor lightyellow
+  BorderColor orange
+  FontSize 9
+}
+
+title Kointoss - Data Flow Diagram (Level 1)
+subtitle System Decomposition - Major Processes
+
+' External Entities
+entity "Guest User" as Guest
+entity "Registered User" as User
+entity "System Admin" as Admin
+entity "CoinGecko API" as CoinGecko
+entity "AWS Bedrock" as Bedrock
+
+' Major System Processes
+rectangle "1.0\nAuthentication\n& User Management" as AuthProcess
+rectangle "2.0\nSocial Feed\n& Interactions" as SocialProcess
+rectangle "3.0\nMarket Data\n& Portfolio" as MarketProcess
+rectangle "4.0\nContent Management\n(Articles)" as ContentProcess
+rectangle "5.0\nAI Assistant\n& Insights" as AIProcess
+rectangle "6.0\nGamification\n& Analytics" as GameProcess
+rectangle "7.0\nNotification\n& Settings" as NotifProcess
+
+' Data Stores
+storage "D1: User Profiles" as UserStore
+storage "D2: Posts & Comments" as SocialStore
+storage "D3: Articles & Media" as ContentStore
+storage "D4: Portfolio Data" as PortfolioStore
+storage "D5: Market Cache" as MarketStore
+storage "D6: Gamification Stats" as GameStore
+storage "D7: System Settings" as SettingsStore
+storage "D8: Notification Queue" as NotifStore
+
+' External Entity to Process Flows
+Guest --> AuthProcess : Registration Data\nLogin Attempts
+User --> AuthProcess : Login Credentials\nProfile Updates
+User --> SocialProcess : Post Content\nLikes/Comments\nFollow Requests
+User --> MarketProcess : Portfolio Updates\nWatchlist Changes
+User --> ContentProcess : Article Content\nMedia Uploads
+User --> AIProcess : Chat Messages\nQuery Requests
+User --> GameProcess : User Actions\nAchievement Requests
+User --> NotifProcess : Preference Settings\nNotification Responses
+
+Admin --> AuthProcess : User Management Commands
+Admin --> SocialProcess : Content Moderation
+Admin --> ContentProcess : Article Approval\nContent Review
+Admin --> GameProcess : Analytics Requests
+
+CoinGecko --> MarketProcess : Real-time Prices\nMarket Data\nCoin Information
+Bedrock --> AIProcess : AI Responses\nMarket Analysis\nPersonalized Insights
+
+' Process to External Entity Flows
+AuthProcess --> User : Authentication Tokens\nProfile Data\nSession Info
+SocialProcess --> User : Social Feed\nInteraction Updates\nUser Searches
+MarketProcess --> User : Portfolio Analytics\nMarket Updates\nPrice Alerts
+MarketProcess --> Guest : Public Market Data
+ContentProcess --> User : Published Articles\nContent Recommendations
+ContentProcess --> Guest : Public Articles
+AIProcess --> User : AI Responses\nMarket Insights\nPersonalized Advice
+GameProcess --> User : Points & Badges\nLeaderboard\nAchievements
+NotifProcess --> User : Push Notifications\nEmail Alerts\nSystem Messages
+
+AuthProcess --> Admin : User Statistics\nAuthentication Logs
+SocialProcess --> Admin : Content Reports\nModeration Queue
+ContentProcess --> Admin : Content Analytics\nApproval Queue
+GameProcess --> Admin : System Analytics\nUser Engagement Stats
+
+MarketProcess --> CoinGecko : API Requests\nData Sync Commands
+AIProcess --> Bedrock : User Context\nMarket Queries\nPersonalization Data
+
+' Process to Data Store Flows
+AuthProcess <--> UserStore : User Profiles\nAuthentication Data\nSession Tokens
+SocialProcess <--> SocialStore : Posts & Comments\nLikes & Follows\nUser Interactions
+SocialProcess --> UserStore : Social Stats Updates
+ContentProcess <--> ContentStore : Articles & Media\nContent Metadata\nPublication Status
+MarketProcess <--> PortfolioStore : Holdings Data\nTransaction History\nP&L Calculations
+MarketProcess <--> MarketStore : Cached Market Data\nPrice History\nCoin Information
+AIProcess --> UserStore : User Interaction History
+AIProcess --> MarketStore : Market Context Data
+GameProcess <--> GameStore : Points & Badges\nStreaks & Achievements\nLeaderboard Data
+GameProcess --> UserStore : Gamification Updates
+NotifProcess <--> NotifStore : Notification Queue\nDelivery Status\nUser Preferences
+NotifProcess <--> SettingsStore : User Settings\nPrivacy Preferences\nNotification Rules
+
+' Inter-Process Flows
+AuthProcess --> SocialProcess : User Authentication Status
+AuthProcess --> MarketProcess : User Verification
+AuthProcess --> ContentProcess : Author Verification
+AuthProcess --> AIProcess : User Context
+AuthProcess --> GameProcess : User Activity Data
+AuthProcess --> NotifProcess : User Session Info
+
+SocialProcess --> GameProcess : Social Actions (for points)
+SocialProcess --> NotifProcess : Social Notifications
+
+ContentProcess --> GameProcess : Content Actions (for points)
+ContentProcess --> NotifProcess : Content Notifications
+
+MarketProcess --> NotifProcess : Price Alerts\nPortfolio Updates
+
+AIProcess --> GameProcess : AI Interaction Points
+AIProcess --> NotifProcess : AI Response Delivery
+
+GameProcess --> NotifProcess : Achievement Notifications
+
+@enduml

@@ -224,9 +224,7 @@ class _BedrockPermissionCheckerState extends State<BedrockPermissionChecker> {
       });
 
       final response = await llmService.generateResponse(
-        prompt:
-            'Hello! This is a test message to verify Bedrock integration. Please respond with a brief confirmation that you can access real-time data.',
-        context: {},
+        'Hello! This is a test message to verify Bedrock integration. Please respond with a brief confirmation that you can access real-time data.',
         maxTokens: 100,
         temperature: 0.7,
       );

@@ -1,0 +1,148 @@
+@startuml KointossCollaborationDiagram
+
+title Kointoss - Collaboration Diagrams
+
+left to right direction
+
+' Collaboration Diagram 1: User Authentication Flow
+package "Authentication Collaboration" {
+  object ":User" as user1
+  object ":AuthScreen" as authUI1  
+  object ":AuthService" as authSvc1
+  object ":AWS Cognito" as cognito1
+  object ":ApiService" as apiSvc1
+  object ":UserProfile" as profile1
+
+  user1 -> authUI1 : 1: enterCredentials()
+  authUI1 -> authSvc1 : 2: signIn(email, password)
+  authSvc1 -> cognito1 : 3: authenticate()
+  cognito1 -> authSvc1 : 4: return JWT tokens
+  authSvc1 -> apiSvc1 : 5: setAuthToken()
+  apiSvc1 -> profile1 : 6: getUserProfile()
+  profile1 -> apiSvc1 : 7: return profile data
+  apiSvc1 -> authSvc1 : 8: profile loaded
+  authSvc1 -> authUI1 : 9: authentication success
+  authUI1 -> user1 : 10: navigate to main app
+}
+
+' Collaboration Diagram 2: Social Post Creation
+package "Social Post Creation Collaboration" {
+  object ":User" as user2
+  object ":SocialFeedScreen" as socialUI2
+  object ":SocialService" as socialSvc2
+  object ":ApiService" as apiSvc2
+  object ":Post" as post2
+  object ":GamificationService" as gameSvc2
+  object ":UserProfile" as profile2
+
+  user2 -> socialUI2 : 1: createPost(content)
+  socialUI2 -> socialSvc2 : 2: createPost(content, userId)
+  socialSvc2 -> apiSvc2 : 3: savePost(postData)
+  apiSvc2 -> post2 : 4: create new Post()
+  post2 -> apiSvc2 : 5: post created
+  apiSvc2 -> socialSvc2 : 6: post saved
+  socialSvc2 -> gameSvc2 : 7: awardPoints(userId, "post_created")
+  gameSvc2 -> profile2 : 8: updatePoints()
+  profile2 -> gameSvc2 : 9: points updated
+  gameSvc2 -> socialSvc2 : 10: gamification complete
+  socialSvc2 -> socialUI2 : 11: post creation success
+  socialUI2 -> user2 : 12: show success message
+}
+
+' Collaboration Diagram 3: Portfolio Management
+package "Portfolio Management Collaboration" {
+  object ":User" as user3
+  object ":PortfolioScreen" as portfolioUI3
+  object ":PortfolioService" as portfolioSvc3
+  object ":CoinGeckoService" as coinGecko3
+  object ":Portfolio" as portfolio3
+  object ":PortfolioHolding" as holding3
+  object ":Cryptocurrency" as crypto3
+
+  user3 -> portfolioUI3 : 1: addHolding(cryptoId, quantity)
+  portfolioUI3 -> portfolioSvc3 : 2: addHolding(cryptoId, quantity, price)
+  portfolioSvc3 -> coinGecko3 : 3: getCurrentPrice(cryptoId)
+  coinGecko3 -> crypto3 : 4: getCryptoData()
+  crypto3 -> coinGecko3 : 5: return price data
+  coinGecko3 -> portfolioSvc3 : 6: current price
+  portfolioSvc3 -> portfolio3 : 7: getPortfolio(userId)
+  portfolio3 -> holding3 : 8: addHolding(holdingData)
+  holding3 -> portfolio3 : 9: holding added
+  portfolio3 -> portfolioSvc3 : 10: portfolio updated
+  portfolioSvc3 -> portfolioUI3 : 11: holding added successfully
+  portfolioUI3 -> user3 : 12: display updated portfolio
+}
+
+' Collaboration Diagram 4: AI Chat Interaction
+package "AI Chat Collaboration" {
+  object ":User" as user4
+  object ":ChatBotScreen" as chatUI4
+  object ":LLMService" as llmSvc4
+  object ":AuthService" as authSvc4
+  object ":UserProfile" as profile4
+  object ":CoinGeckoService" as coinGecko4
+  object ":AWS Bedrock" as bedrock4
+
+  user4 -> chatUI4 : 1: sendMessage(query)
+  chatUI4 -> llmSvc4 : 2: processMessage(query, userId)
+  llmSvc4 -> authSvc4 : 3: getCurrentUserId()
+  authSvc4 -> llmSvc4 : 4: return userId
+  llmSvc4 -> profile4 : 5: getUserContext()
+  profile4 -> llmSvc4 : 6: return user data
+  llmSvc4 -> coinGecko4 : 7: getMarketContext()
+  coinGecko4 -> llmSvc4 : 8: return market data
+  llmSvc4 -> bedrock4 : 9: generateResponse(query, context)
+  bedrock4 -> llmSvc4 : 10: AI response
+  llmSvc4 -> chatUI4 : 11: return bot message
+  chatUI4 -> user4 : 12: display AI response
+}
+
+' Collaboration Diagram 5: Market Data Refresh
+package "Market Data Collaboration" {
+  object ":System Timer" as timer5
+  object ":MarketScreen" as marketUI5
+  object ":CoinGeckoService" as coinGecko5
+  object ":CoinGecko API" as coinGeckoAPI5
+  object ":Cryptocurrency" as crypto5
+  object ":ElastiCache" as cache5
+  object ":PortfolioService" as portfolioSvc5
+
+  timer5 -> marketUI5 : 1: refresh trigger (30s)
+  marketUI5 -> coinGecko5 : 2: refreshMarketData()
+  coinGecko5 -> coinGeckoAPI5 : 3: fetchLatestPrices()
+  coinGeckoAPI5 -> coinGecko5 : 4: return price data
+  coinGecko5 -> crypto5 : 5: updatePrices(priceData)
+  crypto5 -> cache5 : 6: cacheData()
+  cache5 -> crypto5 : 7: data cached
+  crypto5 -> coinGecko5 : 8: prices updated
+  coinGecko5 -> portfolioSvc5 : 9: notifyPriceUpdate()
+  portfolioSvc5 -> coinGecko5 : 10: portfolio values recalculated
+  coinGecko5 -> marketUI5 : 11: refresh complete
+  marketUI5 -> timer5 : 12: display updated data
+}
+
+' Collaboration Diagram 6: Article Publishing
+package "Article Publishing Collaboration" {
+  object ":User" as user6
+  object ":ArticlesScreen" as articleUI6
+  object ":ApiService" as apiSvc6
+  object ":Article" as article6
+  object ":StorageService" as storageSvc6
+  object ":S3" as s36
+  object ":GamificationService" as gameSvc6
+
+  user6 -> articleUI6 : 1: publishArticle(title, content, image)
+  articleUI6 -> storageSvc6 : 2: uploadImage(imageFile)
+  storageSvc6 -> s36 : 3: uploadFile()
+  s36 -> storageSvc6 : 4: return image URL
+  storageSvc6 -> articleUI6 : 5: image uploaded
+  articleUI6 -> apiSvc6 : 6: createArticle(articleData)
+  apiSvc6 -> article6 : 7: create new Article()
+  article6 -> apiSvc6 : 8: article created
+  apiSvc6 -> gameSvc6 : 9: awardPoints(userId, "article_published")
+  gameSvc6 -> apiSvc6 : 10: points awarded
+  apiSvc6 -> articleUI6 : 11: article published
+  articleUI6 -> user6 : 12: show publication success
+}
+
+@enduml

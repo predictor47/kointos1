@@ -2,6 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:kointos/core/services/user_profile_initialization_service.dart';
 import 'package:kointos/core/services/service_locator.dart';
+import 'package:kointos/core/services/logger_service.dart';
 
 class AuthService {
   Future<bool> isAuthenticated() async {
@@ -78,10 +79,18 @@ class AuthService {
       // Initialize user profile after successful confirmation
       try {
         final profileService = getService<UserProfileInitializationService>();
-        await profileService.createProfileForNewUser(email: email);
+        final profile =
+            await profileService.createProfileForNewUser(email: email);
+        if (profile == null) {
+          LoggerService.error(
+              'Profile creation returned null for user: $email');
+          throw Exception('Profile creation failed - returned null');
+        }
+        LoggerService.info('User profile created successfully for: $email');
       } catch (e) {
-        // Log the error but don't fail the auth process
-        print('Warning: Failed to create user profile: $e');
+        LoggerService.error('CRITICAL: Failed to create user profile: $e');
+        // Still throw the error so we know profile creation failed
+        throw Exception('Profile creation failed: $e');
       }
     } catch (e) {
       rethrow;
@@ -111,10 +120,17 @@ class AuthService {
       // Ensure user profile exists after successful sign in
       try {
         final profileService = getService<UserProfileInitializationService>();
-        await profileService.ensureUserProfile();
+        final profile = await profileService.ensureUserProfile();
+        if (profile == null) {
+          LoggerService.error('Profile ensure returned null after sign in');
+          throw Exception('Profile initialization failed after sign in');
+        }
+        LoggerService.info('User profile ensured successfully after sign in');
       } catch (e) {
-        // Log the error but don't fail the auth process
-        print('Warning: Failed to initialize user profile: $e');
+        LoggerService.error(
+            'CRITICAL: Failed to initialize user profile on sign in: $e');
+        // Still throw the error so we know profile creation failed
+        throw Exception('Profile initialization failed on sign in: $e');
       }
     } catch (e) {
       rethrow;

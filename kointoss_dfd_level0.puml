@@ -1,0 +1,61 @@
+@startuml KointossDFDLevel0
+!theme plain
+scale 0.9
+skinparam backgroundColor white
+skinparam rectangle {
+  BackgroundColor lightblue
+  BorderColor darkblue
+  FontSize 11
+}
+skinparam entity {
+  BackgroundColor lightgreen
+  BorderColor darkgreen
+  FontSize 10
+}
+skinparam storage {
+  BackgroundColor lightyellow
+  BorderColor orange
+  FontSize 10
+}
+
+title Kointoss - Data Flow Diagram (Level 0)
+subtitle Context Diagram - Crypto Social Platform
+
+' External Entities
+entity "Guest User" as Guest
+entity "Registered User" as User
+entity "System Admin" as Admin
+entity "CoinGecko API" as CoinGecko
+entity "AWS Bedrock" as Bedrock
+
+' Main System Process
+rectangle "Kointoss\nCrypto Social Platform\n(Process 0)" as MainSystem
+
+' Data Stores (External)
+storage "AWS DynamoDB\n(User Data)" as UserDB
+storage "AWS S3\n(Media Files)" as S3Storage
+
+' Data Flows from External Entities to System
+Guest --> MainSystem : Registration Request\nMarket Data Request\nContent View Request
+User --> MainSystem : Login Credentials\nPost/Article Content\nPortfolio Data\nChat Messages\nProfile Updates
+Admin --> MainSystem : Admin Commands\nContent Moderation\nUser Management
+CoinGecko --> MainSystem : Real-time Crypto Prices\nMarket Statistics\nCoin Information
+Bedrock --> MainSystem : AI Response Data\nMarket Analysis\nPersonalized Insights
+
+' Data Flows from System to External Entities
+MainSystem --> Guest : Market Data\nPublic Content\nRegistration Confirmation
+MainSystem --> User : Personalized Feed\nPortfolio Analytics\nAI Insights\nNotifications\nSocial Updates
+MainSystem --> Admin : System Analytics\nUser Reports\nContent Lists
+MainSystem --> CoinGecko : API Requests\nData Sync Commands
+MainSystem --> Bedrock : User Context\nMarket Queries\nPersonalization Data
+
+' Data Flows between System and Data Stores
+MainSystem <--> UserDB : User Profiles\nPosts & Comments\nPortfolio Data\nGamification Stats\nArticles & Interactions
+MainSystem <--> S3Storage : Profile Pictures\nPost Images\nArticle Media\nBackup Files
+
+' Positioning
+Guest -[hidden]- User
+User -[hidden]- Admin
+CoinGecko -[hidden]- Bedrock
+
+@enduml

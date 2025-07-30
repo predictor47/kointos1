@@ -307,8 +307,7 @@ class _QuickFixScreenState extends State<QuickFixScreen> {
       });
 
       final response = await llmService.generateResponse(
-        prompt: 'Hello, this is a connectivity test from Quick Fix diagnostics',
-        context: {},
+        'Hello, this is a connectivity test from Quick Fix diagnostics',
         maxTokens: 100,
       );
 

@@ -185,8 +185,7 @@ class _DevToolsScreenState extends State<DevToolsScreen> {
       // Test 2: Try actual LLM call
       final llmService = getService<LLMService>();
       final response = await llmService.generateResponse(
-        prompt: 'Hello, this is a test. Please respond briefly.',
-        context: {},
+        'Hello, this is a test. Please respond briefly.',
         maxTokens: 50,
       );
 

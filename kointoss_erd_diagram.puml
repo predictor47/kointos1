@@ -1,0 +1,249 @@
+@startuml KointossERD
+
+title Kointoss - Entity Relationship Diagram
+
+left to right direction
+
+class "UserProfile" as user {
+  +id : String
+  +userId : String
+  +email : String
+  +username : String
+  +displayName : String
+  +bio : String
+  +profilePicture : String
+  +totalPortfolioValue : Double
+  +followersCount : Integer
+  +followingCount : Integer
+  +isPublic : Boolean
+  +totalPoints : Integer
+  +level : Integer
+  +streak : Integer
+  +badges : JSON
+  +lastActivity : DateTime
+  +actionsToday : Integer
+  +weeklyPoints : Integer
+  +monthlyPoints : Integer
+  +globalRank : Integer
+  +createdAt : DateTime
+  +updatedAt : DateTime
+}
+
+class "Post" as post {
+  +id : String
+  +userId : String
+  +content : Text
+  +imageUrl : String
+  +tags : JSON
+  +mentionedCryptos : JSON
+  +isPublic : Boolean
+  +likesCount : Integer
+  +commentsCount : Integer
+  +createdAt : DateTime
+  +updatedAt : DateTime
+}
+
+class "Comment" as comment {
+  +id : String
+  +postId : String
+  +userId : String
+  +content : Text
+  +likesCount : Integer
+  +createdAt : DateTime
+}
+
+class "Article" as article {
+  +id : String
+  +authorId : String
+  +title : String
+  +content : Text
+  +excerpt : String
+  +featuredImage : String
+  +tags : JSON
+  +status : Enum
+  +viewCount : Integer
+  +likesCount : Integer
+  +publishedAt : DateTime
+  +createdAt : DateTime
+  +updatedAt : DateTime
+}
+
+class "Portfolio" as portfolio {
+  +id : String
+  +userId : String
+  +name : String
+  +totalValue : Double
+  +totalCost : Double
+  +totalPnL : Double
+  +pnLPercentage : Double
+  +lastUpdated : DateTime
+  +createdAt : DateTime
+}
+
+class "PortfolioHolding" as holding {
+  +id : String
+  +portfolioId : String
+  +cryptoId : String
+  +symbol : String
+  +quantity : Double
+  +avgBuyPrice : Double
+  +currentPrice : Double
+  +totalValue : Double
+  +pnL : Double
+  +pnLPercentage : Double
+  +addedAt : DateTime
+}
+
+class "Cryptocurrency" as crypto {
+  +id : String
+  +symbol : String
+  +name : String
+  +image : String
+  +currentPrice : Double
+  +marketCap : Double
+  +marketCapRank : Integer
+  +priceChange24h : Double
+  +priceChangePercentage24h : Double
+  +volume24h : Double
+  +high24h : Double
+  +low24h : Double
+  +lastUpdated : DateTime
+}
+
+class "Follow" as follow {
+  +id : String
+  +followerId : String
+  +followingId : String
+  +createdAt : DateTime
+}
+
+class "Like" as like {
+  +id : String
+  +userId : String
+  +postId : String
+  +commentId : String
+  +articleId : String
+  +createdAt : DateTime
+}
+
+class "UserSettings" as settings {
+  +id : String
+  +userId : String
+  +theme : Enum
+  +language : String
+  +currency : String
+  +notificationsEnabled : Boolean
+  +emailNotifications : Boolean
+  +pushNotifications : Boolean
+  +marketAlerts : Boolean
+  +portfolioPrivacy : Boolean
+  +twoFactorEnabled : Boolean
+  +biometricEnabled : Boolean
+  +dataRetention : Integer
+  +createdAt : DateTime
+  +updatedAt : DateTime
+}
+
+class "Watchlist" as watchlist {
+  +id : String
+  +userId : String
+  +name : String
+  +cryptoSymbols : JSON
+  +isPublic : Boolean
+  +createdAt : DateTime
+  +updatedAt : DateTime
+}
+
+class "NewsArticle" as news {
+  +id : String
+  +title : String
+  +content : Text
+  +url : String
+  +source : String
+  +author : String
+  +publishedAt : DateTime
+  +sentiment : Enum
+  +tags : JSON
+  +cryptoMentions : JSON
+  +createdAt : DateTime
+}
+
+class "PriceAlert" as alert {
+  +id : String
+  +userId : String
+  +cryptoId : String
+  +alertType : Enum
+  +targetPrice : Double
+  +currentPrice : Double
+  +isActive : Boolean
+  +isTriggered : Boolean
+  +createdAt : DateTime
+  +triggeredAt : DateTime
+}
+
+class "TradingSignal" as signal {
+  +id : String
+  +cryptoId : String
+  +signalType : Enum
+  +title : String
+  +description : Text
+  +confidence : Double
+  +targetPrice : Double
+  +stopLoss : Double
+  +isActive : Boolean
+  +createdAt : DateTime
+  +expiresAt : DateTime
+}
+
+class "SupportTicket" as ticket {
+  +id : String
+  +userId : String
+  +subject : String
+  +description : Text
+  +category : Enum
+  +priority : Enum
+  +status : Enum
+  +adminResponse : Text
+  +createdAt : DateTime
+  +updatedAt : DateTime
+  +resolvedAt : DateTime
+}
+
+class "FAQ" as faq {
+  +id : String
+  +question : String
+  +answer : Text
+  +category : String
+  +isActive : Boolean
+  +createdAt : DateTime
+  +updatedAt : DateTime
+}
+
+' Relationships
+user ||--o{ post : creates
+user ||--o{ comment : writes
+user ||--o{ article : authors
+user ||--o{ portfolio : owns
+user ||--|| settings : has
+user ||--o{ watchlist : maintains
+user ||--o{ alert : sets
+user ||--o{ ticket : submits
+
+user ||--o{ follow : follower
+user ||--o{ follow : following
+user ||--o{ like : likes
+
+post ||--o{ comment : has
+post ||--o{ like : receives
+
+article ||--o{ like : receives
+
+portfolio ||--o{ holding : contains
+holding }o--|| crypto : references
+
+comment ||--o{ like : receives
+
+crypto ||--o{ alert : monitored
+crypto ||--o{ signal : analyzed
+
+@enduml

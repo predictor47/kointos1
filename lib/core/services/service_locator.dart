@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:kointos/core/constants/app_constants.dart';
+import 'package:kointos/core/services/amplify_bedrock_service.dart';
 import 'package:kointos/core/services/amplify_storage_service.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/auth_service.dart';
@@ -60,6 +61,10 @@ Future<void> setupServiceLocator() async {
 
   // AI Services
   serviceLocator.registerLazySingleton<BedrockClient>(() => BedrockClient());
+
+  serviceLocator.registerLazySingleton<AmplifyBedrockService>(
+    () => AmplifyBedrockService(),
+  );
 
   serviceLocator.registerLazySingleton<LLMService>(() => LLMService());
 

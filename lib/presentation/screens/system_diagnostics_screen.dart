@@ -115,8 +115,7 @@ class _SystemDiagnosticsScreenState extends State<SystemDiagnosticsScreen> {
     try {
       final llmService = getService<LLMService>();
       final response = await llmService.generateResponse(
-        prompt: 'Test message',
-        context: {},
+        'Test message',
         maxTokens: 50,
       );
 

@@ -1,0 +1,119 @@
+@startuml KointossSequenceDiagram
+
+title Kointoss - Sequence Diagram: User Authentication and Social Post Creation
+
+participant "User" as User
+participant "AuthScreen" as AuthUI
+participant "AuthService" as Auth
+participant "AWS Cognito" as Cognito
+participant "ApiService" as API
+participant "AWS AppSync" as AppSync
+participant "DynamoDB" as DB
+participant "SocialFeedScreen" as SocialUI
+participant "SocialService" as Social
+participant "GamificationService" as Gamification
+
+== User Registration and Authentication ==
+User -> AuthUI: Enter registration data
+AuthUI -> Auth: signUp(email, password)
+Auth -> Cognito: Create user account
+Cognito -> Auth: Registration successful
+Auth -> AuthUI: Show verification screen
+AuthUI -> User: Request verification code
+
+User -> AuthUI: Enter verification code
+AuthUI -> Auth: confirmSignUp(email, code)
+Auth -> Cognito: Verify account
+Cognito -> Auth: Account verified
+Auth -> API: createUserProfile()
+API -> AppSync: GraphQL mutation
+AppSync -> DB: Create user profile
+DB -> AppSync: Profile created
+AppSync -> API: Profile data
+API -> Auth: Profile ready
+Auth -> AuthUI: Registration complete
+AuthUI -> User: Navigate to main app
+
+== User Login ==
+User -> AuthUI: Enter login credentials
+AuthUI -> Auth: signIn(email, password)
+Auth -> Cognito: Authenticate user
+Cognito -> Auth: JWT tokens
+Auth -> AuthUI: Authentication successful
+AuthUI -> User: Navigate to social feed
+
+== Social Post Creation ==
+User -> SocialUI: Create new post
+SocialUI -> Auth: getCurrentUserId()
+Auth -> SocialUI: Return user ID
+SocialUI -> Social: createPost(content, userId)
+Social -> API: createPost(postData)
+API -> AppSync: GraphQL mutation
+AppSync -> DB: Store post data
+DB -> AppSync: Post stored
+AppSync -> API: Post created
+API -> Social: Post creation successful
+Social -> Gamification: updateUserStats(userId, "post_created")
+Gamification -> API: updateUserProfile(points)
+API -> AppSync: Update user points
+AppSync -> DB: Update gamification data
+DB -> AppSync: Points updated
+AppSync -> API: Update successful
+API -> Gamification: Points awarded
+Gamification -> Social: Gamification complete
+Social -> SocialUI: Post created successfully
+SocialUI -> User: Show success message
+SocialUI -> SocialUI: refreshFeed()
+SocialUI -> User: Display updated feed
+
+== Real-time Market Data Flow ==
+User -> "MarketScreen" as MarketUI: View market data
+MarketUI -> "CoinGeckoService" as CoinGecko: getCryptocurrencies()
+CoinGecko -> "CoinGecko API" as CoinGeckoAPI: Fetch market data
+CoinGeckoAPI -> CoinGecko: Return crypto prices
+CoinGecko -> "ElastiCache" as Cache: Store cached data
+Cache -> CoinGecko: Data cached
+CoinGecko -> MarketUI: Return market data
+MarketUI -> User: Display crypto prices
+
+== AI Chatbot Interaction ==
+User -> "ChatBotScreen" as ChatUI: Send message
+ChatUI -> "LLMService" as LLM: sendMessage(userQuery)
+LLM -> Auth: getCurrentUserId()
+Auth -> LLM: Return user ID
+LLM -> API: getUserProfile(userId)
+API -> AppSync: Query user data
+AppSync -> DB: Fetch user profile
+DB -> AppSync: User profile data
+AppSync -> API: Profile data
+API -> LLM: User context
+LLM -> CoinGecko: fetchMarketData()
+CoinGecko -> LLM: Market context
+LLM -> "AWS Bedrock" as Bedrock: Generate response with context
+Bedrock -> LLM: AI response
+LLM -> API: saveInteractionHistory()
+API -> AppSync: Store chat history
+AppSync -> DB: Save interaction
+DB -> AppSync: Interaction saved
+AppSync -> API: History saved
+API -> LLM: History updated
+LLM -> ChatUI: Return AI response
+ChatUI -> User: Display bot message
+
+== Portfolio Update Flow ==
+User -> "PortfolioScreen" as PortfolioUI: Add new holding
+PortfolioUI -> "PortfolioService" as PortfolioSvc: addHolding(cryptoId, quantity)
+PortfolioSvc -> CoinGecko: getCryptocurrencyById(cryptoId)
+CoinGecko -> CoinGeckoAPI: Get current price
+CoinGeckoAPI -> CoinGecko: Return price data
+CoinGecko -> PortfolioSvc: Current price
+PortfolioSvc -> API: updatePortfolio(holdingData)
+API -> AppSync: GraphQL mutation
+AppSync -> DB: Store holding data
+DB -> AppSync: Holding stored
+AppSync -> API: Update successful
+API -> PortfolioSvc: Holding added
+PortfolioSvc -> PortfolioUI: Portfolio updated
+PortfolioUI -> User: Show updated portfolio
+
+@enduml
