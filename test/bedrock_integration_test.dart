@@ -4,6 +4,11 @@ import 'package:kointos/core/services/llm_service.dart';
 import 'package:kointos/core/services/service_locator.dart';
 
 void main() {
+  setUpAll(() async {
+    // Initialize Flutter bindings for tests
+    TestWidgetsFlutterBinding.ensureInitialized();
+  });
+
   group('Bedrock Integration Tests', () {
     setUp(() async {
       // Initialize service locator for testing

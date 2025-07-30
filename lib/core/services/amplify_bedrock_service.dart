@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:kointos/core/services/logger_service.dart';
 import 'package:kointos/core/services/service_locator.dart';
@@ -46,8 +47,10 @@ class AmplifyBedrockService {
 
       if (response.data != null) {
         LoggerService.info('Claude response received successfully');
-        final data = response.data as Map<String, dynamic>;
-        return data['invokeBedrock'] as Map<String, dynamic>;
+        // The response is a JSON string, so decode it first
+        final decoded = jsonDecode(response.data!);
+        // The mutation returns { "invokeBedrock": { "response": "...", "usage": {...} } }
+        return decoded['invokeBedrock'] as Map<String, dynamic>;
       } else if (response.errors.isNotEmpty) {
         LoggerService.error('GraphQL errors: ${response.errors}');
         throw Exception(
