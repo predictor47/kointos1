@@ -5,7 +5,6 @@ import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/data/datasources/coingecko_service.dart';
 import 'package:kointos/core/services/portfolio_service.dart';
-import 'package:kointos/presentation/widgets/platform_widgets.dart';
 
 class EnhancedCryptoDetailScreen extends StatefulWidget {
   final String coinId;

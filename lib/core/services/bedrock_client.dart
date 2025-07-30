@@ -55,9 +55,9 @@ class BedrockClient {
       };
 
       final bodyJson = jsonEncode(requestBody);
-      final endpoint = 'https://bedrock-runtime.$_region.amazonaws.com';
+      const endpoint = 'https://bedrock-runtime.$_region.amazonaws.com';
       const modelId = 'anthropic.claude-3-haiku-20240307-v1:0';
-      final path = '/model/$modelId/invoke';
+      const path = '/model/$modelId/invoke';
       final url = '$endpoint$path';
 
       // Create signed headers

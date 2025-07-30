@@ -3,7 +3,6 @@ import 'package:kointos/core/theme/modern_theme.dart';
 import 'package:kointos/core/services/service_locator.dart';
 import 'package:kointos/core/services/api_service.dart';
 import 'package:kointos/core/services/auth_service.dart';
-import 'package:kointos/presentation/widgets/platform_widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class ChatScreen extends StatefulWidget {

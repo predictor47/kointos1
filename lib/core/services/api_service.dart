@@ -415,38 +415,36 @@ class ApiService {
             'username': username,
             'displayName': displayName ?? username,
             'bio': bio ?? 'Welcome to Kointos!',
-            'isPublic': true,
-            'totalPortfolioValue': 0.0,
-            'followersCount': 0,
-            'followingCount': 0,
-            'totalPoints': 0,
-            'level': 1,
-            'streak': 0,
-            'badges': [],
             'lastActivity': now,
-            'actionsToday': 0,
-            'weeklyPoints': 0,
-            'monthlyPoints': 0,
-            'globalRank': 999999,
-            'createdAt': now,
-            'updatedAt': now,
           },
         },
       );
 
       final response = await Amplify.API.mutate(request: request).response;
 
+      LoggerService.info(
+          'Create user profile response - Data: ${response.data}, Errors: ${response.errors}');
+
       if (response.data != null) {
         LoggerService.info('User profile created successfully');
         final data = jsonDecode(response.data!);
-        return data['createUserProfile'];
+        final profile = data['createUserProfile'];
+        if (profile != null) {
+          LoggerService.info('Profile data received: ${profile.toString()}');
+          return profile;
+        } else {
+          LoggerService.error('Profile data is null in response');
+          throw Exception('Profile creation returned null data');
+        }
       } else if (response.errors.isNotEmpty) {
         LoggerService.error('GraphQL errors: ${response.errors}');
         throw Exception(
           'Failed to create user profile: ${response.errors.first.message}',
         );
+      } else {
+        LoggerService.error('No data and no errors in response');
+        throw Exception('Profile creation failed - empty response');
       }
-      return null;
     } catch (e) {
       LoggerService.error('Failed to create user profile: $e');
       rethrow;

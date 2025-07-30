@@ -92,25 +92,71 @@ class UserProfileInitializationService {
     try {
       LoggerService.info('Creating profile for new user: $email');
 
-      // Wait a moment for Cognito to be fully ready
-      await Future.delayed(const Duration(seconds: 1));
+      // Wait for Cognito to be fully ready and try multiple times
+      Map<String, dynamic>? profile;
+      String? userId;
 
-      // Get current user info after confirmation
-      final userId = await _authService.getCurrentUserId();
+      for (int attempt = 1; attempt <= 5; attempt++) {
+        LoggerService.info('Profile creation attempt $attempt/5');
+
+        // Wait longer between attempts
+        await Future.delayed(Duration(seconds: attempt));
+
+        // Get current user info after confirmation
+        userId = await _authService.getCurrentUserId();
+        if (userId == null) {
+          LoggerService.warning(
+              'No authenticated user found on attempt $attempt');
+          if (attempt == 5) {
+            throw Exception('No authenticated user found after 5 attempts');
+          }
+          continue;
+        }
+
+        LoggerService.info('Found user ID: $userId');
+        break;
+      }
+
       if (userId == null) {
-        LoggerService.error('No authenticated user found after sign up');
-        return null;
+        throw Exception('Could not get user ID after confirmation');
       }
 
       final username = displayName ?? email.split('@').first;
 
-      return await _apiService.createUserProfile(
-        userId: userId,
-        email: email,
-        username: username,
-        displayName: displayName ?? username,
-        bio: 'New Kointos member! 🎉',
-      );
+      // Try to create the profile with retry logic
+      for (int attempt = 1; attempt <= 3; attempt++) {
+        try {
+          LoggerService.info('Attempting profile creation: attempt $attempt/3');
+
+          profile = await _apiService.createUserProfile(
+            userId: userId,
+            email: email,
+            username: username,
+            displayName: displayName ?? username,
+            bio: 'New Kointos member! 🎉',
+          );
+
+          if (profile != null) {
+            LoggerService.info(
+                'Profile created successfully on attempt $attempt');
+            return profile;
+          } else {
+            LoggerService.warning(
+                'Profile creation returned null on attempt $attempt');
+            if (attempt < 3) {
+              await Future.delayed(Duration(seconds: 2 * attempt));
+            }
+          }
+        } catch (e) {
+          LoggerService.error('Profile creation attempt $attempt failed: $e');
+          if (attempt == 3) {
+            rethrow;
+          }
+          await Future.delayed(Duration(seconds: 2 * attempt));
+        }
+      }
+
+      throw Exception('Profile creation failed after 3 attempts');
     } catch (e) {
       LoggerService.error('Failed to create profile for new user: $e');
       rethrow;
